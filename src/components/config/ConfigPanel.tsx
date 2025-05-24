@@ -208,7 +208,15 @@ const ConfigPanel = ({ onStartWorkout, onOpenSettings }: ConfigPanelProps) => {
                       <option key={num} value={num}>{num}</option>
                     ))}
                   </select>
-                  <span>sets</span>
+                  <span className="sets-label">sets</span>
+                  <Button 
+                    onClick={() => dispatch(removeSplit(split.id))}
+                    variant="danger"
+                    size="small"
+                    disabled={splits.length === 1}
+                  >
+                    <Trash2 size={16} />
+                  </Button>
                 </div>
                 <div className="split-actions">
                   <Button 
@@ -218,14 +226,6 @@ const ConfigPanel = ({ onStartWorkout, onOpenSettings }: ConfigPanelProps) => {
                     size="small"
                   >
                     +
-                  </Button>
-                  <Button 
-                    onClick={() => dispatch(removeSplit(split.id))}
-                    variant="danger"
-                    size="small"
-                    disabled={splits.length === 1}
-                  >
-                    <Trash2 size={16} />
                   </Button>
                 </div>
               </div>

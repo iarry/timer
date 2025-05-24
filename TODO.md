@@ -80,6 +80,12 @@
 -   [x] Update the start and add split buttons to use the same green as the
         selects. This should be the only green used throughout the app. Make it
         a CSS variable.
+-   [x] Make the space between the start, settings, and the placeholder equal
+        with the edges of the screen.
+-   [x] DEBUG the new exercise button is still showing red, there seems to be a
+        conflicting CSS rule with !important on it
+        ✅ FIXED: Updated selector to `.split-actions .add-exercise-button.btn.btn-small` 
+        to override the red color from `.split-actions .btn.btn-small` rule
 
 ## Timer page
 
@@ -114,6 +120,13 @@
 -   [x] Make the ring progress green (the same green we just made the only green
         across the app). The progress when resting should be off-white, and the
         ring's un-filled/progressed section should be a light grey.
+-   [x] Make the space between the mute, play, and settings button equal with
+        the edges of the screen.
+-   [x] Remove the orange highlight that happens after pressing the pause
+        button.
+-   [x] Fill the pause/play button's paths, e.g. so the play button is solid
+        without a background.
+-   [x] DEBUG AND FIX - the rounds info didn't move up on your last try
 
 ## Settings
 

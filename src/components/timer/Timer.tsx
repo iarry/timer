@@ -208,7 +208,7 @@ const Timer = ({ onExit, onOpenSettings }: TimerProps) => {
                     {/* Rounds remaining text */}
                     <text
                       x="110"
-                      y="80"
+                      y="70"
                       textAnchor="middle"
                       dominantBaseline="middle"
                       fill="#999"
@@ -234,7 +234,7 @@ const Timer = ({ onExit, onOpenSettings }: TimerProps) => {
                     {/* Total remaining text inside ring */}
                     <text
                       x="110"
-                      y="140"
+                      y="144"
                       textAnchor="middle"
                       dominantBaseline="middle"
                       fill="#999"
@@ -272,7 +272,7 @@ const Timer = ({ onExit, onOpenSettings }: TimerProps) => {
                 size="large"
                 className="play-pause-button"
               >
-                {timerState.status === 'running' ? <Pause size={60} /> : <Play size={60} />}
+                {timerState.status === 'running' ? <Pause size={60} fill="currentColor" /> : <Play size={60} fill="currentColor" />}
               </Button>
               <Button 
                 onClick={onOpenSettings}

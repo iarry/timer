@@ -197,6 +197,7 @@ input[type='number'] {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 0;
+    padding-bottom: var(--spacing-sm);
 }
 
 .split-actions {
@@ -217,10 +218,30 @@ input[type='number'] {
     gap: var(--spacing-xs);
 }
 
+/* Split delete button styling when in sets-info */
+.sets-info .btn.btn-small {
+    background: transparent !important;
+    border: none !important;
+    color: var(--color-danger) !important;
+    box-shadow: none !important;
+    padding: 4px;
+    min-width: auto;
+    margin-left: var(--spacing-xs);
+}
+
+.sets-info .btn.btn-small:hover {
+    background: rgba(255, 82, 82, 0.1) !important;
+}
+
+.sets-label {
+    color: var(--color-text-light);
+}
+
 .add-split-section {
     display: flex;
     justify-content: center;
     padding: 0 var(--spacing-md) var(--spacing-md) var(--spacing-md);
+    margin-top: var(--spacing-xl);
     background-color: var(--color-background);
     position: relative;
 }
@@ -273,7 +294,6 @@ input[type='number'] {
     margin-top: 0;
     margin-bottom: 0;
     border-top: 1px solid var(--color-border);
-    padding-top: var(--spacing-sm);
 }
 
 .exercise-item {
@@ -300,11 +320,11 @@ input[type='number'] {
 }
 
 /* Add exercise button styling */
-.add-exercise-button {
+.split-actions .add-exercise-button.btn.btn-small {
     width: auto;
     height: auto;
     font-size: 16px;
-    padding: 4px 8px;
+    padding: 4px 8px !important;
     min-width: auto;
     background-color: var(--color-secondary) !important;
     color: white !important;
@@ -312,8 +332,9 @@ input[type='number'] {
     box-shadow: none !important;
 }
 
-.add-exercise-button:hover {
+.split-actions .add-exercise-button.btn.btn-small:hover {
     background-color: var(--color-secondary-hover) !important;
+    color: white !important;
 }
 
 .exercise-name {
