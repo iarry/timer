@@ -41,21 +41,27 @@ export const useSoundEffects = (): SoundEffects => {
   const playStart = () => {
     if (startSound.current) {
       startSound.current.currentTime = 0;
-      startSound.current.play().catch(e => console.error('Error playing sound:', e));
+      startSound.current.play().catch(() => {
+        // Sound play failed - user might not have interacted with page yet
+      });
     }
   };
 
   const playComplete = () => {
     if (completeSound.current) {
       completeSound.current.currentTime = 0;
-      completeSound.current.play().catch(e => console.error('Error playing sound:', e));
+      completeSound.current.play().catch(() => {
+        // Sound play failed - user might not have interacted with page yet
+      });
     }
   };
 
   const playTransition = () => {
     if (transitionSound.current) {
       transitionSound.current.currentTime = 0;
-      transitionSound.current.play().catch(e => console.error('Error playing sound:', e));
+      transitionSound.current.play().catch(() => {
+        // Sound play failed - user might not have interacted with page yet
+      });
     }
   };
 

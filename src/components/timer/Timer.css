@@ -146,11 +146,6 @@
     margin-bottom: var(--spacing-xl);
 }
 
-.completion-message h2 {
-    color: #2ecc71;
-    margin-bottom: 1.5rem;
-}
-
 /* Make the SVG responsive */
 svg {
     display: block;

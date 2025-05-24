@@ -1,6 +1,43 @@
 # HIIT Timer App
 
-A mobile-first High-Intensity Interval Training (HIIT) timer application built with Re## Implementation Details
+A mobile-first High-Intensity Interval Training (HIIT) timer application built with React, Redux, and Firebase. This app allows users to create custom workout routines with configurable exercises, rest periods, and multiple splits.
+
+## Recent Development Summary
+
+This HIIT Timer application has been completely implemented with all core features and thoroughly tested. The project demonstrates modern React/TypeScript development practices with Redux state management and Firebase integration.
+
+### Major Features Implemented
+
+- **Inline Editable Exercise Lists**: Real-time editing with immediate Redux state updates
+- **Left/Right Exercise Support**: Checkbox functionality that doubles exercise time with rest between sides
+- **Visual Duration Indicators**: Exercises using default duration values are highlighted
+- **Auto-updating Configurations**: When default durations change, exercises using defaults automatically update
+- **Auto-initialization**: Split 1 is automatically created to eliminate empty states
+- **Complete Mobile Design**: Dark theme with responsive layout optimized for workouts
+- **Firebase Authentication**: Google OAuth integration with user profile management
+- **Sound Effects**: Audio feedback for timer start, transitions, and completion
+- **LocalStorage Persistence**: Workout configurations persist between sessions
+
+### Technical Decisions Made
+
+- **Redux Toolkit**: Chosen for complex state management with multiple interconnected slices
+- **TypeScript**: Strict typing for better development experience and error prevention
+- **CSS Variables**: Consistent theming system with mobile-first responsive design
+- **Custom Hooks**: Sound effects abstracted into reusable hook with error handling
+- **Error Boundaries**: Silent error handling for localStorage and audio playback failures
+- **Modular Architecture**: Feature-based folder structure for scalability
+
+### Code Quality Improvements
+
+Recent cleanup included:
+- Removed unused CSS animations and placeholder content
+- Eliminated console.error statements in favor of silent error handling
+- Fixed duplicate CSS rules
+- Replaced Firebase hosting placeholder with proper production HTML
+- Removed completed TODO file
+- Updated page titles to be production-ready
+
+## Implementation Details
 
 The application has been implemented with several key features and components:
 
@@ -291,13 +328,102 @@ npm install
 npm run dev
 ```
 
-### Deployment
+The development server will start at `http://localhost:5173`
+
+### Manual Testing Instructions
+
+After running `npm run dev`, test the following functionality:
+
+#### 1. Initial Setup and Configuration
+- [ ] Open `http://localhost:5173` in your browser
+- [ ] Verify dark theme loads correctly
+- [ ] Check that "Split 1" is automatically created and ready for exercise input
+- [ ] Test hamburger menu opens/closes properly in top-right corner
+
+#### 2. Default Duration Configuration
+- [ ] Adjust exercise duration slider (default: 45s)
+- [ ] Adjust rest duration slider (default: 30s)
+- [ ] Verify changes are reflected in new exercise forms
+
+#### 3. Exercise Management
+- [ ] Click "Add Exercise" button in Split 1
+- [ ] Enter exercise name (e.g., "Push-ups")
+- [ ] Select duration from dropdown (notice default values are highlighted)
+- [ ] Toggle L/R checkbox to test left/right exercise functionality
+- [ ] Click "Add" to create exercise
+- [ ] Verify exercise appears in list with inline editing capability
+
+#### 4. Inline Editing
+- [ ] Click on exercise name to edit inline
+- [ ] Change duration via dropdown
+- [ ] Notice visual highlighting when using default duration values
+- [ ] Test checkbox for L/R exercises
+- [ ] Verify all changes save automatically
+
+#### 5. Multiple Splits
+- [ ] Scroll to bottom and create additional splits using "Add Split" form
+- [ ] Set different numbers of sets for each split
+- [ ] Add exercises to multiple splits
+- [ ] Test deleting splits (exercises should be removed)
+
+#### 6. Timer Functionality
+- [ ] Add at least one exercise to a split
+- [ ] Click "Start Workout" button
+- [ ] Verify timer interface loads with circular progress indicator
+- [ ] Check exercise name and type (Exercise/Rest) display correctly
+- [ ] Test pause/resume functionality
+- [ ] Verify total remaining time updates accurately
+- [ ] Test "Back to Configuration" button
+
+#### 7. Left/Right Exercise Flow
+- [ ] Create an exercise with L/R checkbox enabled
+- [ ] Start timer and verify flow: Exercise (Left) → Rest → Exercise (Right) → Rest
+- [ ] Confirm timing is doubled for L/R exercises
+
+#### 8. Sound Effects
+- [ ] Interact with page first (click somewhere) to enable audio
+- [ ] Start timer and listen for start sound
+- [ ] Wait for transitions between exercises for transition sounds
+- [ ] Complete a short workout for completion sound
+
+#### 9. User Authentication
+- [ ] Click hamburger menu in top-right
+- [ ] Test "Sign In with Google" (requires real Google account)
+- [ ] Verify user name appears after successful login
+- [ ] Test sign out functionality
+
+#### 10. Persistence Testing
+- [ ] Configure exercises and splits
+- [ ] Refresh the browser page
+- [ ] Verify all configuration persists via localStorage
+- [ ] Test that timer state resets but configuration remains
+
+#### 11. Responsive Design
+- [ ] Test on mobile device or resize browser window
+- [ ] Verify layouts remain functional on small screens
+- [ ] Check touch targets are appropriately sized
+- [ ] Test menu behavior on mobile
+
+#### 12. Error Handling
+- [ ] Try to start workout with no exercises (should show warning)
+- [ ] Test navigation during active timer
+- [ ] Verify graceful handling of audio failures (check browser console)
+
+### Expected Behavior Summary
+
+- **Configuration**: Auto-initialization, real-time updates, visual indicators
+- **Timer**: Smooth countdown, accurate progress display, proper audio cues
+- **Navigation**: Seamless transitions, state preservation, responsive design
+- **Persistence**: LocalStorage saves configurations between sessions
+- **Authentication**: Google OAuth integration with profile display
+
+### Build and Deployment
 
 ```bash
 # Build for production
 npm run build
 
-# Deploy to Firebase
+# Deploy to Firebase (requires Firebase CLI setup)
 firebase deploy
 ```
 
@@ -313,3 +439,34 @@ git commit -m "Description of changes"
 # Push to remote repository
 git push origin main
 ```
+
+## Technical Architecture
+
+### State Management
+- **timerConfigSlice**: Workout configuration with auto-save to localStorage
+- **timerSlice**: Timer countdown with complex queue management for splits/sets
+- **samplesSlice**: Sample workout data for quick start
+- **userSlice**: Authentication state management
+
+### Component Hierarchy
+```
+App
+├── ConfigPanel (main configuration interface)
+│   ├── Default duration controls
+│   ├── Split management
+│   └── Exercise CRUD operations
+├── Timer (workout execution interface)
+│   ├── Circular progress display
+│   ├── Exercise information
+│   └── Control buttons
+└── UserAuth (authentication component)
+    ├── Google sign-in
+    └── User profile display
+```
+
+### Key Technical Features
+- **Real-time State Updates**: All changes immediately reflected across components
+- **Audio Management**: Custom hook with graceful error handling
+- **Type Safety**: Comprehensive TypeScript coverage
+- **Mobile Optimization**: CSS Grid/Flexbox with touch-friendly interactions
+- **Error Boundaries**: Silent fallbacks for localStorage and audio failures

@@ -26,7 +26,7 @@ const UserAuth = () => {
         email: user.email,
       }));
     } catch (error) {
-      console.error('Error signing in:', error);
+      // Login failed - could be user cancelled or network issue
     } finally {
       setIsLoading(false);
     }
@@ -39,7 +39,7 @@ const UserAuth = () => {
       await signOut(auth);
       dispatch(logout());
     } catch (error) {
-      console.error('Error signing out:', error);
+      // Logout failed - likely network issue
     } finally {
       setIsLoading(false);
     }
