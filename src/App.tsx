@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useAppSelector } from './hooks'
 import './App.css'
 import ConfigPanel from './components/config/ConfigPanel'
@@ -10,6 +10,18 @@ function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const timerStatus = useAppSelector(state => state.timer.status)
   const menuRef = useRef<HTMLDivElement>(null)
+  
+  // Add click outside handler for menu
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsMenuOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
   
   // If timer is active (running or paused), show timer view
   // Otherwise show the view based on user selection

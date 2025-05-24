@@ -264,7 +264,7 @@ const Timer = ({ onExit, onOpenSettings }: TimerProps) => {
                 size="small"
                 className="timer-mute-button"
               >
-                {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
+                {isMuted ? <VolumeX size={24} /> : <Volume2 size={24} />}
               </Button>
               <Button 
                 onClick={handleTogglePlay}
@@ -280,7 +280,7 @@ const Timer = ({ onExit, onOpenSettings }: TimerProps) => {
                 size="small"
                 className="timer-settings-button"
               >
-                <Settings size={18} />
+                <Settings size={24} />
               </Button>
             </div>
           )}
