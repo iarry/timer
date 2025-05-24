@@ -22,9 +22,8 @@
     right: 0;
     display: flex;
     flex-direction: row;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
-    gap: var(--spacing-md);
     padding: var(--spacing-md);
     background-color: var(--color-surface);
     border-top: 1px solid var(--color-border);
@@ -35,7 +34,7 @@
 .start-workout-section button:not(.settings-button) {
     background-color: var(--color-secondary);
     color: white;
-    min-width: 200px;
+    min-width: 120px;
     margin-bottom: 0;
     padding: 0.5rem 0.75rem;
 }
@@ -60,6 +59,11 @@
 
 .start-workout-section .settings-button:hover {
     background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.start-workout-section .spacer {
+    width: 48px; /* Same width as settings button to balance the layout */
+    height: 48px;
 }
 
 .warning-message {
@@ -95,6 +99,13 @@
     padding: var(--spacing-xs) var(--spacing-sm);
     font-size: 0.9rem;
     border-radius: 4px;
+    background-color: var(--color-secondary) !important;
+    color: white !important;
+    border: none !important;
+}
+
+.add-split-button:hover {
+    background-color: var(--color-secondary-hover) !important;
 }
 
 .setting-group {
@@ -185,7 +196,7 @@ input[type='number'] {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: var(--spacing-md);
+    margin-bottom: 0;
 }
 
 .split-actions {
@@ -209,19 +220,9 @@ input[type='number'] {
 .add-split-section {
     display: flex;
     justify-content: center;
-    padding: var(--spacing-md);
+    padding: 0 var(--spacing-md) var(--spacing-md) var(--spacing-md);
     background-color: var(--color-background);
     position: relative;
-}
-
-.add-split-section::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 10%;
-    right: 10%;
-    height: 1px;
-    background-color: var(--color-border);
 }
 
 /* Sets select styling to match exercise selects */
@@ -302,9 +303,17 @@ input[type='number'] {
 .add-exercise-button {
     width: auto;
     height: auto;
-    font-size: 0.8rem;
-    padding: 4px;
+    font-size: 16px;
+    padding: 4px 8px;
     min-width: auto;
+    background-color: var(--color-secondary) !important;
+    color: white !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.add-exercise-button:hover {
+    background-color: var(--color-secondary-hover) !important;
 }
 
 .exercise-name {
@@ -453,23 +462,23 @@ input[type='number'] {
 }
 
 .duration-input-field {
-    width: 50px;
-    padding: var(--spacing-xs) 4px;
-    text-align: center;
-    font-weight: bold;
-    font-size: 0.9rem;
     background: transparent;
     border: 1px solid transparent;
+    padding: var(--spacing-xs) 2px;
+    font-family: monospace;
+    font-weight: 600;
+    text-align: center;
+    color: var(--color-secondary);
+    width: 50px;
+    font-size: 0.9rem;
     border-radius: 4px;
     transition: border-color 0.2s ease;
-    background-color: rgba(var(--color-secondary-rgb, 74, 144, 226), 0.1);
-    border-color: var(--color-secondary);
-    color: var(--color-secondary);
+    cursor: pointer;
 }
 
 .duration-input-field:hover,
 .duration-input-field:focus {
-    border-color: var(--color-secondary);
+    border-color: var(--color-border);
     outline: none;
 }
 

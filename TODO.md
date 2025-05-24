@@ -66,9 +66,20 @@
         the padding on the left and right, and remove a quarter of the vertical
         padding.
 -   [x] Remove the bottom margin on the Start button
--   [ ] Remove the bottom margin on the split header.
--   [ ] Remove the top padding of the add-split-section.
--   [ ] Remove the line below the add split
+-   [x] Remove the bottom margin on the split header.
+-   [x] Remove the top padding of the add-split-section.
+-   [x] Remove the line below the add split
+-   [x] Move the settings button to the right of the start button, and make the
+        start button centered on the horizontal page. We can put an empty
+        element to the left of the start button to space it evenly.
+-   [x] Make the start button's min-width 120px.
+-   [x] Make the default setting's selects use the same select that's used for
+        the exercises and sets select.
+-   [x] Make the add exercise button green, and make the + icon larger - font
+        size 16px, padding 4px 8px.
+-   [x] Update the start and add split buttons to use the same green as the
+        selects. This should be the only green used throughout the app. Make it
+        a CSS variable.
 
 ## Timer page
 
@@ -93,6 +104,16 @@
 -   [x] Remove the highlight on the pause button when paused
 -   [x] Make the pause / resume button just the icon, without a circle around
         it. The icon should be slightly smaller the current circle.
+-   [x] Move the "Rounds" display up a little bit, to have the same space
+        between the count down that the total remaining time has.
+-   [x] Make the pause/play icon take up the entire size of the button, and make
+        it green (the same green we just made the only green across the app).
+-   [x] The play/pause button should be in the center of the page horizontally,
+        with the settings button to the right of it. We can add a "mute" button
+        to the left of the play/pause button, same size as the settings button.
+-   [x] Make the ring progress green (the same green we just made the only green
+        across the app). The progress when resting should be off-white, and the
+        ring's un-filled/progressed section should be a light grey.
 
 ## Settings
 
@@ -103,3 +124,4 @@
         with the play/pause button, but keep it smaller and to the right. It
         should also be vertically aligned, even though it's smaller, the
         centeres of the buttons should be at the same Y.
+-   [x] Remove the settings button that's on the top right of the page.

@@ -10,7 +10,7 @@ import {
 import { formatTime } from '../../utils';
 import { useSoundEffects } from '../../hooks/useSoundEffects';
 import Button from '../common/Button';
-import { ArrowLeft, Pause, Play, Settings } from 'lucide-react';
+import { ArrowLeft, Pause, Play, Settings, VolumeX, Volume2 } from 'lucide-react';
 import './Timer.css';
 
 interface TimerProps {
@@ -27,9 +27,10 @@ const Timer = ({ onExit, onOpenSettings }: TimerProps) => {
   const previousItemRef = useRef(timerState.currentItem);
   const [smoothTimeRemaining, setSmoothTimeRemaining] = useState(0);
   const lastTickTimeRef = useRef<number>(Date.now());
+  const [isMuted, setIsMuted] = useState(false);
   
   // Get sound effects
-  const { playStart, playComplete, playTransition } = useSoundEffects();
+  const { playStart, playComplete, playTransition } = useSoundEffects(isMuted);
 
   // Calculate total rounds for the display
   const totalRounds = timerConfig.splits.reduce((total, split) => total + split.sets, 0);
@@ -187,7 +188,7 @@ const Timer = ({ onExit, onOpenSettings }: TimerProps) => {
                       cy="110"
                       r={radius}
                       fill="none"
-                      stroke="#e6e6e6"
+                      stroke="#444444"
                       strokeWidth="12"
                     />
                     {/* Progress circle */}
@@ -196,7 +197,7 @@ const Timer = ({ onExit, onOpenSettings }: TimerProps) => {
                       cy="110"
                       r={radius}
                       fill="none"
-                      stroke={timerState.currentItem.type === 'exercise' ? '#4a90e2' : '#2ecc71'}
+                      stroke={timerState.currentItem.type === 'exercise' ? '#4caf50' : '#f5f5f5'}
                       strokeWidth="12"
                       strokeDasharray={circumference}
                       strokeDashoffset={progressOffset}
@@ -258,12 +259,20 @@ const Timer = ({ onExit, onOpenSettings }: TimerProps) => {
           {timerState.status !== 'completed' && (
             <div className="timer-controls">
               <Button 
+                onClick={() => setIsMuted(!isMuted)}
+                variant="transparent"
+                size="small"
+                className="timer-mute-button"
+              >
+                {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
+              </Button>
+              <Button 
                 onClick={handleTogglePlay}
                 variant="transparent"
                 size="large"
                 className="play-pause-button"
               >
-                {timerState.status === 'running' ? <Pause size={20} /> : <Play size={20} />}
+                {timerState.status === 'running' ? <Pause size={60} /> : <Play size={60} />}
               </Button>
               <Button 
                 onClick={onOpenSettings}

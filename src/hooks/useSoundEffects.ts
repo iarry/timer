@@ -9,7 +9,7 @@ interface SoundEffects {
   playTransition: () => void;
 }
 
-export const useSoundEffects = (): SoundEffects => {
+export const useSoundEffects = (isMuted = false): SoundEffects => {
   const startSound = useRef<HTMLAudioElement | null>(null);
   const completeSound = useRef<HTMLAudioElement | null>(null);
   const transitionSound = useRef<HTMLAudioElement | null>(null);
@@ -39,7 +39,7 @@ export const useSoundEffects = (): SoundEffects => {
   }, []);
 
   const playStart = () => {
-    if (startSound.current) {
+    if (startSound.current && !isMuted) {
       startSound.current.currentTime = 0;
       startSound.current.play().catch(() => {
         // Sound play failed - user might not have interacted with page yet
@@ -48,7 +48,7 @@ export const useSoundEffects = (): SoundEffects => {
   };
 
   const playComplete = () => {
-    if (completeSound.current) {
+    if (completeSound.current && !isMuted) {
       completeSound.current.currentTime = 0;
       completeSound.current.play().catch(() => {
         // Sound play failed - user might not have interacted with page yet
@@ -57,7 +57,7 @@ export const useSoundEffects = (): SoundEffects => {
   };
 
   const playTransition = () => {
-    if (transitionSound.current) {
+    if (transitionSound.current && !isMuted) {
       transitionSound.current.currentTime = 0;
       transitionSound.current.play().catch(() => {
         // Sound play failed - user might not have interacted with page yet

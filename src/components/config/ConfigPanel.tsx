@@ -343,14 +343,7 @@ const ConfigPanel = ({ onStartWorkout, onOpenSettings }: ConfigPanelProps) => {
       
       {/* Start Workout Button - moved to bottom */}
       <div className="start-workout-section">
-        <Button 
-          onClick={onOpenSettings}
-          variant="transparent" 
-          size="small"
-          className="settings-button"
-        >
-          <Settings size={20} />
-        </Button>
+        <div className="spacer"></div>
         <Button 
           onClick={onStartWorkout} 
           variant="primary" 
@@ -358,6 +351,14 @@ const ConfigPanel = ({ onStartWorkout, onOpenSettings }: ConfigPanelProps) => {
           disabled={splits.length === 0 || splits.every(split => split.exercises.length === 0)}
         >
           Start
+        </Button>
+        <Button 
+          onClick={onOpenSettings}
+          variant="transparent" 
+          size="small"
+          className="settings-button"
+        >
+          <Settings size={20} />
         </Button>
       </div>
     </div>
