@@ -13,34 +13,28 @@ export const useSoundEffects = (): SoundEffects => {
   const startSound = useRef<HTMLAudioElement | null>(null);
   const completeSound = useRef<HTMLAudioElement | null>(null);
   const transitionSound = useRef<HTMLAudioElement | null>(null);
+  const initialized = useRef<boolean>(false);
 
   useEffect(() => {
-    // Create audio elements if in browser environment
-    if (typeof window !== 'undefined') {
+    // Initialize sounds when component mounts
+    if (!initialized.current && typeof window !== 'undefined') {
       startSound.current = new Audio('https://assets.mixkit.co/active_storage/sfx/1034/1034-preview.mp3');
       completeSound.current = new Audio('https://assets.mixkit.co/active_storage/sfx/1010/1010-preview.mp3');
       transitionSound.current = new Audio('https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3');
       
-      // Preload audio
-      startSound.current.load();
-      completeSound.current.load();
-      transitionSound.current.load();
+      // Set volume to avoid sounds being too loud
+      if (startSound.current) startSound.current.volume = 0.7;
+      if (completeSound.current) completeSound.current.volume = 0.7;
+      if (transitionSound.current) transitionSound.current.volume = 0.5;
+      
+      initialized.current = true;
     }
-    
-    // Cleanup
+
+    // Cleanup on component unmount
     return () => {
-      if (startSound.current) {
-        startSound.current.pause();
-        startSound.current = null;
-      }
-      if (completeSound.current) {
-        completeSound.current.pause();
-        completeSound.current = null;
-      }
-      if (transitionSound.current) {
-        transitionSound.current.pause();
-        transitionSound.current = null;
-      }
+      if (startSound.current) startSound.current.pause();
+      if (completeSound.current) completeSound.current.pause();
+      if (transitionSound.current) transitionSound.current.pause();
     };
   }, []);
 

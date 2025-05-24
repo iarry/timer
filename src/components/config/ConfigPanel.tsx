@@ -4,17 +4,14 @@ import {
   setDefaultDurations,
   addSplit,
   removeSplit,
-  updateSplit,
   addExercise,
   removeExercise,
-  updateExercise,
   Split,
   Exercise
 } from '../../features/timerConfig/timerConfigSlice';
 import { loadSampleWorkout, clearSampleWorkout } from '../../features/samples/samplesSlice';
 import { generateId, formatTime } from '../../utils';
 import Button from '../common/Button';
-import Input from '../common/Input';
 
 import './ConfigPanel.css';
 

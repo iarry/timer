@@ -32,7 +32,14 @@ export const formatTime = (seconds: number): string => {
  * @returns Total workout time in seconds
  */
 export const calculateTotalTime = (
-  splits: any[], 
+  splits: { 
+    sets: number; 
+    exercises: { 
+      id: string; 
+      name: string; 
+      duration: number;
+    }[]
+  }[], 
   defaultRestDuration: number
 ): number => {
   let totalTime = 0;
@@ -41,7 +48,7 @@ export const calculateTotalTime = (
     // Calculate time for all sets
     for (let set = 0; set < split.sets; set++) {
       // Add exercise durations
-      split.exercises.forEach((exercise: { duration: number }, index: number) => {
+      split.exercises.forEach((exercise, index: number) => {
         totalTime += exercise.duration;
         
         // Add rest period after each exercise except the last one in the last set
