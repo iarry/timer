@@ -195,6 +195,12 @@ const timerConfigSlice = createSlice({
       
       saveState(state);
     },
+
+    clearWorkout(state) {
+      // Reset to empty workout state
+      state.splits = [];
+      saveState(state);
+    },
   },
 });
 
@@ -208,6 +214,7 @@ export const {
   removeExercise,
   updateExercise,
   loadWorkout,
+  clearWorkout,
 } = timerConfigSlice.actions;
 
 export default timerConfigSlice.reducer;

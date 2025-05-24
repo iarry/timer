@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { saveWorkout, updateWorkout } from '../../features/savedWorkouts/savedWorkoutsSlice';
 import Button from '../common/Button';
@@ -20,6 +20,15 @@ const WorkoutSaveDialog = ({ isOpen, onClose }: WorkoutSaveDialogProps) => {
     ? workouts.find(w => w.id === currentWorkoutId)
     : null;
 
+  // Populate name with current workout name when editing existing workout
+  useEffect(() => {
+    if (currentWorkout) {
+      setWorkoutName(currentWorkout.name);
+    } else {
+      setWorkoutName('');
+    }
+  }, [currentWorkout, isOpen]);
+
   const handleSaveNew = () => {
     if (workoutName.trim()) {
       dispatch(saveWorkout({
@@ -34,13 +43,21 @@ const WorkoutSaveDialog = ({ isOpen, onClose }: WorkoutSaveDialogProps) => {
   };
 
   const handleUpdateExisting = () => {
-    if (currentWorkout) {
+    if (currentWorkout && workoutName.trim()) {
       dispatch(updateWorkout({
         id: currentWorkout.id,
+        name: workoutName.trim(),
         splits: timerConfig.splits,
         defaultExerciseDuration: timerConfig.defaultExerciseDuration,
         defaultRestDuration: timerConfig.defaultRestDuration,
       }));
+      setWorkoutName('');
+      onClose();
+    }
+  };
+
+  const handleClickOutside = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
       onClose();
     }
   };
@@ -48,57 +65,55 @@ const WorkoutSaveDialog = ({ isOpen, onClose }: WorkoutSaveDialogProps) => {
   if (!isOpen) return null;
 
   return (
-    <div className="dialog-overlay">
+    <div className="dialog-overlay" onClick={handleClickOutside}>
       <div className="save-dialog">
         <div className="dialog-header">
           <h3>Save Workout</h3>
         </div>
         
         <div className="dialog-content">
-          {currentWorkout && (
-            <div className="update-section">
-              <p>Current workout: <strong>{currentWorkout.name}</strong></p>
-              <Button 
-                onClick={handleUpdateExisting}
-                variant="primary"
-                size="small"
-              >
-                Update "{currentWorkout.name}"
-              </Button>
-            </div>
-          )}
-          
-          <div className="save-new-section">
-            <h4>Save as new workout</h4>
+          <div className="workout-name-section">
+            <label>Workout Name</label>
             <input
               type="text"
-              placeholder="Enter workout name"
+              placeholder="Workout Name"
               value={workoutName}
               onChange={(e) => setWorkoutName(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
-                  handleSaveNew();
+                  currentWorkout ? handleUpdateExisting() : handleSaveNew();
                 }
               }}
               autoFocus
             />
-            <div className="dialog-actions">
+          </div>
+          
+          <div className="dialog-actions">
+            <Button 
+              onClick={onClose}
+              variant="outline"
+              size="small"
+            >
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleSaveNew}
+              variant="outline"
+              size="small"
+              disabled={!workoutName.trim()}
+            >
+              Save New
+            </Button>
+            {currentWorkout && (
               <Button 
-                onClick={onClose}
-                variant="outline"
-                size="small"
-              >
-                Cancel
-              </Button>
-              <Button 
-                onClick={handleSaveNew}
-                variant="secondary"
+                onClick={handleUpdateExisting}
+                variant="primary"
                 size="small"
                 disabled={!workoutName.trim()}
               >
-                Save New
+                Update
               </Button>
-            </div>
+            )}
           </div>
         </div>
       </div>

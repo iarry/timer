@@ -64,28 +64,24 @@ function App() {
           <div className="menu-header">Settings</div>
           <div className="menu-content">
             <div className="menu-section">
-              <div className="menu-buttons">
-                <Button 
-                  onClick={handleSaveWorkout}
-                  variant="secondary"
-                  size="small"
-                  className="menu-button"
-                >
-                  <Save size={16} />
-                  Save Workout
-                </Button>
-                <Button 
-                  onClick={handleLoadWorkout}
-                  variant="secondary"
-                  size="small"
-                  className="menu-button"
-                >
-                  <FolderOpen size={16} />
-                  Load Workout
-                </Button>
-              </div>
-            </div>
-            <div className="menu-section">
+              <Button 
+                onClick={handleSaveWorkout}
+                variant="secondary"
+                size="small"
+                className="menu-button"
+              >
+                <Save size={16} />
+                Save Workout
+              </Button>
+              <Button 
+                onClick={handleLoadWorkout}
+                variant="secondary"
+                size="small"
+                className="menu-button"
+              >
+                <FolderOpen size={16} />
+                Load Workout
+              </Button>
               <UserAuth />
             </div>
           </div>

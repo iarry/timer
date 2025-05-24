@@ -66,13 +66,19 @@ const WorkoutLibrary = ({ isOpen, onClose }: WorkoutLibraryProps) => {
     setEditingName('');
   };
 
+  const handleClickOutside = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
-    <div className="dialog-overlay">
+    <div className="dialog-overlay" onClick={handleClickOutside}>
       <div className="workout-library">
         <div className="dialog-header">
-          <h3>Workout Library</h3>
+          <h3>Workouts</h3>
           <Button 
             onClick={onClose}
             variant="transparent"
@@ -89,6 +95,10 @@ const WorkoutLibrary = ({ isOpen, onClose }: WorkoutLibraryProps) => {
               key={workout.id} 
               className={`workout-item ${currentWorkoutId === workout.id ? 'current' : ''}`}
             >
+              {currentWorkoutId === workout.id && (
+                <span className="current-badge">Current</span>
+              )}
+              
               <div className="workout-info">
                 {editingWorkoutId === workout.id ? (
                   <div className="workout-edit">
@@ -123,9 +133,6 @@ const WorkoutLibrary = ({ isOpen, onClose }: WorkoutLibraryProps) => {
                   <>
                     <div className="workout-name-section">
                       <h4>{workout.name}</h4>
-                      {currentWorkoutId === workout.id && (
-                        <span className="current-badge">Current</span>
-                      )}
                     </div>
                     <div className="workout-meta">
                       <span>{workout.splits.length} splits</span>
@@ -152,15 +159,13 @@ const WorkoutLibrary = ({ isOpen, onClose }: WorkoutLibraryProps) => {
                   >
                     <Edit3 size={16} />
                   </Button>
-                  {workout.id !== 'default-calisthenics' && (
-                    <Button 
-                      onClick={() => handleDeleteWorkout(workout.id)}
-                      variant="danger"
-                      size="small"
-                    >
-                      <Trash2 size={16} />
-                    </Button>
-                  )}
+                  <Button 
+                    onClick={() => handleDeleteWorkout(workout.id)}
+                    variant="danger"
+                    size="small"
+                  >
+                    <Trash2 size={16} />
+                  </Button>
                 </div>
               )}
             </div>

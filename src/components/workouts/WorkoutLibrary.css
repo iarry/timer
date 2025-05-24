@@ -39,6 +39,7 @@
 }
 
 .workout-item {
+    position: relative;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -65,7 +66,7 @@
 
 .workout-name-section {
     display: flex;
-    align-items: center;
+    align-items: left;
     gap: var(--spacing-sm);
     margin-bottom: var(--spacing-xs);
 }
@@ -78,12 +79,17 @@
 }
 
 .current-badge {
+    position: absolute;
+    top: -8px;
+    left: -8px;
     background: var(--color-primary);
     color: white;
     padding: 2px var(--spacing-xs);
     border-radius: 12px;
     font-size: 0.75rem;
     font-weight: 500;
+    border: 2px solid var(--color-surface);
+    z-index: 1;
 }
 
 .workout-meta {

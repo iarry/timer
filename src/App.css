@@ -84,11 +84,6 @@
 .menu-section {
   display: flex;
   flex-direction: column;
-}
-
-.menu-buttons {
-  display: flex;
-  flex-direction: column;
   gap: var(--spacing-sm);
 }
 
