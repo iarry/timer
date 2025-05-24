@@ -1,0 +1,169 @@
+.timer-container {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: var(--spacing-md);
+    padding-top: 60px; /* Space for back button */
+}
+
+.timer-setup {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: var(--spacing-xl);
+    background-color: var(--color-surface);
+    border-radius: 8px;
+}
+
+.timer-setup h2 {
+    color: var(--color-text);
+    margin-bottom: var(--spacing-lg);
+}
+
+.timer-setup p {
+    color: var(--color-text-light);
+    margin-bottom: var(--spacing-xl);
+}
+
+.timer-setup button {
+    width: 100%;
+    padding: var(--spacing-lg) var(--spacing-xl);
+    font-size: 1.1rem;
+}
+
+.error-message {
+    color: var(--color-primary);
+    margin-top: var(--spacing-md);
+}
+
+.timer-header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: var(--spacing-md);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 10;
+    margin-bottom: var(--spacing-lg);
+    width: 100%;
+}
+
+.timer-header button {
+    background-color: transparent;
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+    box-shadow: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.timer-header button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--color-text-light);
+}
+
+.timer-status {
+    font-weight: 600;
+    color: var(--color-text-light);
+    text-align: center;
+    margin: 0 auto;
+}
+
+.timer-display {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-md) 0;
+}
+
+.timer-info {
+    text-align: center;
+    margin-bottom: var(--spacing-xl);
+}
+
+.timer-info h2 {
+    font-size: 1.75rem;
+    margin: 0;
+    color: var(--color-text);
+}
+
+.timer-type {
+    font-size: 1.1rem;
+    color: var(--color-text-light);
+    margin-top: var(--spacing-xs);
+}
+
+.timer-circle {
+    position: relative;
+    margin: var(--spacing-lg) 0;
+}
+
+.total-remaining {
+    font-size: 1.1rem;
+    color: var(--color-text-light);
+    text-align: center;
+    margin-top: var(--spacing-xl);
+    font-weight: 500;
+}
+
+.timer-controls {
+    width: 100%;
+    margin-top: auto;
+    padding: var(--spacing-lg) 0;
+    display: flex;
+    justify-content: center;
+}
+
+.timer-controls button {
+    min-width: 160px;
+    padding: var(--spacing-md) var(--spacing-xl);
+    font-size: 1.2rem;
+}
+
+.completion-message {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: var(--spacing-xl);
+}
+
+.completion-message h2 {
+    color: var(--color-secondary);
+    margin-bottom: var(--spacing-xl);
+}
+
+.completion-message h2 {
+    color: #2ecc71;
+    margin-bottom: 1.5rem;
+}
+
+/* Make the SVG responsive */
+svg {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
+.timer-loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 300px;
+    color: var(--color-text-light);
+    font-size: 1.1rem;
+    text-align: center;
+}

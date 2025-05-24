@@ -1,15 +1,158 @@
-# Timer
+# HIIT Timer App
 
-This is a HIIT timer that allows users to create custom workouts that support
-the use case of multiple sets of different splits, largely based around the
-recommended routine of r/calisthenics - where you do 3 sets of 2 exercises, 3
-sets of 2 different exercises, 3 sets of another 2 exercises, and then 3 sets of
-3 exercises, with varying times for each set or having one exercise include both
-left and right sides.
+A mobile-first High-Intensity Interval Training (HIIT) timer application built with Re## Implementation Details
 
-## Initial Setup Details
+The application has been implemented with several key features and components:
 
-🧠 Project Summary for Copilot
+### Redux Store
+
+The Redux store is divided into multiple slices:
+- **timerConfigSlice**: Manages workout configuration (exercises, splits, durations)
+- **timerSlice**: Manages timer state (countdown, current exercise, status)
+- **samplesSlice**: Provides sample workout data for new users
+- **userSlice**: Handles user authentication and profile
+
+### Key Components
+
+1. **ConfigPanel**: 
+   - Configuration interface for workout settings
+   - Exercise and split management
+   - Default duration settings
+   - Sample workout loading
+
+2. **Timer**:
+   - Circular progress indicator
+   - Exercise display
+   - Total workout time remaining
+   - Pause/resume controls
+   - Back button for navigation
+
+3. **UserAuth**:
+   - Google authentication integration
+   - User profile display
+   - Login/logout functionality
+
+4. **Common Components**:
+   - Button: Reusable button with variants (primary, secondary, danger, outline)
+   - Input: Styled input fields with labels
+
+### Application Flow
+
+1. User configures workout by:
+   - Setting default durations
+   - Creating splits with exercises
+   - Optionally loading a sample workout
+
+2. User starts the workout using the "Start Workout" button
+   - Timer automatically initiates
+   - Sound plays on start, transitions, and completion
+
+3. User can pause, resume, or return to configuration
+   - Progress is maintained when navigating back to timer
+
+### Setup Detailspt, Redux, and Firebase. This app allows users to create custom workout routines with configurable exercises, rest periods, and multiple splits.
+
+## Features
+
+- **Custom Workout Configuration**
+  - Create multiple exercise splits with customizable sets
+  - Configure exercise and rest durations
+  - Add/remove exercises to each split
+  - Load sample workouts for quick start
+
+- **Timer Functionality**
+  - Visual countdown with circular progress indicator
+  - Exercise name and type display
+  - Total remaining workout time
+  - Pause/resume functionality
+  - Sound effects for transitions
+
+- **User Experience**
+  - Mobile-first dark theme design
+  - Intuitive navigation between configuration and timer
+  - User authentication with Google
+  - Save custom workouts to Firebase (coming soon)
+
+- **Visual Design**
+  - Dark theme with high-contrast colors
+  - Bright red and green accent colors
+  - Clean, minimal interface optimized for mobile
+
+## Project Structure
+
+### Core Technologies
+
+- **Frontend**: React + TypeScript + Vite
+- **State Management**: Redux Toolkit
+- **Authentication & Database**: Firebase (Google OAuth)
+- **Styling**: CSS with CSS Variables
+
+### Project Structure
+
+```
+src/
+├── components/
+│   ├── common/          # Reusable UI components
+│   │   ├── Button.tsx   # Custom button component
+│   │   ├── Input.tsx    # Custom input component
+│   │   └── UserAuth.tsx # User authentication component
+│   ├── config/          # Workout configuration components
+│   │   └── ConfigPanel.tsx
+│   ├── layout/          # Layout components
+│   │   ├── Header.tsx
+│   │   └── Footer.tsx
+│   └── timer/           # Timer components
+│       └── Timer.tsx
+├── features/            # Redux slices by feature domain
+│   ├── samples/         # Sample workouts
+│   │   └── samplesSlice.ts
+│   ├── timer/           # Timer functionality
+│   │   └── timerSlice.ts
+│   └── timerConfig/     # Configuration state
+│       └── timerConfigSlice.ts
+├── hooks/               # Custom hooks
+│   └── useSoundEffects.ts
+├── App.tsx              # Main application component
+├── firebase.ts          # Firebase initialization
+├── hooks.ts             # Redux typed hooks
+├── store.ts             # Redux store configuration
+└── utils.ts             # Utility functions
+```
+
+## Design Decisions
+
+### 1. Mobile-First Approach
+
+The app is designed primarily for mobile usage during workouts:
+- Simplified navigation that works well on small screens
+- Touch-friendly buttons and inputs
+- Responsive layout that adapts to different screen sizes
+
+### 2. Redux State Management
+
+Redux was chosen to manage the application state due to:
+- Complex state relationships between timer and configuration
+- Need for global state access across components
+- Better separation of concerns with slice pattern
+- Simplified debugging and state inspection
+
+### 3. Dark Theme
+
+A dark theme was implemented to:
+- Reduce eye strain during workouts
+- Provide better contrast in various lighting conditions
+- Reduce battery consumption on OLED screens
+- Create a modern, focused visual experience
+
+### 4. Streamlined User Flow
+
+The user experience was optimized to minimize friction:
+- Direct navigation between configuration and timer
+- Automatic durations update without explicit save actions
+- Simplified split management with automatic numbering
+- Visual consistency between editing and viewing exercises
+
+## Implementation Details
 
 I’m building a React app with TypeScript, Redux Toolkit, and Firebase. Here’s
 the setup so far:
@@ -116,4 +259,57 @@ export default tseslint.config({
         ...reactDom.configs.recommended.rules,
     },
 })
+```
+
+## Future Enhancements
+
+- **UI Improvements**
+  - Add animations for exercise transitions
+  - Implement haptic feedback for mobile devices
+  - Enhance visual feedback during workouts
+
+- **Feature Additions**
+  - Persist workouts to Firebase
+  - Add workout history and statistics
+  - Support different workout types (Tabata, EMOM, etc.)
+  - Allow sharing workouts between users
+
+- **Technical Improvements**
+  - Add comprehensive test coverage
+  - Optimize for PWA functionality
+  - Improve accessibility features
+
+## Development
+
+### Local Development
+
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+```
+
+### Deployment
+
+```bash
+# Build for production
+npm run build
+
+# Deploy to Firebase
+firebase deploy
+```
+
+### Source Control
+
+```bash
+# Add changes
+git add .
+
+# Commit changes
+git commit -m "Description of changes"
+
+# Push to remote repository
+git push origin main
 ```
