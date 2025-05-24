@@ -9,14 +9,6 @@ sets of 2 different exercises, 3 sets of another 2 exercises, and then 3 sets of
 3 exercises, with varying times for each set or having one exercise include both
 left and right sides.
 
-## Code Structure
-
--   `src/` - Source code of the react app
-    -   `app.tsx` - Main app entrypoint
-    -   `index.css` - CSS styling
-    -   `store.ts` - Redux store
-    -   `firebase.ts` - Firebase config for auth & db usage
-
 ## Coding Standards
 
 ### TypeScript

@@ -3,6 +3,7 @@
     display: flex;
     flex-direction: column;
     padding: var(--spacing-sm);
+    padding-bottom: 120px; /* Space for fixed bottom button */
 }
 
 .config-panel h2 {
@@ -14,14 +15,18 @@
 
 /* Start Workout Button Section */
 .start-workout-section {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-bottom: var(--spacing-xl);
     padding: var(--spacing-md);
     background-color: var(--color-surface);
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    border-top: 1px solid var(--color-border);
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
 }
 
 .start-workout-section button {
@@ -56,23 +61,6 @@
     border-radius: 8px;
     padding: var(--spacing-lg);
     margin-bottom: var(--spacing-lg);
-}
-
-.splits-section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: var(--spacing-md);
-}
-
-.splits-section-header h3 {
-    margin: 0;
-    border-bottom: none !important;
-    padding-bottom: 0 !important;
-    margin-top: 0 !important;
-    margin-bottom: 0 !important;
-    color: var(--color-text);
-    font-size: 1.25rem;
 }
 
 .add-split-button {
@@ -172,24 +160,18 @@ input[type='number'] {
     margin-bottom: var(--spacing-md);
 }
 
-.split-header h4 {
-    font-size: 1.1rem;
-    margin: 0;
-    color: var(--color-text);
-}
-
-.split-info {
-    display: flex;
-    gap: var(--spacing-md);
-    color: var(--color-text-light);
-    font-size: 0.9rem;
-    align-items: center;
-}
-
 .sets-info {
     display: flex;
     align-items: center;
     gap: var(--spacing-xs);
+}
+
+.add-split-section {
+    display: flex;
+    justify-content: center;
+    margin-top: var(--spacing-md);
+    padding-top: var(--spacing-md);
+    border-top: 1px solid var(--color-border);
 }
 
 .sets-input {
@@ -198,10 +180,20 @@ input[type='number'] {
     text-align: center;
     font-weight: bold;
     background: transparent;
-    border: 1px solid var(--color-border);
+    border: 1px solid transparent;
     border-radius: 4px;
     color: var(--color-text);
     font-size: 0.9rem;
+    transition: border-color 0.2s ease;
+    background-color: rgba(var(--color-secondary-rgb, 74, 144, 226), 0.1);
+    border-color: var(--color-secondary);
+    color: var(--color-secondary);
+}
+
+.sets-input:hover,
+.sets-input:focus {
+    border-color: var(--color-secondary);
+    outline: none;
 }
 
 .exercises-list {
@@ -241,7 +233,8 @@ input[type='number'] {
     display: block;
     margin-left: auto;
     margin-right: auto;
-    width: 120px;
+    width: 60px;
+    height: 32px;
 }
 
 .exercise-name {
@@ -366,6 +359,19 @@ input[type='number'] {
     text-align: center;
     font-weight: bold;
     font-size: 0.9rem;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    transition: border-color 0.2s ease;
+    background-color: rgba(var(--color-secondary-rgb, 74, 144, 226), 0.1);
+    border-color: var(--color-secondary);
+    color: var(--color-secondary);
+}
+
+.duration-input-field:hover,
+.duration-input-field:focus {
+    border-color: var(--color-secondary);
+    outline: none;
 }
 
 .duration-input span {

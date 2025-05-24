@@ -14,6 +14,7 @@ import {
 import { clearSampleWorkout } from '../../features/samples/samplesSlice';
 import { generateId } from '../../utils';
 import Button from '../common/Button';
+import { Trash2 } from 'lucide-react';
 
 import './ConfigPanel.css';
 
@@ -32,11 +33,8 @@ const ConfigPanel = ({ onStartWorkout }: ConfigPanelProps) => {
   // Form state for new split
   const [newSplitSets, setNewSplitSets] = useState(3);
 
-  // Form state for new exercise
-  const [activeSplitId, setActiveSplitId] = useState<string | null>(null);
-  const [newExerciseName, setNewExerciseName] = useState('');
-  const [newExerciseDuration, setNewExerciseDuration] = useState(defaultExerciseDuration);
-  const [newExerciseLeftRight, setNewExerciseLeftRight] = useState(false);
+  // Track which exercise is being edited (for auto-focus)
+  const [editingExerciseId, setEditingExerciseId] = useState<string | null>(null);
 
   // Generate duration options (5-180 seconds in intervals of 5)
   const generateDurationOptions = () => {
@@ -56,7 +54,7 @@ const ConfigPanel = ({ onStartWorkout }: ConfigPanelProps) => {
 
   // Update new exercise duration when default changes
   useEffect(() => {
-    setNewExerciseDuration(defaultExerciseDuration);
+    // No longer needed since we don't have a separate new exercise form
   }, [defaultExerciseDuration]);
 
   // Effect for auto-updating default durations when they change
@@ -83,30 +81,26 @@ const ConfigPanel = ({ onStartWorkout }: ConfigPanelProps) => {
     dispatch(addSplit(newSplit));
     setNewSplitSets(3); // Reset to default
     
-    // Automatically open the add exercise form for the new split
-    setActiveSplitId(newSplit.id);
+    // Automatically create a blank exercise for the new split
+    handleAddBlankExercise(newSplit.id);
   };
 
-  // Handler for adding a new exercise
-  const handleAddExercise = () => {
-    if (!activeSplitId || newExerciseName.trim() === '') return;
-
+  // Handler for adding a blank exercise (replaces handleAddExercise)
+  const handleAddBlankExercise = (splitId: string) => {
     const newExercise: Exercise = {
       id: generateId(),
-      name: newExerciseName,
-      duration: newExerciseDuration,
-      leftRight: newExerciseLeftRight,
+      name: '',
+      duration: defaultExerciseDuration,
+      leftRight: false,
     };
 
     dispatch(addExercise({
-      splitId: activeSplitId,
+      splitId: splitId,
       exercise: newExercise
     }));
 
-    // Reset form but keep it open for adding more exercises
-    setNewExerciseName('');
-    setNewExerciseDuration(defaultExerciseDuration);
-    setNewExerciseLeftRight(false);
+    // Set this exercise as being edited
+    setEditingExerciseId(newExercise.id);
   };
   
   // Monitor the sample workout from the store
@@ -131,7 +125,7 @@ const ConfigPanel = ({ onStartWorkout }: ConfigPanelProps) => {
       };
       
       dispatch(addSplit(initialSplit));
-      setActiveSplitId(initialSplit.id);
+      // Don't auto-create exercise for initial split
     }
   }, [splits.length, dispatch]);
 
@@ -141,7 +135,7 @@ const ConfigPanel = ({ onStartWorkout }: ConfigPanelProps) => {
         <div className="setting-group">
           <div className="default-durations-row">
             <div className="duration-input">
-              <label>Exercise: </label>
+              <label>Work: </label>
               <select
                 value={exerciseDuration}
                 onChange={(e) => setExerciseDuration(parseInt(e.target.value))} 
@@ -172,44 +166,30 @@ const ConfigPanel = ({ onStartWorkout }: ConfigPanelProps) => {
       </div>
       
       <div className="splits-section">
-        <div className="splits-section-header">
-          <h3>Splits</h3>
-          <Button 
-            className="add-split-button"
-            onClick={handleAddSplit} 
-            variant="secondary"
-            size="small"
-          >
-            Add Split
-          </Button>
-        </div>
         {/* List of existing splits */}
         <div className="splits-list">
           {splits.map(split => (
             <div key={split.id} className="split-item">
               <div className="split-header">
-                <h4>{split.name}</h4>
-                <div className="split-info">
-                  <div className="sets-info">
-                    <input 
-                      type="number" 
-                      value={split.sets}
-                      onChange={(e) => dispatch(updateSplit({ 
-                        id: split.id, 
-                        sets: parseInt(e.target.value) || 1 
-                      }))}
-                      min="1"
-                      className="sets-input"
-                    />
-                    <span>sets</span>
-                  </div>
+                <div className="sets-info">
+                  <input 
+                    type="number" 
+                    value={split.sets}
+                    onChange={(e) => dispatch(updateSplit({ 
+                      id: split.id, 
+                      sets: parseInt(e.target.value) || 1 
+                    }))}
+                    min="1"
+                    className="sets-input"
+                  />
+                  <span>sets</span>
                 </div>
                 <Button 
                   onClick={() => dispatch(removeSplit(split.id))}
                   variant="danger"
                   size="small"
                 >
-                  Delete
+                  <Trash2 size={16} />
                 </Button>
               </div>
               
@@ -228,6 +208,31 @@ const ConfigPanel = ({ onStartWorkout }: ConfigPanelProps) => {
                           name: e.target.value
                         }))
                       }
+                      onBlur={() => {
+                        // If exercise name is empty after losing focus, delete it
+                        if (exercise.name.trim() === '') {
+                          dispatch(removeExercise({
+                            splitId: split.id,
+                            exerciseId: exercise.id
+                          }));
+                        }
+                        setEditingExerciseId(null);
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.currentTarget.blur();
+                        } else if (e.key === 'Escape') {
+                          // Reset to empty and blur (which will delete it)
+                          dispatch(updateExercise({
+                            splitId: split.id,
+                            exerciseId: exercise.id,
+                            name: ''
+                          }));
+                          e.currentTarget.blur();
+                        }
+                      }}
+                      placeholder="Exercise name"
+                      autoFocus={editingExerciseId === exercise.id}
                     />
                     <select
                       className={`exercise-duration-input ${isUsingDefaultDuration(exercise.duration) ? 'default-duration' : ''}`}
@@ -271,75 +276,35 @@ const ConfigPanel = ({ onStartWorkout }: ConfigPanelProps) => {
                         variant="danger"
                         size="small"
                       >
-                        Delete
+                        <Trash2 size={14} />
                       </Button>
                     </div>
                   </div>
                 ))}
-              </div>
-                
-                {/* Add exercise form - appears when active */}
-                {activeSplitId === split.id && (
-                  <div className="add-exercise-form">
-                    <div className="exercise-item new-exercise-item">
-                      <input 
-                        type="text"
-                        className="exercise-name-input"
-                        value={newExerciseName}
-                        onChange={(e) => setNewExerciseName(e.target.value)}
-                        onBlur={handleAddExercise}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') {
-                            handleAddExercise();
-                          } else if (e.key === 'Escape') {
-                            setActiveSplitId(null);
-                          }
-                        }}
-                        placeholder="Exercise name"
-                        autoFocus
-                      />
-                      <select
-                        className="exercise-duration-input"
-                        value={newExerciseDuration}
-                        onChange={(e) => setNewExerciseDuration(parseInt(e.target.value))}
-                      >
-                        {durationOptions.map(duration => (
-                          <option key={duration} value={duration}>{duration}</option>
-                        ))}
-                      </select>
-                      <div className="exercise-checkbox">
-                        <label>
-                          <input
-                            type="checkbox"
-                            checked={newExerciseLeftRight}
-                            onChange={(e) => setNewExerciseLeftRight(e.target.checked)}
-                          />
-                          L/R
-                        </label>
-                      </div>
-                      <div className="exercise-actions">
-                        <Button 
-                          onClick={() => setActiveSplitId(null)} 
-                          variant={newExerciseName.trim() === '' ? "danger" : "outline"} 
-                          size="small"
-                        >
-                          {newExerciseName.trim() === '' ? "Delete" : "Done"}
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                )}
 
                 {/* Add exercise button - always visible */}
                 <Button 
                   className="add-exercise-button"
-                  onClick={() => setActiveSplitId(split.id)}
+                  onClick={() => handleAddBlankExercise(split.id)}
                   variant="secondary"
                 >
                   +
                 </Button>
               </div>
-            ))}
+            </div>
+          ))}
+        </div>
+        
+        {/* Add Split button moved to bottom */}
+        <div className="add-split-section">
+          <Button 
+            className="add-split-button"
+            onClick={handleAddSplit} 
+            variant="secondary"
+            size="small"
+          >
+            Add Split
+          </Button>
         </div>
       </div>
       
