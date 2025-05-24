@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
-import type { Split, Exercise } from '../timerConfig/timerConfigSlice';
+import type { Split } from '../timerConfig/timerConfigSlice';
 
 export type TimerStatus = 'idle' | 'running' | 'paused' | 'completed';
 
@@ -46,16 +46,49 @@ const timerSlice = createSlice({
       splits.forEach(split => {
         for (let setIndex = 0; setIndex < split.sets; setIndex++) {
           split.exercises.forEach((exercise, exerciseIndex) => {
-            // Add the exercise
-            state.queue.push({
-              type: 'exercise',
-              splitId: split.id,
-              exerciseId: exercise.id,
-              name: exercise.name,
-              duration: exercise.duration,
-              setIndex,
-              exerciseIndex
-            });
+            if (exercise.leftRight) {
+              // For left/right exercises, add separate left and right sides
+              state.queue.push({
+                type: 'exercise',
+                splitId: split.id,
+                exerciseId: exercise.id,
+                name: `${exercise.name} (Left)`,
+                duration: exercise.duration,
+                setIndex,
+                exerciseIndex
+              });
+              
+              // Add rest between left and right
+              state.queue.push({
+                type: 'rest',
+                splitId: split.id,
+                name: 'Rest',
+                duration: defaultRestDuration,
+                setIndex,
+                exerciseIndex
+              });
+              
+              state.queue.push({
+                type: 'exercise',
+                splitId: split.id,
+                exerciseId: exercise.id,
+                name: `${exercise.name} (Right)`,
+                duration: exercise.duration,
+                setIndex,
+                exerciseIndex
+              });
+            } else {
+              // Regular exercise
+              state.queue.push({
+                type: 'exercise',
+                splitId: split.id,
+                exerciseId: exercise.id,
+                name: exercise.name,
+                duration: exercise.duration,
+                setIndex,
+                exerciseIndex
+              });
+            }
             
             // Add rest period after each exercise (except the last exercise in the last set)
             const isLastExercise = exerciseIndex === split.exercises.length - 1;
@@ -99,7 +132,7 @@ const timerSlice = createSlice({
       state.status = 'paused';
     },
     
-    resetTimer(state) {
+    resetTimer() {
       return initialState;
     },
     

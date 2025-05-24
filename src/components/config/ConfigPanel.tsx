@@ -7,11 +7,12 @@ import {
   updateSplit,
   addExercise,
   removeExercise,
+  updateExercise,
   Split,
   Exercise
 } from '../../features/timerConfig/timerConfigSlice';
 import { loadSampleWorkout, clearSampleWorkout } from '../../features/samples/samplesSlice';
-import { generateId, formatTime } from '../../utils';
+import { generateId } from '../../utils';
 import Button from '../common/Button';
 
 import './ConfigPanel.css';
@@ -36,6 +37,7 @@ const ConfigPanel = ({ onStartWorkout }: ConfigPanelProps) => {
   const [activeSplitId, setActiveSplitId] = useState<string | null>(null);
   const [newExerciseName, setNewExerciseName] = useState('');
   const [newExerciseDuration, setNewExerciseDuration] = useState(defaultExerciseDuration);
+  const [newExerciseLeftRight, setNewExerciseLeftRight] = useState(false);
 
   // Generate duration options (5-180 seconds in intervals of 5)
   const generateDurationOptions = () => {
@@ -47,6 +49,11 @@ const ConfigPanel = ({ onStartWorkout }: ConfigPanelProps) => {
   };
 
   const durationOptions = generateDurationOptions();
+
+  // Check if an exercise is using the default duration
+  const isUsingDefaultDuration = (exerciseDuration: number) => {
+    return exerciseDuration === defaultExerciseDuration;
+  };
 
   // Update new exercise duration when default changes
   useEffect(() => {
@@ -86,6 +93,7 @@ const ConfigPanel = ({ onStartWorkout }: ConfigPanelProps) => {
       id: generateId(),
       name: newExerciseName,
       duration: newExerciseDuration,
+      leftRight: newExerciseLeftRight,
     };
 
     dispatch(addExercise({
@@ -95,6 +103,7 @@ const ConfigPanel = ({ onStartWorkout }: ConfigPanelProps) => {
 
     setNewExerciseName('');
     setNewExerciseDuration(defaultExerciseDuration);
+    setNewExerciseLeftRight(false);
   };
   
   // Handler to load sample workout
@@ -201,10 +210,49 @@ const ConfigPanel = ({ onStartWorkout }: ConfigPanelProps) => {
                   ) : (
                     split.exercises.map(exercise => (
                       <div key={exercise.id} className="exercise-item">
-                        <span className="exercise-name">{exercise.name}</span>
-                        <span className="exercise-duration">
-                          {formatTime(exercise.duration)}
-                        </span>
+                        <input 
+                          type="text"
+                          className="exercise-name-input"
+                          value={exercise.name}
+                          onChange={(e) => 
+                            dispatch(updateExercise({
+                              splitId: split.id,
+                              exerciseId: exercise.id,
+                              name: e.target.value
+                            }))
+                          }
+                        />
+                        <select
+                          className={`exercise-duration-input ${isUsingDefaultDuration(exercise.duration) ? 'default-duration' : ''}`}
+                          value={exercise.duration}
+                          onChange={(e) => 
+                            dispatch(updateExercise({
+                              splitId: split.id,
+                              exerciseId: exercise.id,
+                              duration: parseInt(e.target.value)
+                            }))
+                          }
+                        >
+                          {durationOptions.map(duration => (
+                            <option key={duration} value={duration}>{duration}</option>
+                          ))}
+                        </select>
+                        <div className="exercise-checkbox">
+                          <label>
+                            <input
+                              type="checkbox"
+                              checked={exercise.leftRight || false}
+                              onChange={(e) =>
+                                dispatch(updateExercise({
+                                  splitId: split.id,
+                                  exerciseId: exercise.id,
+                                  leftRight: e.target.checked
+                                }))
+                              }
+                            />
+                            L/R
+                          </label>
+                        </div>
                         <div className="exercise-actions">
                           <Button 
                             onClick={() => 
@@ -251,6 +299,16 @@ const ConfigPanel = ({ onStartWorkout }: ConfigPanelProps) => {
                           <option key={duration} value={duration}>{duration}</option>
                         ))}
                       </select>
+                      <div className="exercise-checkbox">
+                        <label>
+                          <input
+                            type="checkbox"
+                            checked={newExerciseLeftRight}
+                            onChange={(e) => setNewExerciseLeftRight(e.target.checked)}
+                          />
+                          L/R
+                        </label>
+                      </div>
                       <div className="exercise-actions">
                         <Button type="submit" variant="secondary" size="small">Add</Button>
                         <Button onClick={() => setActiveSplitId(null)} variant="outline" size="small">Cancel</Button>

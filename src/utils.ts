@@ -38,6 +38,7 @@ export const calculateTotalTime = (
       id: string; 
       name: string; 
       duration: number;
+      leftRight?: boolean;
     }[]
   }[], 
   defaultRestDuration: number
@@ -49,7 +50,15 @@ export const calculateTotalTime = (
     for (let set = 0; set < split.sets; set++) {
       // Add exercise durations
       split.exercises.forEach((exercise, index: number) => {
-        totalTime += exercise.duration;
+        if (exercise.leftRight) {
+          // Left/right exercises: left + rest + right
+          totalTime += exercise.duration; // Left side
+          totalTime += defaultRestDuration; // Rest between sides
+          totalTime += exercise.duration; // Right side
+        } else {
+          // Regular exercise
+          totalTime += exercise.duration;
+        }
         
         // Add rest period after each exercise except the last one in the last set
         const isLastExercise = index === split.exercises.length - 1;

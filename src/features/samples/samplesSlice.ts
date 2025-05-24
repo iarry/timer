@@ -8,21 +8,25 @@ const sampleExercises = [
     id: generateId(),
     name: 'Push-ups',
     duration: 45,
+    leftRight: false,
   },
   {
     id: generateId(),
     name: 'Squats',
     duration: 45,
+    leftRight: false,
   },
   {
     id: generateId(),
     name: 'Mountain Climbers',
     duration: 30,
+    leftRight: false,
   },
   {
     id: generateId(),
     name: 'Jumping Jacks',
     duration: 45,
+    leftRight: false,
   }
 ];
 

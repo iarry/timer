@@ -8,6 +8,7 @@
   --color-primary: #ff5252; /* bright red */
   --color-primary-hover: #ff1a1a;
   --color-secondary: #4caf50; /* bright green */
+  --color-secondary-rgb: 76, 175, 80; /* RGB values for rgba usage */
   --color-secondary-hover: #3d8c40;
   --color-accent: #ff9800; /* orange for contrast */
   --color-accent-hover: #e68900;

@@ -6,6 +6,7 @@ export interface Exercise {
   id: string;
   name: string;
   duration: number; // in seconds
+  leftRight?: boolean; // if true, exercise runs twice (left and right side)
 }
 
 export interface Split {
@@ -65,8 +66,23 @@ const timerConfigSlice = createSlice({
       state,
       action: PayloadAction<{ exerciseDuration: number; restDuration: number }>
     ) {
-      state.defaultExerciseDuration = action.payload.exerciseDuration;
-      state.defaultRestDuration = action.payload.restDuration;
+      const { exerciseDuration, restDuration } = action.payload;
+      const oldExerciseDuration = state.defaultExerciseDuration;
+      
+      state.defaultExerciseDuration = exerciseDuration;
+      state.defaultRestDuration = restDuration;
+      
+      // Update exercises that are using the old default duration
+      if (oldExerciseDuration !== exerciseDuration) {
+        state.splits.forEach(split => {
+          split.exercises.forEach(exercise => {
+            if (exercise.duration === oldExerciseDuration) {
+              exercise.duration = exerciseDuration;
+            }
+          });
+        });
+      }
+      
       saveState(state); // Save to local storage
     },
     
@@ -132,9 +148,10 @@ const timerConfigSlice = createSlice({
         exerciseId: string;
         name?: string;
         duration?: number;
+        leftRight?: boolean;
       }>
     ) {
-      const { splitId, exerciseId, name, duration } = action.payload;
+      const { splitId, exerciseId, name, duration, leftRight } = action.payload;
       const splitIndex = state.splits.findIndex(split => split.id === splitId);
       
       if (splitIndex !== -1) {
@@ -149,6 +166,10 @@ const timerConfigSlice = createSlice({
           
           if (duration !== undefined) {
             state.splits[splitIndex].exercises[exerciseIndex].duration = duration;
+          }
+          
+          if (leftRight !== undefined) {
+            state.splits[splitIndex].exercises[exerciseIndex].leftRight = leftRight;
           }
           saveState(state); // Save to local storage
         }
