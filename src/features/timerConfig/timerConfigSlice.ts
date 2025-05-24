@@ -175,6 +175,26 @@ const timerConfigSlice = createSlice({
         }
       }
     },
+    
+    loadWorkout(state, action: PayloadAction<{
+      splits: Split[];
+      defaultExerciseDuration: number;
+      defaultRestDuration: number;
+    }>) {
+      const { splits, defaultExerciseDuration, defaultRestDuration } = action.payload;
+      
+      // Clear existing splits
+      state.splits = [];
+      
+      // Set new defaults
+      state.defaultExerciseDuration = defaultExerciseDuration;
+      state.defaultRestDuration = defaultRestDuration;
+      
+      // Add new splits
+      state.splits = [...splits];
+      
+      saveState(state);
+    },
   },
 });
 
@@ -187,6 +207,7 @@ export const {
   addExercise,
   removeExercise,
   updateExercise,
+  loadWorkout,
 } = timerConfigSlice.actions;
 
 export default timerConfigSlice.reducer;

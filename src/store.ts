@@ -4,6 +4,7 @@ import userReducer from './userSlice';
 import timerConfigReducer from './features/timerConfig/timerConfigSlice';
 import timerReducer from './features/timer/timerSlice';
 import samplesReducer from './features/samples/samplesSlice';
+import savedWorkoutsReducer from './features/savedWorkouts/savedWorkoutsSlice';
 
 export const store = configureStore({
   reducer: {
@@ -11,6 +12,7 @@ export const store = configureStore({
     timerConfig: timerConfigReducer,
     timer: timerReducer,
     samples: samplesReducer,
+    savedWorkouts: savedWorkoutsReducer,
   },
 });
 

@@ -2,35 +2,23 @@ import { createSlice } from '@reduxjs/toolkit';
 import type { Split } from '../timerConfig/timerConfigSlice';
 import { generateId } from '../../utils';
 
-// Sample exercises that a new user can load
+// Updated sample exercises for r/calisthenics recommended routine
 const sampleExercises = [
   {
     id: generateId(),
-    name: 'Push-ups',
+    name: 'Pull-up',
     duration: 45,
     leftRight: false,
   },
   {
     id: generateId(),
-    name: 'Squats',
-    duration: 45,
-    leftRight: false,
-  },
-  {
-    id: generateId(),
-    name: 'Mountain Climbers',
-    duration: 30,
-    leftRight: false,
-  },
-  {
-    id: generateId(),
-    name: 'Jumping Jacks',
+    name: 'Squat',
     duration: 45,
     leftRight: false,
   }
 ];
 
-// Sample split
+// Sample split - now matches the default workout
 const createSampleSplit = () => ({
   id: generateId(),
   name: 'Split 1',

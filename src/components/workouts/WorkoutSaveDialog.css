@@ -1,0 +1,80 @@
+.dialog-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+.save-dialog {
+    background: var(--color-surface);
+    border-radius: 8px;
+    padding: var(--spacing-lg);
+    max-width: 400px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    border: 1px solid var(--color-border);
+}
+
+.dialog-header {
+    margin-bottom: var(--spacing-md);
+}
+
+.dialog-header h3 {
+    margin: 0;
+    color: var(--color-text);
+    font-size: 1.25rem;
+}
+
+.dialog-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
+.update-section {
+    padding: var(--spacing-md);
+    background: var(--color-background);
+    border-radius: 6px;
+    border: 1px solid var(--color-border);
+}
+
+.update-section p {
+    margin: 0 0 var(--spacing-md) 0;
+    color: var(--color-text);
+}
+
+.save-new-section h4 {
+    margin: 0 0 var(--spacing-sm) 0;
+    color: var(--color-text);
+    font-size: 1rem;
+}
+
+.save-new-section input {
+    width: 100%;
+    margin-bottom: var(--spacing-md);
+    padding: var(--spacing-sm);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    background: var(--color-background);
+    color: var(--color-text);
+    font-size: 1rem;
+}
+
+.save-new-section input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px rgba(255, 82, 82, 0.25);
+}
+
+.dialog-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+    justify-content: flex-end;
+}

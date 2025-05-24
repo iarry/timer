@@ -4,10 +4,16 @@ import './App.css'
 import ConfigPanel from './components/config/ConfigPanel'
 import Timer from './components/timer/Timer'
 import UserAuth from './components/common/UserAuth'
+import WorkoutSaveDialog from './components/workouts/WorkoutSaveDialog'
+import WorkoutLibrary from './components/workouts/WorkoutLibrary'
+import Button from './components/common/Button'
+import { Save, FolderOpen } from 'lucide-react'
 
 function App() {
   const [activeView, setActiveView] = useState<'config' | 'timer'>('config')
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [showSaveDialog, setShowSaveDialog] = useState(false)
+  const [showWorkoutLibrary, setShowWorkoutLibrary] = useState(false)
   const timerStatus = useAppSelector(state => state.timer.status)
   const menuRef = useRef<HTMLDivElement>(null)
   
@@ -38,6 +44,16 @@ function App() {
     setIsMenuOpen(!isMenuOpen)
   }
 
+  const handleSaveWorkout = () => {
+    setShowSaveDialog(true)
+    setIsMenuOpen(false)
+  }
+
+  const handleLoadWorkout = () => {
+    setShowWorkoutLibrary(true)
+    setIsMenuOpen(false)
+  }
+
   return (
     <div 
       className="app-container"
@@ -47,10 +63,46 @@ function App() {
         <div className="menu-dropdown" ref={menuRef}>
           <div className="menu-header">Settings</div>
           <div className="menu-content">
-            <UserAuth />
+            <div className="menu-section">
+              <div className="menu-buttons">
+                <Button 
+                  onClick={handleSaveWorkout}
+                  variant="secondary"
+                  size="small"
+                  className="menu-button"
+                >
+                  <Save size={16} />
+                  Save Workout
+                </Button>
+                <Button 
+                  onClick={handleLoadWorkout}
+                  variant="secondary"
+                  size="small"
+                  className="menu-button"
+                >
+                  <FolderOpen size={16} />
+                  Load Workout
+                </Button>
+              </div>
+            </div>
+            <div className="menu-section">
+              <UserAuth />
+            </div>
           </div>
         </div>
       )}
+
+      {/* Save Dialog */}
+      <WorkoutSaveDialog 
+        isOpen={showSaveDialog}
+        onClose={() => setShowSaveDialog(false)}
+      />
+
+      {/* Workout Library */}
+      <WorkoutLibrary 
+        isOpen={showWorkoutLibrary}
+        onClose={() => setShowWorkoutLibrary(false)}
+      />
 
       <main className="app-content">
         {currentView === 'config' ? (

@@ -76,6 +76,27 @@
 
 .menu-content {
   padding: var(--spacing-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.menu-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.menu-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.menu-button {
+  justify-content: flex-start;
+  gap: var(--spacing-sm);
+  width: 100%;
+  text-align: left;
 }
 
 /* Back button for timer view */
