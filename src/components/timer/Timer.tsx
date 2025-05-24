@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import {
   startTimer,
@@ -10,6 +10,7 @@ import {
 import { formatTime } from '../../utils';
 import { useSoundEffects } from '../../hooks/useSoundEffects';
 import Button from '../common/Button';
+import { ArrowLeft, Pause, Play } from 'lucide-react';
 import './Timer.css';
 
 interface TimerProps {
@@ -21,7 +22,10 @@ const Timer = ({ onExit }: TimerProps) => {
   const timerState = useAppSelector(state => state.timer);
   const timerConfig = useAppSelector(state => state.timerConfig);
   const timerRef = useRef<number | null>(null);
+  const animationRef = useRef<number | null>(null);
   const previousItemRef = useRef(timerState.currentItem);
+  const [smoothTimeRemaining, setSmoothTimeRemaining] = useState(0);
+  const lastTickTimeRef = useRef<number>(Date.now());
   
   // Get sound effects
   const { playStart, playComplete, playTransition } = useSoundEffects();
@@ -33,14 +37,43 @@ const Timer = ({ onExit }: TimerProps) => {
       if (timerRef.current) {
         clearInterval(timerRef.current);
       }
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+
+      // Initialize smooth time remaining
+      setSmoothTimeRemaining(timerState.currentTime);
+      lastTickTimeRef.current = Date.now();
 
       // Set up a new timer that ticks every 1 second
       timerRef.current = window.setInterval(() => {
         dispatch(tickTimer(1));
+        lastTickTimeRef.current = Date.now();
       }, 1000);
-    } else if (timerRef.current) {
-      clearInterval(timerRef.current);
-      timerRef.current = null;
+
+      // Set up smooth animation
+      const animate = () => {
+        const now = Date.now();
+        const timeSinceLastTick = (now - lastTickTimeRef.current) / 1000;
+        const smoothTime = Math.max(0, timerState.currentTime - timeSinceLastTick);
+        setSmoothTimeRemaining(smoothTime);
+        
+        if (timerState.status === 'running') {
+          animationRef.current = requestAnimationFrame(animate);
+        }
+      };
+      animationRef.current = requestAnimationFrame(animate);
+    } else {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+        animationRef.current = null;
+      }
+      // When paused or stopped, show exact time
+      setSmoothTimeRemaining(timerState.currentTime);
     }
 
     // Cleanup on unmount
@@ -48,8 +81,11 @@ const Timer = ({ onExit }: TimerProps) => {
       if (timerRef.current) {
         clearInterval(timerRef.current);
       }
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
     };
-  }, [timerState.status, dispatch]);
+  }, [timerState.status, timerState.currentTime, dispatch]);
   
   // Effect to play sounds on transitions
   useEffect(() => {
@@ -100,7 +136,7 @@ const Timer = ({ onExit }: TimerProps) => {
     if (!timerState.currentItem) return 0;
     
     const { duration } = timerState.currentItem;
-    const elapsed = duration - timerState.currentTime;
+    const elapsed = duration - smoothTimeRemaining;
     return (elapsed / duration) * 100;
   };
 
@@ -127,8 +163,8 @@ const Timer = ({ onExit }: TimerProps) => {
       ) : (
         <>
           <div className="timer-header">
-            <Button onClick={handleBackToConfig} variant="outline">
-              ← Back to Configuration
+            <Button onClick={handleBackToConfig} variant="transparent" className="back-button">
+              <ArrowLeft size={24} />
             </Button>
           </div>
           
@@ -137,9 +173,6 @@ const Timer = ({ onExit }: TimerProps) => {
               <>
                 <div className="timer-info">
                   <h2>{timerState.currentItem.name}</h2>
-                  <div className="timer-type">
-                    {timerState.currentItem.type === 'exercise' ? 'Exercise' : 'Rest'}
-                  </div>
                 </div>
                 
                 <div className="timer-circle">
@@ -167,23 +200,45 @@ const Timer = ({ onExit }: TimerProps) => {
                       style={{ transform: 'rotate(-90deg)', transformOrigin: 'center' }}
                     />
                     
+                    {/* Rounds remaining text */}
+                    <text
+                      x="110"
+                      y="70"
+                      textAnchor="middle"
+                      dominantBaseline="middle"
+                      fill="#999"
+                      fontSize="16px"
+                      fontWeight="500"
+                    >
+                      {timerState.currentItem && `Round ${timerState.currentItem.setIndex + 1}`}
+                    </text>
+                    
                     {/* Time remaining text */}
                     <text
                       x="110"
-                      y="110"
+                      y="95"
                       textAnchor="middle"
                       dominantBaseline="middle"
-                      fill="#333"
+                      fill="#ffffff"
                       fontSize="48px"
                       fontWeight="bold"
                     >
-                      {formatTime(timerState.currentTime)}
+                      {formatTime(Math.ceil(smoothTimeRemaining))}
+                    </text>
+                    
+                    {/* Total remaining text inside ring */}
+                    <text
+                      x="110"
+                      y="130"
+                      textAnchor="middle"
+                      dominantBaseline="middle"
+                      fill="#999"
+                      fontSize="14px"
+                      fontWeight="500"
+                    >
+                      {formatTime(timerState.totalTimeRemaining)}
                     </text>
                   </svg>
-                </div>
-                
-                <div className="total-remaining">
-                  Total Remaining: {formatTime(timerState.totalTimeRemaining)}
                 </div>
               </>
             )}
@@ -202,8 +257,9 @@ const Timer = ({ onExit }: TimerProps) => {
                 onClick={handleTogglePlay}
                 variant={timerState.status === 'running' ? 'accent' : 'secondary'}
                 size="large"
+                className="play-pause-button"
               >
-                {timerState.status === 'running' ? 'Pause' : 'Resume'}
+                {timerState.status === 'running' ? <Pause size={24} /> : <Play size={24} />}
               </Button>
             </div>
           )}

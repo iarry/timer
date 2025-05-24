@@ -82,7 +82,20 @@ const ConfigPanel = ({ onStartWorkout }: ConfigPanelProps) => {
     setNewSplitSets(3); // Reset to default
     
     // Automatically create a blank exercise for the new split
-    handleAddBlankExercise(newSplit.id);
+    const newExercise: Exercise = {
+      id: generateId(),
+      name: '',
+      duration: defaultExerciseDuration,
+      leftRight: false,
+    };
+
+    dispatch(addExercise({
+      splitId: newSplit.id,
+      exercise: newExercise
+    }));
+
+    // Set this exercise as being edited
+    setEditingExerciseId(newExercise.id);
   };
 
   // Handler for adding a blank exercise (replaces handleAddExercise)
@@ -125,9 +138,21 @@ const ConfigPanel = ({ onStartWorkout }: ConfigPanelProps) => {
       };
       
       dispatch(addSplit(initialSplit));
-      // Don't auto-create exercise for initial split
+      
+      // Create an empty exercise for the initial split
+      const newExercise: Exercise = {
+        id: generateId(),
+        name: '',
+        duration: defaultExerciseDuration,
+        leftRight: false,
+      };
+
+      dispatch(addExercise({
+        splitId: initialSplit.id,
+        exercise: newExercise
+      }));
     }
-  }, [splits.length, dispatch]);
+  }, [splits.length, dispatch, defaultExerciseDuration]);
 
   return (
     <div className="config-panel">
@@ -184,13 +209,25 @@ const ConfigPanel = ({ onStartWorkout }: ConfigPanelProps) => {
                   />
                   <span>sets</span>
                 </div>
-                <Button 
-                  onClick={() => dispatch(removeSplit(split.id))}
-                  variant="danger"
-                  size="small"
-                >
-                  <Trash2 size={16} />
-                </Button>
+                <div className="split-actions">
+                  <Button 
+                    className="add-exercise-button"
+                    onClick={() => handleAddBlankExercise(split.id)}
+                    variant="secondary"
+                    size="small"
+                  >
+                    +
+                  </Button>
+                  {splits.length > 1 && (
+                    <Button 
+                      onClick={() => dispatch(removeSplit(split.id))}
+                      variant="danger"
+                      size="small"
+                    >
+                      <Trash2 size={16} />
+                    </Button>
+                  )}
+                </div>
               </div>
               
               {/* Exercises in this split */}
@@ -208,9 +245,13 @@ const ConfigPanel = ({ onStartWorkout }: ConfigPanelProps) => {
                           name: e.target.value
                         }))
                       }
-                      onBlur={() => {
-                        // If exercise name is empty after losing focus, delete it
-                        if (exercise.name.trim() === '') {
+                      onBlur={(e) => {
+                        // Only delete if exercise name is empty and the user isn't clicking on other form elements within the same exercise
+                        const relatedTarget = e.relatedTarget as HTMLElement;
+                        const exerciseContainer = e.currentTarget.closest('.exercise-item');
+                        const isClickingWithinSameExercise = relatedTarget && exerciseContainer && exerciseContainer.contains(relatedTarget);
+                        
+                        if (exercise.name.trim() === '' && !isClickingWithinSameExercise) {
                           dispatch(removeExercise({
                             splitId: split.id,
                             exerciseId: exercise.id
@@ -275,21 +316,13 @@ const ConfigPanel = ({ onStartWorkout }: ConfigPanelProps) => {
                         }
                         variant="danger"
                         size="small"
+                        disabled={split.exercises.length === 1}
                       >
                         <Trash2 size={14} />
                       </Button>
                     </div>
                   </div>
                 ))}
-
-                {/* Add exercise button - always visible */}
-                <Button 
-                  className="add-exercise-button"
-                  onClick={() => handleAddBlankExercise(split.id)}
-                  variant="secondary"
-                >
-                  +
-                </Button>
               </div>
             </div>
           ))}
@@ -318,9 +351,6 @@ const ConfigPanel = ({ onStartWorkout }: ConfigPanelProps) => {
         >
           Start Workout
         </Button>
-        {splits.length > 0 && splits.every(split => split.exercises.length === 0) && (
-          <p className="warning-message">Add at least one exercise to start your workout</p>
-        )}
       </div>
     </div>
   );

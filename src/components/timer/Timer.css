@@ -47,28 +47,31 @@
     right: 0;
     padding: var(--spacing-md);
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
     z-index: 10;
     margin-bottom: var(--spacing-lg);
     width: 100%;
 }
 
-.timer-header button {
-    background-color: transparent;
-    border: 1px solid var(--color-border);
-    color: var(--color-text);
-    font-size: 0.9rem;
-    padding: 0.5rem 1rem;
-    box-shadow: none;
+.back-button {
+    background-color: transparent !important;
+    border: none !important;
+    color: var(--color-text) !important;
+    padding: 8px !important;
+    box-shadow: none !important;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    justify-content: center;
+    border-radius: 50% !important;
+    width: 48px !important;
+    height: 48px !important;
+    min-width: auto !important;
 }
 
-.timer-header button:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-    color: var(--color-text-light);
+.back-button:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    color: var(--color-text-light) !important;
 }
 
 .timer-status {
@@ -125,9 +128,15 @@
     justify-content: center;
 }
 
-.timer-controls button {
-    min-width: 160px;
-    padding: var(--spacing-md) var(--spacing-xl);
+.play-pause-button {
+    min-width: 80px !important;
+    width: 80px !important;
+    height: 80px !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
     font-size: 1.2rem;
 }
 
