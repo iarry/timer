@@ -82,6 +82,9 @@ const ConfigPanel = ({ onStartWorkout }: ConfigPanelProps) => {
 
     dispatch(addSplit(newSplit));
     setNewSplitSets(3); // Reset to default
+    
+    // Automatically open the add exercise form for the new split
+    setActiveSplitId(newSplit.id);
   };
 
   // Handler for adding a new exercise
@@ -100,6 +103,7 @@ const ConfigPanel = ({ onStartWorkout }: ConfigPanelProps) => {
       exercise: newExercise
     }));
 
+    // Reset form but keep it open for adding more exercises
     setNewExerciseName('');
     setNewExerciseDuration(defaultExerciseDuration);
     setNewExerciseLeftRight(false);
@@ -168,6 +172,17 @@ const ConfigPanel = ({ onStartWorkout }: ConfigPanelProps) => {
       </div>
       
       <div className="splits-section">
+        <div className="splits-section-header">
+          <h3>Splits</h3>
+          <Button 
+            className="add-split-button"
+            onClick={handleAddSplit} 
+            variant="secondary"
+            size="small"
+          >
+            Add Split
+          </Button>
+        </div>
         {/* List of existing splits */}
         <div className="splits-list">
           {splits.map(split => (
@@ -263,21 +278,23 @@ const ConfigPanel = ({ onStartWorkout }: ConfigPanelProps) => {
                 ))}
               </div>
                 
-                {/* Add exercise form */}
-                {activeSplitId === split.id ? (
-                  <form 
-                    className="add-exercise-form"
-                    onSubmit={(e) => {
-                      e.preventDefault();
-                      handleAddExercise();
-                    }}
-                  >
+                {/* Add exercise form - appears when active */}
+                {activeSplitId === split.id && (
+                  <div className="add-exercise-form">
                     <div className="exercise-item new-exercise-item">
                       <input 
                         type="text"
                         className="exercise-name-input"
                         value={newExerciseName}
                         onChange={(e) => setNewExerciseName(e.target.value)}
+                        onBlur={handleAddExercise}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            handleAddExercise();
+                          } else if (e.key === 'Escape') {
+                            setActiveSplitId(null);
+                          }
+                        }}
                         placeholder="Exercise name"
                         autoFocus
                       />
@@ -301,28 +318,28 @@ const ConfigPanel = ({ onStartWorkout }: ConfigPanelProps) => {
                         </label>
                       </div>
                       <div className="exercise-actions">
-                        <Button type="submit" variant="secondary" size="small">Add</Button>
-                        <Button onClick={() => setActiveSplitId(null)} variant="outline" size="small">Cancel</Button>
+                        <Button 
+                          onClick={() => setActiveSplitId(null)} 
+                          variant={newExerciseName.trim() === '' ? "danger" : "outline"} 
+                          size="small"
+                        >
+                          {newExerciseName.trim() === '' ? "Delete" : "Done"}
+                        </Button>
                       </div>
                     </div>
-                  </form>
-                ) : (
-                  <Button 
-                    onClick={() => setActiveSplitId(split.id)}
-                    variant="secondary"
-                  >
-                    Add Exercise
-                  </Button>
+                  </div>
                 )}
+
+                {/* Add exercise button - always visible */}
+                <Button 
+                  className="add-exercise-button"
+                  onClick={() => setActiveSplitId(split.id)}
+                  variant="secondary"
+                >
+                  +
+                </Button>
               </div>
             ))}
-        </div>
-        
-        {/* Add new split form - moved to bottom */}
-        <div className="add-split-form">
-          <div className="form-group">
-            <Button onClick={handleAddSplit} variant="secondary">Add Split</Button>
-          </div>
         </div>
       </div>
       

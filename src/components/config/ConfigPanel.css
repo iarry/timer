@@ -58,6 +58,30 @@
     margin-bottom: var(--spacing-lg);
 }
 
+.splits-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-md);
+}
+
+.splits-section-header h3 {
+    margin: 0;
+    border-bottom: none !important;
+    padding-bottom: 0 !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    color: var(--color-text);
+    font-size: 1.25rem;
+}
+
+.add-split-button {
+    white-space: nowrap;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: 0.9rem;
+    border-radius: 4px;
+}
+
 .setting-group {
     display: flex;
     flex-direction: column;
@@ -181,7 +205,8 @@ input[type='number'] {
 }
 
 .exercises-list {
-    margin: var(--spacing-sm) 0;
+    margin-top: var(--spacing-sm);
+    margin-bottom: 0;
     border-top: 1px solid var(--color-border);
     padding-top: var(--spacing-sm);
 }
@@ -195,8 +220,28 @@ input[type='number'] {
     border-bottom: 1px solid var(--color-border);
 }
 
+/* Remove the default border from last child when form is present */
 .exercise-item:last-child {
     border-bottom: none;
+}
+
+/* When the add form is present, ensure the last regular exercise has a border */
+.exercises-list .exercise-item:not(.new-exercise-item):last-of-type {
+    border-bottom: 1px solid var(--color-border);
+}
+
+/* The new exercise form should not have a bottom border */
+.new-exercise-item {
+    border-bottom: none !important;
+}
+
+/* Add exercise button styling */
+.add-exercise-button {
+    margin-top: var(--spacing-sm);
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 120px;
 }
 
 .exercise-name {
@@ -246,11 +291,6 @@ input[type='number'] {
     color: var(--color-secondary);
 }
 
-/* New exercise item styling */
-.new-exercise-item {
-    background-color: rgba(255, 255, 255, 0.05);
-}
-
 /* Exercise inputs styling for inline editing */
 .exercise-item .exercise-name-input {
     background: transparent;
@@ -298,11 +338,6 @@ input[type='number'] {
     border: 1px dashed var(--color-border);
 }
 
-.add-exercise-form {
-    margin-top: var(--spacing-md);
-    padding-top: var(--spacing-sm);
-    border-top: 1px solid var(--color-border);
-}
 
 .default-durations-row {
     display: flex;
