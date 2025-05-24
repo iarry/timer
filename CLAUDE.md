@@ -54,3 +54,14 @@ When implementing new features:
 2. Follow the established UI/UX patterns
 3. Consider both performance and usability
 4. Add tests for new features
+
+## Testing Guidance
+
+1. Keep the dev server running to verify there's no compilation errors with
+   `npm run dev`.
+2. The dev server only needs to be started once. You can check if it's running
+   by checking any terminals open, or by checking http://localhost:5173/.
+3. Visual updates can be viewed at http://localhost:5173/ with the dev server
+   running.
+4. Prefer `npm run dev` (and an existing instance of it) over running
+   `npm run build`.

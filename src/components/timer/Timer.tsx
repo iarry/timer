@@ -10,14 +10,15 @@ import {
 import { formatTime } from '../../utils';
 import { useSoundEffects } from '../../hooks/useSoundEffects';
 import Button from '../common/Button';
-import { ArrowLeft, Pause, Play } from 'lucide-react';
+import { ArrowLeft, Pause, Play, Settings } from 'lucide-react';
 import './Timer.css';
 
 interface TimerProps {
   onExit: () => void;
+  onOpenSettings: () => void;
 }
 
-const Timer = ({ onExit }: TimerProps) => {
+const Timer = ({ onExit, onOpenSettings }: TimerProps) => {
   const dispatch = useAppDispatch();
   const timerState = useAppSelector(state => state.timer);
   const timerConfig = useAppSelector(state => state.timerConfig);
@@ -29,6 +30,9 @@ const Timer = ({ onExit }: TimerProps) => {
   
   // Get sound effects
   const { playStart, playComplete, playTransition } = useSoundEffects();
+
+  // Calculate total rounds for the display
+  const totalRounds = timerConfig.splits.reduce((total, split) => total + split.sets, 0);
 
   // Effect to handle the timer ticking
   useEffect(() => {
@@ -203,20 +207,20 @@ const Timer = ({ onExit }: TimerProps) => {
                     {/* Rounds remaining text */}
                     <text
                       x="110"
-                      y="70"
+                      y="80"
                       textAnchor="middle"
                       dominantBaseline="middle"
                       fill="#999"
                       fontSize="16px"
                       fontWeight="500"
                     >
-                      {timerState.currentItem && `Round ${timerState.currentItem.setIndex + 1}`}
+                      {timerState.currentItem && `Round ${timerState.currentItem.setIndex + 1}/${totalRounds}`}
                     </text>
                     
-                    {/* Time remaining text */}
+                    {/* Time remaining text - centered */}
                     <text
                       x="110"
-                      y="95"
+                      y="110"
                       textAnchor="middle"
                       dominantBaseline="middle"
                       fill="#ffffff"
@@ -229,7 +233,7 @@ const Timer = ({ onExit }: TimerProps) => {
                     {/* Total remaining text inside ring */}
                     <text
                       x="110"
-                      y="130"
+                      y="140"
                       textAnchor="middle"
                       dominantBaseline="middle"
                       fill="#999"
@@ -255,11 +259,19 @@ const Timer = ({ onExit }: TimerProps) => {
             <div className="timer-controls">
               <Button 
                 onClick={handleTogglePlay}
-                variant={timerState.status === 'running' ? 'accent' : 'secondary'}
+                variant="transparent"
                 size="large"
                 className="play-pause-button"
               >
-                {timerState.status === 'running' ? <Pause size={24} /> : <Play size={24} />}
+                {timerState.status === 'running' ? <Pause size={20} /> : <Play size={20} />}
+              </Button>
+              <Button 
+                onClick={onOpenSettings}
+                variant="transparent"
+                size="small"
+                className="timer-settings-button"
+              >
+                <Settings size={18} />
               </Button>
             </div>
           )}

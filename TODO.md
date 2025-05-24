@@ -47,6 +47,28 @@
         able to delete the only split.
 -   [x] Move the add new exercise button to the top of the split section, to the
         left of the delete button.
+-   [x] Make the gabage icons just the icons as red, instead of being a filled
+        box.
+-   [x] Make the add new exercise button the same size as the delete, and give
+        them a little spacing between eachother.
+-   [x] Make the "Sets" input a select, and go from 1-20 with 3 as the default.
+-   [x] Make the "Sets" and default selects use the same select that the
+        exercise's select does. I like the exercise's version better, where
+        there's no outline or background color - just the number and chevron.
+-   [x] Remove the dividing line between splits.
+-   [x] Remove the top margin of the exercise list.
+-   [x] Reduce the padding on the default settings.
+-   [x] Change "Work" is defeault settings to "Default work"
+-   [x] Remove the "sec"s in the default settings
+-   [x] Instead of hiding the delete button on the last remaining split, just
+        disable it (visually too).
+-   [x] Make the start workout button just say "Start", and remove about half
+        the padding on the left and right, and remove a quarter of the vertical
+        padding.
+-   [x] Remove the bottom margin on the Start button
+-   [ ] Remove the bottom margin on the split header.
+-   [ ] Remove the top padding of the add-split-section.
+-   [ ] Remove the line below the add split
 
 ## Timer page
 
@@ -65,3 +87,19 @@
         pauses)
 -   [x] Display the total number of rounds left (above the countdown, not too
         large, the countdown should still be the largest thing in there)
+-   [x] Center all of the text inside the ring. It should have the countdown in
+        the dead center, then the round above and the total time below.
+-   [x] Update the rounds display to include the total number, e.g. "Round 1/30"
+-   [x] Remove the highlight on the pause button when paused
+-   [x] Make the pause / resume button just the icon, without a circle around
+        it. The icon should be slightly smaller the current circle.
+
+## Settings
+
+-   [x] Update the hamburger icon to be a gear cog icon.
+-   [x] On the configuration page, move the settings button to the floating
+        section with the start button, and make it on the right side
+-   [x] Move the settings button on the timer page to be horizontally in line
+        with the play/pause button, but keep it smaller and to the right. It
+        should also be vertically aligned, even though it's smaller, the
+        centeres of the buttons should be at the same Y.

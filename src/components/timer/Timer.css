@@ -126,18 +126,22 @@
     padding: var(--spacing-lg) 0;
     display: flex;
     justify-content: center;
+    align-items: center;
+    gap: var(--spacing-md);
 }
 
 .play-pause-button {
-    min-width: 80px !important;
-    width: 80px !important;
-    height: 80px !important;
-    border-radius: 50% !important;
+    min-width: 60px !important;
+    width: 60px !important;
+    height: 60px !important;
+    border-radius: 0 !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     padding: 0 !important;
     font-size: 1.2rem;
+    background: transparent !important;
+    box-shadow: none !important;
 }
 
 .completion-message {
@@ -170,4 +174,22 @@ svg {
     color: var(--color-text-light);
     font-size: 1.1rem;
     text-align: center;
+}
+
+.timer-settings-button {
+    background-color: transparent !important;
+    color: var(--color-text) !important;
+    box-shadow: none !important;
+    min-width: auto !important;
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 50% !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.timer-settings-button:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
 }

@@ -14,15 +14,16 @@ import {
 import { clearSampleWorkout } from '../../features/samples/samplesSlice';
 import { generateId } from '../../utils';
 import Button from '../common/Button';
-import { Trash2 } from 'lucide-react';
+import { Trash2, Settings } from 'lucide-react';
 
 import './ConfigPanel.css';
 
 interface ConfigPanelProps {
   onStartWorkout: () => void;
+  onOpenSettings: () => void;
 }
 
-const ConfigPanel = ({ onStartWorkout }: ConfigPanelProps) => {
+const ConfigPanel = ({ onStartWorkout, onOpenSettings }: ConfigPanelProps) => {
   const dispatch = useAppDispatch();
   const { defaultExerciseDuration, defaultRestDuration, splits } = 
     useAppSelector(state => state.timerConfig);
@@ -160,7 +161,7 @@ const ConfigPanel = ({ onStartWorkout }: ConfigPanelProps) => {
         <div className="setting-group">
           <div className="default-durations-row">
             <div className="duration-input">
-              <label>Work: </label>
+              <label>Default work: </label>
               <select
                 value={exerciseDuration}
                 onChange={(e) => setExerciseDuration(parseInt(e.target.value))} 
@@ -170,7 +171,6 @@ const ConfigPanel = ({ onStartWorkout }: ConfigPanelProps) => {
                   <option key={duration} value={duration}>{duration}</option>
                 ))}
               </select>
-              <span>sec</span>
             </div>
             
             <div className="duration-input">
@@ -184,7 +184,6 @@ const ConfigPanel = ({ onStartWorkout }: ConfigPanelProps) => {
                   <option key={duration} value={duration}>{duration}</option>
                 ))}
               </select>
-              <span>sec</span>
             </div>
           </div>
         </div>
@@ -197,16 +196,18 @@ const ConfigPanel = ({ onStartWorkout }: ConfigPanelProps) => {
             <div key={split.id} className="split-item">
               <div className="split-header">
                 <div className="sets-info">
-                  <input 
-                    type="number" 
+                  <select
                     value={split.sets}
                     onChange={(e) => dispatch(updateSplit({ 
                       id: split.id, 
                       sets: parseInt(e.target.value) || 1 
                     }))}
-                    min="1"
-                    className="sets-input"
-                  />
+                    className="sets-select"
+                  >
+                    {Array.from({ length: 20 }, (_, i) => i + 1).map(num => (
+                      <option key={num} value={num}>{num}</option>
+                    ))}
+                  </select>
                   <span>sets</span>
                 </div>
                 <div className="split-actions">
@@ -218,15 +219,14 @@ const ConfigPanel = ({ onStartWorkout }: ConfigPanelProps) => {
                   >
                     +
                   </Button>
-                  {splits.length > 1 && (
-                    <Button 
-                      onClick={() => dispatch(removeSplit(split.id))}
-                      variant="danger"
-                      size="small"
-                    >
-                      <Trash2 size={16} />
-                    </Button>
-                  )}
+                  <Button 
+                    onClick={() => dispatch(removeSplit(split.id))}
+                    variant="danger"
+                    size="small"
+                    disabled={splits.length === 1}
+                  >
+                    <Trash2 size={16} />
+                  </Button>
                 </div>
               </div>
               
@@ -344,12 +344,20 @@ const ConfigPanel = ({ onStartWorkout }: ConfigPanelProps) => {
       {/* Start Workout Button - moved to bottom */}
       <div className="start-workout-section">
         <Button 
+          onClick={onOpenSettings}
+          variant="transparent" 
+          size="small"
+          className="settings-button"
+        >
+          <Settings size={20} />
+        </Button>
+        <Button 
           onClick={onStartWorkout} 
           variant="primary" 
           size="large"
           disabled={splits.length === 0 || splits.every(split => split.exercises.length === 0)}
         >
-          Start Workout
+          Start
         </Button>
       </div>
     </div>
