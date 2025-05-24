@@ -235,12 +235,13 @@ input[type='number'] {
 .exercise-duration-input {
     background: transparent;
     border: 1px dashed var(--color-border);
-    padding: var(--spacing-xs) var(--spacing-sm);
+    padding: var(--spacing-xs) 4px;
     font-family: monospace;
     font-weight: 600;
     text-align: center;
     color: var(--color-secondary);
-    width: 100%;
+    width: 80px;
+    font-size: 0.9rem;
 }
 
 .add-exercise-form {
@@ -271,10 +272,11 @@ input[type='number'] {
 }
 
 .duration-input-field {
-    width: 60px;
-    padding: var(--spacing-xs) var(--spacing-sm);
+    width: 50px;
+    padding: var(--spacing-xs) 4px;
     text-align: center;
     font-weight: bold;
+    font-size: 0.9rem;
 }
 
 .duration-input span {

@@ -37,6 +37,17 @@ const ConfigPanel = ({ onStartWorkout }: ConfigPanelProps) => {
   const [newExerciseName, setNewExerciseName] = useState('');
   const [newExerciseDuration, setNewExerciseDuration] = useState(defaultExerciseDuration);
 
+  // Generate duration options (5-180 seconds in intervals of 5)
+  const generateDurationOptions = () => {
+    const options = [];
+    for (let i = 5; i <= 180; i += 5) {
+      options.push(i);
+    }
+    return options;
+  };
+
+  const durationOptions = generateDurationOptions();
+
   // Update new exercise duration when default changes
   useEffect(() => {
     setNewExerciseDuration(defaultExerciseDuration);
@@ -104,45 +115,34 @@ const ConfigPanel = ({ onStartWorkout }: ConfigPanelProps) => {
 
   return (
     <div className="config-panel">
-      {/* Start Workout Button */}
-      <div className="start-workout-section">
-        <Button 
-          onClick={onStartWorkout} 
-          variant="primary" 
-          size="large"
-          disabled={splits.length === 0}
-        >
-          Start Workout
-        </Button>
-        {splits.length === 0 && (
-          <p className="warning-message">Configure at least one split with exercises first</p>
-        )}
-      </div>
-      
       <div className="default-settings">
         <div className="setting-group">
           <div className="default-durations-row">
             <div className="duration-input">
               <label>Exercise: </label>
-              <input
-                type="number" 
+              <select
                 value={exerciseDuration}
-                onChange={(e) => setExerciseDuration(parseInt(e.target.value || '0'))} 
-                min="5"
+                onChange={(e) => setExerciseDuration(parseInt(e.target.value))} 
                 className="duration-input-field"
-              />
+              >
+                {durationOptions.map(duration => (
+                  <option key={duration} value={duration}>{duration}</option>
+                ))}
+              </select>
               <span>sec</span>
             </div>
             
             <div className="duration-input">
               <label>Rest: </label>
-              <input
-                type="number" 
+              <select
                 value={restDuration}
-                onChange={(e) => setRestDuration(parseInt(e.target.value || '0'))}
-                min="5"
+                onChange={(e) => setRestDuration(parseInt(e.target.value))}
                 className="duration-input-field"
-              />
+              >
+                {durationOptions.map(duration => (
+                  <option key={duration} value={duration}>{duration}</option>
+                ))}
+              </select>
               <span>sec</span>
             </div>
           </div>
@@ -242,14 +242,15 @@ const ConfigPanel = ({ onStartWorkout }: ConfigPanelProps) => {
                         placeholder="Exercise name"
                         autoFocus
                       />
-                      <input 
-                        type="number"
+                      <select
                         className="exercise-duration-input"
                         value={newExerciseDuration}
-                        onChange={(e) => setNewExerciseDuration(parseInt(e.target.value || '0'))}
-                        min="5"
-                        placeholder="Seconds"
-                      />
+                        onChange={(e) => setNewExerciseDuration(parseInt(e.target.value))}
+                      >
+                        {durationOptions.map(duration => (
+                          <option key={duration} value={duration}>{duration}</option>
+                        ))}
+                      </select>
                       <div className="exercise-actions">
                         <Button type="submit" variant="secondary" size="small">Add</Button>
                         <Button onClick={() => setActiveSplitId(null)} variant="outline" size="small">Cancel</Button>
@@ -275,6 +276,21 @@ const ConfigPanel = ({ onStartWorkout }: ConfigPanelProps) => {
             <Button onClick={handleAddSplit} variant="secondary">Add Split</Button>
           </div>
         </div>
+      </div>
+      
+      {/* Start Workout Button - moved to bottom */}
+      <div className="start-workout-section">
+        <Button 
+          onClick={onStartWorkout} 
+          variant="primary" 
+          size="large"
+          disabled={splits.length === 0}
+        >
+          Start Workout
+        </Button>
+        {splits.length === 0 && (
+          <p className="warning-message">Configure at least one split with exercises first</p>
+        )}
       </div>
     </div>
   );

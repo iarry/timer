@@ -29,7 +29,7 @@ const sampleExercises = [
 // Sample split
 const createSampleSplit = () => ({
   id: generateId(),
-  name: 'Sample Circuit',
+  name: 'Split 1',
   sets: 3,
   exercises: sampleExercises
 });
