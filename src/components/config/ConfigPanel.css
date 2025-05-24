@@ -44,21 +44,21 @@
 }
 
 .start-workout-section .settings-button {
-    background-color: transparent !important;
-    color: var(--color-text) !important;
-    box-shadow: none !important;
-    min-width: auto !important;
-    width: 48px !important;
-    height: 48px !important;
-    border-radius: 50% !important;
-    padding: 0 !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
+    background-color: transparent;
+    color: var(--color-text);
+    box-shadow: none;
+    min-width: auto;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .start-workout-section .settings-button:hover {
-    background-color: rgba(255, 255, 255, 0.1) !important;
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
 .start-workout-section .spacer {
@@ -99,13 +99,13 @@
     padding: var(--spacing-xs) var(--spacing-sm);
     font-size: 0.9rem;
     border-radius: 4px;
-    background-color: var(--color-secondary) !important;
-    color: white !important;
-    border: none !important;
+    background-color: var(--color-secondary);
+    color: white;
+    border: none;
 }
 
 .add-split-button:hover {
-    background-color: var(--color-secondary-hover) !important;
+    background-color: var(--color-secondary-hover);
 }
 
 .setting-group {
@@ -186,7 +186,7 @@ input[type='number'] {
 
 .split-item {
     background-color: var(--color-background);
-    padding: var(--spacing-md);
+    padding: var(--spacing-md) var(--spacing-xs);
     border-bottom: none;
     border-radius: 0;
     position: relative;
@@ -220,17 +220,17 @@ input[type='number'] {
 
 /* Split delete button styling when in sets-info */
 .sets-info .btn.btn-small {
-    background: transparent !important;
-    border: none !important;
-    color: var(--color-danger) !important;
-    box-shadow: none !important;
+    background: transparent;
+    border: none;
+    color: var(--color-danger);
+    box-shadow: none;
     padding: 4px;
     min-width: auto;
     margin-left: var(--spacing-xs);
 }
 
 .sets-info .btn.btn-small:hover {
-    background: rgba(255, 82, 82, 0.1) !important;
+    background: rgba(255, 82, 82, 0.1);
 }
 
 .sets-label {
@@ -255,7 +255,7 @@ input[type='number'] {
     font-weight: 600;
     text-align: center;
     color: var(--color-secondary);
-    width: 35px;
+    width: 42px;
     font-size: 0.9rem;
     border-radius: 4px;
     transition: border-color 0.2s ease;
@@ -269,7 +269,7 @@ input[type='number'] {
 }
 
 .sets-input {
-    width: 35px !important;
+    width: 35px;
     padding: 2px 4px;
     text-align: center;
     font-weight: bold;
@@ -301,7 +301,7 @@ input[type='number'] {
     grid-template-columns: 1fr 45px 40px auto;
     gap: var(--spacing-sm);
     align-items: center;
-    padding: var(--spacing-xs) var(--spacing-md);
+    padding: var(--spacing-xs) 0;
     border-bottom: 1px solid var(--color-border);
 }
 
@@ -316,7 +316,7 @@ input[type='number'] {
 
 /* The new exercise form should not have a bottom border */
 .new-exercise-item {
-    border-bottom: none !important;
+    border-bottom: none;
 }
 
 /* Add exercise button styling */
@@ -324,17 +324,17 @@ input[type='number'] {
     width: auto;
     height: auto;
     font-size: 16px;
-    padding: 4px 8px !important;
+    padding: 6px;
     min-width: auto;
-    background-color: var(--color-secondary) !important;
-    color: white !important;
-    border: none !important;
-    box-shadow: none !important;
+    background-color: var(--color-secondary);
+    color: white;
+    border: none;
+    box-shadow: none;
 }
 
 .split-actions .add-exercise-button.btn.btn-small:hover {
-    background-color: var(--color-secondary-hover) !important;
-    color: white !important;
+    background-color: var(--color-secondary-hover);
+    color: white;
 }
 
 .exercise-name {
@@ -361,28 +361,28 @@ input[type='number'] {
 .exercise-actions .btn.btn-small {
     padding: 2px;
     min-width: auto;
-    background: transparent !important;
-    border: none !important;
-    color: var(--color-danger) !important;
-    box-shadow: none !important;
+    background: transparent;
+    border: none;
+    color: var(--color-danger);
+    box-shadow: none;
 }
 
 .exercise-actions .btn.btn-small:hover {
-    background: rgba(255, 82, 82, 0.1) !important;
+    background: rgba(255, 82, 82, 0.1);
 }
 
 /* Split delete button styling */
 .split-actions .btn.btn-small {
-    background: transparent !important;
-    border: none !important;
-    color: var(--color-danger) !important;
-    box-shadow: none !important;
+    background: transparent;
+    border: none;
+    color: var(--color-danger);
+    box-shadow: none;
     padding: 4px;
     min-width: auto;
 }
 
 .split-actions .btn.btn-small:hover {
-    background: rgba(255, 82, 82, 0.1) !important;
+    background: rgba(255, 82, 82, 0.1);
 }
 
 /* Exercise checkbox styling */

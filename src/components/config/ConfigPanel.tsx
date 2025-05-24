@@ -14,7 +14,7 @@ import {
 import { clearSampleWorkout } from '../../features/samples/samplesSlice';
 import { generateId } from '../../utils';
 import Button from '../common/Button';
-import { Trash2, Settings } from 'lucide-react';
+import { Trash2, Settings, Plus } from 'lucide-react';
 
 import './ConfigPanel.css';
 
@@ -53,10 +53,7 @@ const ConfigPanel = ({ onStartWorkout, onOpenSettings }: ConfigPanelProps) => {
     return exerciseDuration === defaultExerciseDuration;
   };
 
-  // Update new exercise duration when default changes
-  useEffect(() => {
-    // No longer needed since we don't have a separate new exercise form
-  }, [defaultExerciseDuration]);
+
 
   // Effect for auto-updating default durations when they change
   useEffect(() => {
@@ -225,7 +222,7 @@ const ConfigPanel = ({ onStartWorkout, onOpenSettings }: ConfigPanelProps) => {
                     variant="secondary"
                     size="small"
                   >
-                    +
+                    <Plus size={16} />
                   </Button>
                 </div>
               </div>

@@ -86,6 +86,12 @@
         conflicting CSS rule with !important on it
         ✅ FIXED: Updated selector to `.split-actions .add-exercise-button.btn.btn-small` 
         to override the red color from `.split-actions .btn.btn-small` rule
+-   [x] Remove the .app-content padding.
+-   [x] Remove the horizontal padding on .exercise-item (keep the vertical padding)
+-   [x] Make .default-durations-row's padding xs
+-   [x] Make `.exercise-item .exercise-duration-input` width 51px, and remove the `max-width: 100%;` on `input, select, textarea`
+-   [x] Make `.sets-select`'s width 42px.
+-   [ ] Refactor the .exercise-item to use flex instead of grid. It should work so the exercise name's input grows as wide as possible, and the remaining elements only take up as much as they need + the margins between them
 
 ## Timer page
 

@@ -141,7 +141,6 @@ input, select, textarea {
   border-radius: 4px;
   background-color: var(--color-surface);
   color: var(--color-text);
-  max-width: 100%;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
