@@ -11,7 +11,7 @@ import {
   Split,
   Exercise
 } from '../../features/timerConfig/timerConfigSlice';
-import { loadSampleWorkout, clearSampleWorkout } from '../../features/samples/samplesSlice';
+import { clearSampleWorkout } from '../../features/samples/samplesSlice';
 import { generateId } from '../../utils';
 import Button from '../common/Button';
 
@@ -25,7 +25,6 @@ const ConfigPanel = ({ onStartWorkout }: ConfigPanelProps) => {
   const dispatch = useAppDispatch();
   const { defaultExerciseDuration, defaultRestDuration, splits } = 
     useAppSelector(state => state.timerConfig);
-  const { hasLoadedSample } = useAppSelector(state => state.samples);
 
   const [exerciseDuration, setExerciseDuration] = useState(defaultExerciseDuration);
   const [restDuration, setRestDuration] = useState(defaultRestDuration);
@@ -106,11 +105,6 @@ const ConfigPanel = ({ onStartWorkout }: ConfigPanelProps) => {
     setNewExerciseLeftRight(false);
   };
   
-  // Handler to load sample workout
-  const handleLoadSample = () => {
-    dispatch(loadSampleWorkout());
-  };
-  
   // Monitor the sample workout from the store
   const { sampleWorkout } = useAppSelector(state => state.samples);
   
@@ -121,6 +115,21 @@ const ConfigPanel = ({ onStartWorkout }: ConfigPanelProps) => {
       dispatch(clearSampleWorkout());
     }
   }, [sampleWorkout, dispatch]);
+
+  // Effect to automatically create Split 1 and set it as active when starting fresh
+  useEffect(() => {
+    if (splits.length === 0) {
+      // Create initial split
+      const initialSplit: Omit<Split, 'exercises'> = {
+        id: generateId(),
+        name: 'Split 1',
+        sets: 3,
+      };
+      
+      dispatch(addSplit(initialSplit));
+      setActiveSplitId(initialSplit.id);
+    }
+  }, [splits.length, dispatch]);
 
   return (
     <div className="config-panel">
@@ -159,118 +168,100 @@ const ConfigPanel = ({ onStartWorkout }: ConfigPanelProps) => {
       </div>
       
       <div className="splits-section">
-        {/* Load sample workout button - only show if no splits and sample not loaded */}
-        {splits.length === 0 && !hasLoadedSample && (
-          <div className="sample-workout-section">
-            <h4>New to HIIT workouts?</h4>
-            <p>Get started quickly with a pre-configured workout routine!</p>
-            <Button onClick={handleLoadSample} variant="secondary">
-              Load Sample Workout
-            </Button>
-          </div>
-        )}
-        
         {/* List of existing splits */}
         <div className="splits-list">
-          {splits.length === 0 ? (
-            <p>No splits configured yet. Add your first split below.</p>
-          ) : (
-            splits.map(split => (
-              <div key={split.id} className="split-item">
-                <div className="split-header">
-                  <h4>{split.name}</h4>
-                  <div className="split-info">
-                    <div className="sets-info">
-                      <input 
-                        type="number" 
-                        value={split.sets}
-                        onChange={(e) => dispatch(updateSplit({ 
-                          id: split.id, 
-                          sets: parseInt(e.target.value) || 1 
-                        }))}
-                        min="1"
-                        className="sets-input"
-                      />
-                      <span>sets</span>
-                    </div>
+          {splits.map(split => (
+            <div key={split.id} className="split-item">
+              <div className="split-header">
+                <h4>{split.name}</h4>
+                <div className="split-info">
+                  <div className="sets-info">
+                    <input 
+                      type="number" 
+                      value={split.sets}
+                      onChange={(e) => dispatch(updateSplit({ 
+                        id: split.id, 
+                        sets: parseInt(e.target.value) || 1 
+                      }))}
+                      min="1"
+                      className="sets-input"
+                    />
+                    <span>sets</span>
                   </div>
-                  <Button 
-                    onClick={() => dispatch(removeSplit(split.id))}
-                    variant="danger"
-                    size="small"
-                  >
-                    Delete
-                  </Button>
                 </div>
-                
-                {/* Exercises in this split */}
-                <div className="exercises-list">
-                  {split.exercises.length === 0 ? (
-                    <p>No exercises in this split. Add some below.</p>
-                  ) : (
-                    split.exercises.map(exercise => (
-                      <div key={exercise.id} className="exercise-item">
-                        <input 
-                          type="text"
-                          className="exercise-name-input"
-                          value={exercise.name}
-                          onChange={(e) => 
+                <Button 
+                  onClick={() => dispatch(removeSplit(split.id))}
+                  variant="danger"
+                  size="small"
+                >
+                  Delete
+                </Button>
+              </div>
+              
+              {/* Exercises in this split */}
+              <div className="exercises-list">
+                {split.exercises.map(exercise => (
+                  <div key={exercise.id} className="exercise-item">
+                    <input 
+                      type="text"
+                      className="exercise-name-input"
+                      value={exercise.name}
+                      onChange={(e) => 
+                        dispatch(updateExercise({
+                          splitId: split.id,
+                          exerciseId: exercise.id,
+                          name: e.target.value
+                        }))
+                      }
+                    />
+                    <select
+                      className={`exercise-duration-input ${isUsingDefaultDuration(exercise.duration) ? 'default-duration' : ''}`}
+                      value={exercise.duration}
+                      onChange={(e) => 
+                        dispatch(updateExercise({
+                          splitId: split.id,
+                          exerciseId: exercise.id,
+                          duration: parseInt(e.target.value)
+                        }))
+                      }
+                    >
+                      {durationOptions.map(duration => (
+                        <option key={duration} value={duration}>{duration}</option>
+                      ))}
+                    </select>
+                    <div className="exercise-checkbox">
+                      <label>
+                        <input
+                          type="checkbox"
+                          checked={exercise.leftRight || false}
+                          onChange={(e) =>
                             dispatch(updateExercise({
                               splitId: split.id,
                               exerciseId: exercise.id,
-                              name: e.target.value
+                              leftRight: e.target.checked
                             }))
                           }
                         />
-                        <select
-                          className={`exercise-duration-input ${isUsingDefaultDuration(exercise.duration) ? 'default-duration' : ''}`}
-                          value={exercise.duration}
-                          onChange={(e) => 
-                            dispatch(updateExercise({
-                              splitId: split.id,
-                              exerciseId: exercise.id,
-                              duration: parseInt(e.target.value)
-                            }))
-                          }
-                        >
-                          {durationOptions.map(duration => (
-                            <option key={duration} value={duration}>{duration}</option>
-                          ))}
-                        </select>
-                        <div className="exercise-checkbox">
-                          <label>
-                            <input
-                              type="checkbox"
-                              checked={exercise.leftRight || false}
-                              onChange={(e) =>
-                                dispatch(updateExercise({
-                                  splitId: split.id,
-                                  exerciseId: exercise.id,
-                                  leftRight: e.target.checked
-                                }))
-                              }
-                            />
-                            L/R
-                          </label>
-                        </div>
-                        <div className="exercise-actions">
-                          <Button 
-                            onClick={() => 
-                              dispatch(removeExercise({
-                                splitId: split.id,
-                                exerciseId: exercise.id
-                              }))
-                            }
-                            variant="danger"
-                            size="small"
-                          >
-                            Delete
-                          </Button>
-                        </div>
-                      </div>
-                    ))
-                  )}
-                </div>
+                        L/R
+                      </label>
+                    </div>
+                    <div className="exercise-actions">
+                      <Button 
+                        onClick={() => 
+                          dispatch(removeExercise({
+                            splitId: split.id,
+                            exerciseId: exercise.id
+                          }))
+                        }
+                        variant="danger"
+                        size="small"
+                      >
+                        Delete
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
                 
                 {/* Add exercise form */}
                 {activeSplitId === split.id ? (
@@ -324,8 +315,7 @@ const ConfigPanel = ({ onStartWorkout }: ConfigPanelProps) => {
                   </Button>
                 )}
               </div>
-            ))
-          )}
+            ))}
         </div>
         
         {/* Add new split form - moved to bottom */}
@@ -342,12 +332,12 @@ const ConfigPanel = ({ onStartWorkout }: ConfigPanelProps) => {
           onClick={onStartWorkout} 
           variant="primary" 
           size="large"
-          disabled={splits.length === 0}
+          disabled={splits.length === 0 || splits.every(split => split.exercises.length === 0)}
         >
           Start Workout
         </Button>
-        {splits.length === 0 && (
-          <p className="warning-message">Configure at least one split with exercises first</p>
+        {splits.length > 0 && splits.every(split => split.exercises.length === 0) && (
+          <p className="warning-message">Add at least one exercise to start your workout</p>
         )}
       </div>
     </div>
