@@ -41,7 +41,7 @@ export const calculateTotalTime = (
     // Calculate time for all sets
     for (let set = 0; set < split.sets; set++) {
       // Add exercise durations
-      split.exercises.forEach((exercise, index) => {
+      split.exercises.forEach((exercise: { duration: number }, index: number) => {
         totalTime += exercise.duration;
         
         // Add rest period after each exercise except the last one in the last set
