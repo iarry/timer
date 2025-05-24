@@ -21,11 +21,39 @@ export interface TimerConfigState {
   splits: Split[];
 }
 
+// Load state from local storage if available
+const loadState = (): TimerConfigState | undefined => {
+  try {
+    const serializedState = localStorage.getItem('timerConfig');
+    if (serializedState === null) {
+      return undefined;
+    }
+    return JSON.parse(serializedState);
+  } catch (err) {
+    console.error('Could not load state from localStorage', err);
+    return undefined;
+  }
+};
+
 // Initial state for timer configuration
-const initialState: TimerConfigState = {
+const initialState: TimerConfigState = loadState() || {
   defaultExerciseDuration: 45, // default 45s
   defaultRestDuration: 30, // default 30s
   splits: [],
+};
+
+// Save state to local storage when it changes
+const saveState = (state: TimerConfigState) => {
+  try {
+    const serializedState = JSON.stringify(state);
+    localStorage.setItem('timerConfig', serializedState);
+  } catch (err) {
+    console.error('Could not save state to localStorage', err);
+  }
+};
+
+export const saveTimerConfig = (state: TimerConfigState) => {
+  saveState(state);
 };
 
 // Create the timer config slice
@@ -39,6 +67,7 @@ const timerConfigSlice = createSlice({
     ) {
       state.defaultExerciseDuration = action.payload.exerciseDuration;
       state.defaultRestDuration = action.payload.restDuration;
+      saveState(state); // Save to local storage
     },
     
     addSplit(state, action: PayloadAction<Omit<Split, 'exercises'> & { exercises?: Exercise[] }>) {
@@ -49,10 +78,12 @@ const timerConfigSlice = createSlice({
         sets,
         exercises,
       });
+      saveState(state); // Save to local storage
     },
     
     removeSplit(state, action: PayloadAction<string>) {
       state.splits = state.splits.filter(split => split.id !== action.payload);
+      saveState(state); // Save to local storage
     },
     
     updateSplit(state, action: PayloadAction<{ id: string; name?: string; sets?: number }>) {
@@ -62,6 +93,7 @@ const timerConfigSlice = createSlice({
       if (splitIndex !== -1) {
         if (name !== undefined) state.splits[splitIndex].name = name;
         if (sets !== undefined) state.splits[splitIndex].sets = sets;
+        saveState(state); // Save to local storage
       }
     },
     
@@ -74,6 +106,7 @@ const timerConfigSlice = createSlice({
       
       if (splitIndex !== -1) {
         state.splits[splitIndex].exercises.push(exercise);
+        saveState(state); // Save to local storage
       }
     },
     
@@ -88,6 +121,7 @@ const timerConfigSlice = createSlice({
         state.splits[splitIndex].exercises = state.splits[splitIndex].exercises.filter(
           exercise => exercise.id !== exerciseId
         );
+        saveState(state); // Save to local storage
       }
     },
     
@@ -116,6 +150,7 @@ const timerConfigSlice = createSlice({
           if (duration !== undefined) {
             state.splits[splitIndex].exercises[exerciseIndex].duration = duration;
           }
+          saveState(state); // Save to local storage
         }
       }
     },

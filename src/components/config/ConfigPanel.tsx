@@ -4,6 +4,7 @@ import {
   setDefaultDurations,
   addSplit,
   removeSplit,
+  updateSplit,
   addExercise,
   removeExercise,
   Split,
@@ -35,6 +36,11 @@ const ConfigPanel = ({ onStartWorkout }: ConfigPanelProps) => {
   const [activeSplitId, setActiveSplitId] = useState<string | null>(null);
   const [newExerciseName, setNewExerciseName] = useState('');
   const [newExerciseDuration, setNewExerciseDuration] = useState(defaultExerciseDuration);
+
+  // Update new exercise duration when default changes
+  useEffect(() => {
+    setNewExerciseDuration(defaultExerciseDuration);
+  }, [defaultExerciseDuration]);
 
   // Effect for auto-updating default durations when they change
   useEffect(() => {
@@ -98,8 +104,6 @@ const ConfigPanel = ({ onStartWorkout }: ConfigPanelProps) => {
 
   return (
     <div className="config-panel">
-      <h2>Timer Configuration</h2>
-      
       {/* Start Workout Button */}
       <div className="start-workout-section">
         <Button 
@@ -115,9 +119,7 @@ const ConfigPanel = ({ onStartWorkout }: ConfigPanelProps) => {
         )}
       </div>
       
-      <section className="default-settings">
-        <h3>Default Settings</h3>
-        
+      <div className="default-settings">
         <div className="setting-group">
           <div className="default-durations-row">
             <div className="duration-input">
@@ -145,11 +147,9 @@ const ConfigPanel = ({ onStartWorkout }: ConfigPanelProps) => {
             </div>
           </div>
         </div>
-      </section>
+      </div>
       
-      <section className="splits-section">
-        <h3>Workout Splits</h3>
-        
+      <div className="splits-section">
         {/* Load sample workout button - only show if no splits and sample not loaded */}
         {splits.length === 0 && !hasLoadedSample && (
           <div className="sample-workout-section">
@@ -161,37 +161,29 @@ const ConfigPanel = ({ onStartWorkout }: ConfigPanelProps) => {
           </div>
         )}
         
-        {/* Add new split form */}
-        <div className="add-split-form">
-          <h4>Add New Split</h4>
-          
-          <div className="form-group">
-            <label>
-              Number of Sets:
-              <input 
-                type="number" 
-                value={newSplitSets}
-                onChange={(e) => setNewSplitSets(parseInt(e.target.value))}
-                min="1"
-              />
-            </label>
-            
-            <Button onClick={handleAddSplit} variant="secondary">Add Split</Button>
-          </div>
-        </div>
-        
         {/* List of existing splits */}
         <div className="splits-list">
           {splits.length === 0 ? (
-            <p>No splits configured yet. Add your first split above.</p>
+            <p>No splits configured yet. Add your first split below.</p>
           ) : (
             splits.map(split => (
               <div key={split.id} className="split-item">
                 <div className="split-header">
                   <h4>{split.name}</h4>
                   <div className="split-info">
-                    <span>{split.sets} sets</span>
-                    <span>{split.exercises.length} exercises</span>
+                    <div className="sets-info">
+                      <input 
+                        type="number" 
+                        value={split.sets}
+                        onChange={(e) => dispatch(updateSplit({ 
+                          id: split.id, 
+                          sets: parseInt(e.target.value) || 1 
+                        }))}
+                        min="1"
+                        className="sets-input"
+                      />
+                      <span>sets</span>
+                    </div>
                   </div>
                   <Button 
                     onClick={() => dispatch(removeSplit(split.id))}
@@ -276,7 +268,14 @@ const ConfigPanel = ({ onStartWorkout }: ConfigPanelProps) => {
             ))
           )}
         </div>
-      </section>
+        
+        {/* Add new split form - moved to bottom */}
+        <div className="add-split-form">
+          <div className="form-group">
+            <Button onClick={handleAddSplit} variant="secondary">Add Split</Button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

@@ -18,7 +18,7 @@ export const useSoundEffects = (): SoundEffects => {
   useEffect(() => {
     // Initialize sounds when component mounts
     if (!initialized.current && typeof window !== 'undefined') {
-      startSound.current = new Audio('https://assets.mixkit.co/active_storage/sfx/1034/1034-preview.mp3');
+      startSound.current = new Audio('https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3');
       completeSound.current = new Audio('https://assets.mixkit.co/active_storage/sfx/1010/1010-preview.mp3');
       transitionSound.current = new Audio('https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3');
       

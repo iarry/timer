@@ -130,9 +130,6 @@ const Timer = ({ onExit }: TimerProps) => {
             <Button onClick={handleBackToConfig} variant="outline">
               ← Back to Configuration
             </Button>
-            <div className="timer-status">
-              {timerState.status === 'completed' ? 'Workout Complete!' : 'Workout in Progress'}
-            </div>
           </div>
           
           <div className="timer-display">

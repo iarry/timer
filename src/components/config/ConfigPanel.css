@@ -159,6 +159,25 @@ input[type='number'] {
     gap: var(--spacing-md);
     color: var(--color-text-light);
     font-size: 0.9rem;
+    align-items: center;
+}
+
+.sets-info {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.sets-input {
+    width: 35px !important;
+    padding: 2px 4px;
+    text-align: center;
+    font-weight: bold;
+    background: transparent;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    color: var(--color-text);
+    font-size: 0.9rem;
 }
 
 .exercises-list {
