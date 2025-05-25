@@ -8,7 +8,6 @@ export interface ToneSpec {
 
 export interface AudioProfile {
   name: string;
-  description: string;
   countdown: ToneSpec[];        // Array of 3 tones for 3-2-1 countdown
   exerciseStart: ToneSpec[];    // Tones for starting exercise
   restStart: ToneSpec[];        // Tones for starting rest
@@ -18,7 +17,6 @@ export interface AudioProfile {
 
 const cleanProfile: AudioProfile = {
     name: "Clean",
-    description: "Simple and non-intrusive.",
     countdown: [
       { frequency: 660, duration: 0.2, waveform: "sine", volume: 0.4 },   // 3
       { frequency: 740, duration: 0.2, waveform: "sine", volume: 0.45 }, // 2
@@ -44,7 +42,6 @@ const cleanProfile: AudioProfile = {
   
   const pixelProfile: AudioProfile = {
     name: "Pixel",
-    description: "8-bit.",
     countdown: [
       { frequency: 392, duration: 0.25, waveform: "square", volume: 0.4 },
       { frequency: 523.25, duration: 0.25, waveform: "square", volume: 0.5 },
@@ -71,24 +68,24 @@ const cleanProfile: AudioProfile = {
 
   const serenityProfile: AudioProfile = {
     name: "Serenity",
-    description: "A soft, organic sound profile inspired by bells, bowls, and nature — designed to flow with breath and movement for yoga and mindfulness practices.",
     countdown: [
-        { frequency: 600, duration: 0.3, waveform: "sine", volume: 0.4 },
+        { frequency: 400, duration: 0.4, waveform: "sine", volume: 0.5 },
         { frequency: 500, duration: 0.3, waveform: "sine", volume: 0.5 },
-        { frequency: 400, duration: 0.4, waveform: "sine", volume: 0.6 },
+        { frequency: 600, duration: 0.3, waveform: "sine", volume: 0.5 },
     ],
     exerciseStart: [
-      { frequency: 432, duration: 0.8, waveform: "triangle", volume: 0.7 },
-      { frequency: 324, duration: 0.6, waveform: "sine", volume: 0.6, delay: 0.2 },
+      { frequency: 750, duration: 0.4, waveform: "sine", volume: 0.6 },
+      { frequency: 780, duration: 0.4, waveform: "sine", volume: 0.7, delay: 0.1 },
     ],
     restStart: [
-      { frequency: 250, duration: 0.6, waveform: "sine", volume: 0.4 },
-      { frequency: 220, duration: 0.5, waveform: "sine", volume: 0.3, delay: 0.2 },
+      { frequency: 250, duration: 0.4, waveform: "sine", volume: 0.4 },
+      { frequency: 220, duration: 0.4, waveform: "sine", volume: 0.3, delay: 0.1 },
     ],
     workoutComplete: [
-      { frequency: 528, duration: 0.6, waveform: "triangle", volume: 0.8 },
-      { frequency: 396, duration: 0.4, waveform: "sine", volume: 0.6, delay: 0.3 },
-    ],
+        { frequency: 600, duration: 0.4, waveform: "sine", volume: 0.5 },
+        { frequency: 700, duration: 0.4, waveform: "sine", volume: 0.6, delay: 0.1 },
+        { frequency: 800, duration: 0.6, waveform: "sine", volume: 0.4, delay: 0.4 },
+      ],
     transition: [
       { frequency: 300, duration: 0.4, waveform: "sine", volume: 0.5 }
     ]

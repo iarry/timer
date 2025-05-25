@@ -31,11 +31,11 @@ export const AudioProfileSelector: React.FC = () => {
     try {
       // Play workout flow demo sequence with full countdown
       // Full countdown: 3-2-1
-      await audioSystem.playCountdownBeep(1);          // "3" countdown beep
+      await audioSystem.playCountdownBeep(3);          // "1" countdown beep
       await new Promise(resolve => setTimeout(resolve, 1000));
       await audioSystem.playCountdownBeep(2);          // "2" countdown beep
       await new Promise(resolve => setTimeout(resolve, 1000));
-      await audioSystem.playCountdownBeep(3);          // "1" countdown beep
+      await audioSystem.playCountdownBeep(1);          // "3" countdown beep
       await new Promise(resolve => setTimeout(resolve, 1000));
       await audioSystem.playRestStart();               // Rest start
       await new Promise(resolve => setTimeout(resolve, 3000));  // 3s pause to simulate exercise time
@@ -67,9 +67,6 @@ export const AudioProfileSelector: React.FC = () => {
   return (
     <div className="audio-profile-selector">
       <h3>Audio Profile</h3>
-      <p className="audio-profile-description">
-        Choose your preferred workout audio theme
-      </p>
       <div className="profile-options">
         {profiles.map(profile => (
           <div key={profile.name} className="profile-option">
@@ -83,7 +80,6 @@ export const AudioProfileSelector: React.FC = () => {
               />
               <div className="profile-info">
                 <span className="profile-name">{profile.name}</span>
-                <span className="profile-description">{profile.description}</span>
               </div>
             </label>
             <button 
