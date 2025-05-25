@@ -1,9 +1,13 @@
+import { AudioProfile, ToneSpec, audioProfiles, getProfileByName } from './audioProfiles';
+
 class AudioSystem {
   private audioContext: AudioContext | null = null;
   private isMuted: boolean = false;
+  private currentProfile: AudioProfile;
 
   constructor() {
     this.initializeAudio();
+    this.currentProfile = audioProfiles[0]; // Default to first profile
   }
 
   private initializeAudio() {
@@ -16,6 +20,18 @@ class AudioSystem {
 
   setMuted(muted: boolean) {
     this.isMuted = muted;
+  }
+
+  setProfile(profileName: string) {
+    this.currentProfile = getProfileByName(profileName);
+  }
+
+  getCurrentProfile(): AudioProfile {
+    return this.currentProfile;
+  }
+
+  getAvailableProfiles(): AudioProfile[] {
+    return audioProfiles;
   }
 
   private async ensureAudioContext() {
@@ -62,65 +78,69 @@ class AudioSystem {
     });
   }
 
-  // Countdown beeps - getting higher in pitch to build anticipation
-  async playCountdownBeep(count: number) {
-    // Frequencies: 440Hz (A), 493Hz (B), 523Hz (C)
-    const frequencies = [440, 493, 523];
-    const frequency = frequencies[Math.min(count - 1, 2)];
-    await this.createTone(frequency, 0.15, 'sine', 0.4);
-  }
-
-  // Upbeat "ready to work" tone - major chord progression
-  async playWorkoutStart() {
+  private async playToneSequence(tones: ToneSpec[]) {
     if (this.isMuted) return;
 
-    // Play a pleasant major chord: C-E-G (523-659-784 Hz)
-    const chordPromises = [
-      this.createTone(523, 0.6, 'sine', 0.25), // C
-      this.createTone(659, 0.6, 'sine', 0.2),  // E
-      this.createTone(784, 0.6, 'sine', 0.15)  // G
-    ];
-
-    await Promise.all(chordPromises);
-  }
-
-  // Mellower "time to rest" tone - soft, calming
-  async playRestStart() {
-    if (this.isMuted) return;
-
-    // Gentle, calming tone progression: F-A-C (349-440-523 Hz)
-    await this.createTone(349, 0.4, 'sine', 0.2); // F
-    await new Promise(resolve => setTimeout(resolve, 100));
-    await this.createTone(440, 0.4, 'sine', 0.15); // A
-    await new Promise(resolve => setTimeout(resolve, 100));
-    await this.createTone(523, 0.6, 'sine', 0.1);  // C (soft ending)
-  }
-
-  // Final completion tone - triumphant but not overwhelming
-  async playWorkoutComplete() {
-    if (this.isMuted) return;
-
-    // Ascending major scale ending on a pleasant chord
-    const notes = [523, 587, 659, 698, 784]; // C-D-E-F-G
+    // Group tones by delay time to handle simultaneous tones
+    const toneGroups = new Map<number, ToneSpec[]>();
     
-    // Play ascending notes
-    for (const frequency of notes) {
-      this.createTone(frequency, 0.2, 'sine', 0.2);
-      await new Promise(resolve => setTimeout(resolve, 150));
-    }
+    tones.forEach(tone => {
+      const delay = tone.delay || 0;
+      if (!toneGroups.has(delay)) {
+        toneGroups.set(delay, []);
+      }
+      toneGroups.get(delay)!.push(tone);
+    });
 
-    // Final chord
-    await Promise.all([
-      this.createTone(523, 1.0, 'sine', 0.15), // C
-      this.createTone(659, 1.0, 'sine', 0.12), // E
-      this.createTone(784, 1.0, 'sine', 0.1)   // G
-    ]);
+    // Sort by delay time and play each group
+    const sortedDelays = Array.from(toneGroups.keys()).sort((a, b) => a - b);
+    
+    for (let i = 0; i < sortedDelays.length; i++) {
+      const delay = sortedDelays[i];
+      const tonesAtDelay = toneGroups.get(delay)!;
+      
+      // Wait for the appropriate delay
+      if (delay > 0) {
+        const previousDelay = i > 0 ? sortedDelays[i - 1] : 0;
+        const waitTime = delay - previousDelay;
+        await new Promise(resolve => setTimeout(resolve, waitTime));
+      }
+      
+      // Play all tones at this delay time simultaneously
+      const promises = tonesAtDelay.map(tone => 
+        this.createTone(tone.frequency, tone.duration, tone.waveform, tone.volume)
+      );
+      
+      await Promise.all(promises);
+    }
   }
 
-  // Gentle transition beep for switching between exercises
+  async playCountdownBeep(count: number) {
+    const countdownTones = this.currentProfile.countdown;
+    const toneIndex = Math.min(count - 1, countdownTones.length - 1);
+    const tone = countdownTones[toneIndex];
+    
+    if (tone) {
+      await this.createTone(tone.frequency, tone.duration, tone.waveform, tone.volume);
+    }
+  }
+
+  async playWorkoutStart() {
+    await this.playToneSequence(this.currentProfile.exerciseStart);
+  }
+
+  async playRestStart() {
+    await this.playToneSequence(this.currentProfile.restStart);
+  }
+
+  async playWorkoutComplete() {
+    await this.playToneSequence(this.currentProfile.workoutComplete);
+  }
+
   async playTransitionBeep() {
-    if (this.isMuted) return;
-    await this.createTone(587, 0.25, 'sine', 0.25); // D note - neutral and pleasant
+    if (this.currentProfile.transition && this.currentProfile.transition.length > 0) {
+      await this.playToneSequence(this.currentProfile.transition);
+    }
   }
 
   // Initialize audio on first user interaction

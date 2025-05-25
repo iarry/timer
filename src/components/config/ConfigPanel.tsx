@@ -37,6 +37,7 @@ import {
 import { clearSampleWorkout } from '../../features/samples/samplesSlice';
 import { generateId } from '../../utils';
 import Button from '../common/Button';
+import { AudioProfileSelector } from './AudioProfileSelector';
 import { Trash2, Save, GalleryVerticalEnd, Plus, GripVertical } from 'lucide-react';
 
 import './ConfigPanel.css';
@@ -390,15 +391,14 @@ const ConfigPanel = ({ onStartWorkout, onSaveWorkout, onLoadWorkout }: ConfigPan
   }, [splits.length, dispatch, defaultExerciseDuration]);
 
   return (
-    <div className="config-panel">
-      <div className="default-settings">
+    <div className="config-panel">      <div className="default-settings">
         <div className="setting-group">
           <div className="default-durations-row">
             <div className="duration-input">
               <label>Default work: </label>
               <select
                 value={exerciseDuration}
-                onChange={(e) => setExerciseDuration(parseInt(e.target.value))} 
+                onChange={(e) => setExerciseDuration(parseInt(e.target.value))}
                 className="duration-input-field"
               >
                 {durationOptions.map(duration => (
@@ -421,6 +421,8 @@ const ConfigPanel = ({ onStartWorkout, onSaveWorkout, onLoadWorkout }: ConfigPan
             </div>
           </div>
         </div>
+        
+        <AudioProfileSelector />
       </div>
       
       <div className="splits-section">
