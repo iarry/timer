@@ -38,7 +38,7 @@ const Timer = ({ onExit }: TimerProps) => {
 
   // Keep screen awake when timer is running
   const isTimerActive = timerState.status === 'running';
-  const { isSupported: isWakeLockSupported } = useScreenWakeLock(isTimerActive);
+  useScreenWakeLock(isTimerActive);
 
   // Calculate total rounds for the display
   const totalRounds = timerConfig.splits.reduce((total, split) => total + split.sets, 0);
@@ -218,21 +218,14 @@ const Timer = ({ onExit }: TimerProps) => {
             <Button onClick={handleBackToConfig} variant="transparent" className="back-button">
               <X size={24} />
             </Button>
-            <div className="timer-header-right">
-              {isWakeLockSupported && isTimerActive && (
-                <div className="wake-lock-indicator" title="Screen wake lock active - display will stay on">
-                  📱
-                </div>
-              )}
-              <Button 
-                onClick={() => setIsMuted(!isMuted)}
-                variant="transparent"
-                size="small"
-                className="timer-mute-button"
-              >
-                {isMuted ? <VolumeX size={24} /> : <Volume2 size={24} />}
-              </Button>
-            </div>
+            <Button 
+              onClick={() => setIsMuted(!isMuted)}
+              variant="transparent"
+              size="small"
+              className="timer-mute-button"
+            >
+              {isMuted ? <VolumeX size={24} /> : <Volume2 size={24} />}
+            </Button>
           </div>
           
           <div className="timer-display">
