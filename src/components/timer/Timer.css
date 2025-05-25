@@ -185,7 +185,7 @@ svg {
     text-align: center;
 }
 
-.timer-settings-button {
+.timer-back-button {
     background-color: transparent !important;
     color: var(--color-text) !important;
     box-shadow: none !important;
@@ -199,7 +199,7 @@ svg {
     justify-content: center !important;
 }
 
-.timer-settings-button:hover {
+.timer-back-button:hover {
     background-color: rgba(255, 255, 255, 0.1) !important;
 }
 

@@ -14,16 +14,17 @@ import {
 import { clearSampleWorkout } from '../../features/samples/samplesSlice';
 import { generateId } from '../../utils';
 import Button from '../common/Button';
-import { Trash2, Settings, Plus } from 'lucide-react';
+import { Trash2, Save, GalleryVerticalEnd, Plus } from 'lucide-react';
 
 import './ConfigPanel.css';
 
 interface ConfigPanelProps {
   onStartWorkout: () => void;
-  onOpenSettings: () => void;
+  onSaveWorkout: () => void;
+  onLoadWorkout: () => void;
 }
 
-const ConfigPanel = ({ onStartWorkout, onOpenSettings }: ConfigPanelProps) => {
+const ConfigPanel = ({ onStartWorkout, onSaveWorkout, onLoadWorkout }: ConfigPanelProps) => {
   const dispatch = useAppDispatch();
   const { defaultExerciseDuration, defaultRestDuration, splits } = 
     useAppSelector(state => state.timerConfig);
@@ -340,7 +341,14 @@ const ConfigPanel = ({ onStartWorkout, onOpenSettings }: ConfigPanelProps) => {
       
       {/* Start Workout Button - moved to bottom */}
       <div className="start-workout-section">
-        <div className="spacer"></div>
+        <Button 
+          onClick={onLoadWorkout}
+          variant="transparent" 
+          size="small"
+          className="load-button"
+        >
+          <GalleryVerticalEnd size={20} style={{ transform: 'rotate(180deg)' }} />
+        </Button>
         <Button 
           onClick={onStartWorkout} 
           variant="primary" 
@@ -350,12 +358,12 @@ const ConfigPanel = ({ onStartWorkout, onOpenSettings }: ConfigPanelProps) => {
           Start
         </Button>
         <Button 
-          onClick={onOpenSettings}
+          onClick={onSaveWorkout}
           variant="transparent" 
           size="small"
-          className="settings-button"
+          className="save-button"
         >
-          <Settings size={20} />
+          <Save size={20} />
         </Button>
       </div>
     </div>

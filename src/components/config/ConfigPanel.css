@@ -31,7 +31,7 @@
     z-index: 1000;
 }
 
-.start-workout-section button:not(.settings-button) {
+.start-workout-section button:not(.settings-button):not(.save-button):not(.load-button) {
     background-color: var(--color-secondary);
     color: white;
     min-width: 120px;
@@ -39,31 +39,30 @@
     padding: 0.5rem 0.75rem;
 }
 
-.start-workout-section button:not(.settings-button):hover:not(:disabled) {
+.start-workout-section button:not(.settings-button):not(.save-button):not(.load-button):hover:not(:disabled) {
     background-color: var(--color-secondary-hover);
 }
 
-.start-workout-section .settings-button {
-    background-color: transparent;
+.start-workout-section .save-button,
+.start-workout-section .load-button {
+    background-color: transparent !important;
     color: var(--color-text);
-    box-shadow: none;
-    min-width: auto;
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    padding: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    box-shadow: none !important;
+    min-width: auto !important;
+    width: 48px !important;
+    height: 48px !important;
+    border-radius: 50% !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: none !important;
 }
 
-.start-workout-section .settings-button:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-}
-
-.start-workout-section .spacer {
-    width: 48px; /* Same width as settings button to balance the layout */
-    height: 48px;
+.start-workout-section .save-button:hover,
+.start-workout-section .load-button:hover {
+    background-color: transparent !important;
+    color: var(--color-text-light);
 }
 
 .warning-message {

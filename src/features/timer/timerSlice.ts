@@ -20,6 +20,9 @@ export interface TimerState {
   totalTimeRemaining: number; // Total time remaining for entire workout
   currentItem: TimerItem | null;
   queue: TimerItem[]; // Queue of exercises and rest periods
+  originalSplits?: Split[]; // Store original configuration for rebuilding
+  originalDefaultRestDuration?: number;
+  currentItemIndex: number; // Track position in the full workout sequence
 }
 
 const initialState: TimerState = {
@@ -28,6 +31,81 @@ const initialState: TimerState = {
   totalTimeRemaining: 0,
   currentItem: null,
   queue: [],
+  originalSplits: undefined,
+  originalDefaultRestDuration: undefined,
+  currentItemIndex: 0,
+};
+
+// Helper function to build the complete workout sequence
+const buildWorkoutSequence = (splits: Split[], defaultRestDuration: number): TimerItem[] => {
+  const sequence: TimerItem[] = [];
+  
+  splits.forEach(split => {
+    for (let setIndex = 0; setIndex < split.sets; setIndex++) {
+      split.exercises.forEach((exercise, exerciseIndex) => {
+        if (exercise.leftRight) {
+          // For left/right exercises, add separate left and right sides
+          sequence.push({
+            type: 'exercise',
+            splitId: split.id,
+            exerciseId: exercise.id,
+            name: `${exercise.name} (Left)`,
+            duration: exercise.duration,
+            setIndex,
+            exerciseIndex
+          });
+          
+          // Add rest between left and right
+          sequence.push({
+            type: 'rest',
+            splitId: split.id,
+            name: 'Rest',
+            duration: defaultRestDuration,
+            setIndex,
+            exerciseIndex
+          });
+          
+          sequence.push({
+            type: 'exercise',
+            splitId: split.id,
+            exerciseId: exercise.id,
+            name: `${exercise.name} (Right)`,
+            duration: exercise.duration,
+            setIndex,
+            exerciseIndex
+          });
+        } else {
+          // Regular exercise
+          sequence.push({
+            type: 'exercise',
+            splitId: split.id,
+            exerciseId: exercise.id,
+            name: exercise.name,
+            duration: exercise.duration,
+            setIndex,
+            exerciseIndex
+          });
+        }
+        
+        // Add rest period after each exercise (except the last exercise in the last set)
+        const isLastExercise = exerciseIndex === split.exercises.length - 1;
+        const isLastSet = setIndex === split.sets - 1;
+        
+        if (!(isLastExercise && isLastSet)) {
+          sequence.push({
+            type: 'rest',
+            splitId: split.id,
+            name: 'Rest',
+            duration: defaultRestDuration,
+            setIndex,
+            exerciseIndex
+          });
+        }
+      });
+    }
+  });
+  
+  return sequence;
 };
 
 const timerSlice = createSlice({
@@ -40,6 +118,11 @@ const timerSlice = createSlice({
       defaultRestDuration: number;
     }>) {
       const { splits, defaultRestDuration } = action.payload;
+      
+      // Store the original configuration for rebuilding if needed
+      state.originalSplits = splits;
+      state.originalDefaultRestDuration = defaultRestDuration;
+      state.currentItemIndex = 0;
       state.queue = [];
       
       // For each split, create timer items for each set and exercise
@@ -136,6 +219,71 @@ const timerSlice = createSlice({
       return initialState;
     },
     
+    resetCurrentCountdown(state) {
+      if (state.currentItem) {
+        // Calculate the difference between the current time and the original duration
+        const timeToAdd = state.currentItem.duration - state.currentTime;
+        
+        // Reset current timer to its original duration
+        state.currentTime = state.currentItem.duration;
+        
+        // Update the total time remaining by adding the time that was reset
+        state.totalTimeRemaining += timeToAdd;
+      }
+    },
+    
+    goToPreviousItem(state) {
+      // If there's no current item, there's nothing to go back from
+      if (!state.currentItem) return;
+      
+      // We need to ensure we've stored the original splits configuration
+      if (!state.originalSplits || !state.originalDefaultRestDuration) {
+        console.error("Cannot go to previous item: original workout configuration not stored");
+        return;
+      }
+      
+      // Rebuild the complete workout sequence
+      const sequence = buildWorkoutSequence(state.originalSplits, state.originalDefaultRestDuration);
+      
+      // Determine current position in sequence
+      let currentIndex = 0;
+      // Find the position by comparing properties of current item
+      for (let i = 0; i < sequence.length; i++) {
+        const item = sequence[i];
+        const current = state.currentItem;
+        if (
+          item.type === current.type &&
+          item.splitId === current.splitId &&
+          item.name === current.name &&
+          item.setIndex === current.setIndex &&
+          item.exerciseIndex === current.exerciseIndex
+        ) {
+          currentIndex = i;
+          break;
+        }
+      }
+      
+      // If we're not at the first item, go back one item
+      if (currentIndex > 0) {
+        // Go to previous item
+        const previousIndex = currentIndex - 1;
+        const previousItem = sequence[previousIndex];
+        
+        // Update the current item to the previous one
+        state.currentItem = previousItem;
+        state.currentTime = previousItem.duration;
+        state.currentItemIndex = previousIndex;
+        
+        // Rebuild the queue with the remaining items after the previous item
+        state.queue = sequence.slice(previousIndex + 1);
+        
+        // Recalculate total time remaining properly
+        // The total time is the sum of the current item's time plus all remaining items
+        state.totalTimeRemaining = previousItem.duration + 
+          state.queue.reduce((total, item) => total + item.duration, 0);
+      }
+    },
+    
     tickTimer(state, action: PayloadAction<number>) {
       if (state.status !== 'running') return;
       
@@ -149,6 +297,7 @@ const timerSlice = createSlice({
           state.currentItem = state.queue[0];
           state.currentTime = state.queue[0].duration;
           state.queue = state.queue.slice(1);
+          state.currentItemIndex++; // Increment the current item index
         } else {
           // Workout complete
           state.currentItem = null;
@@ -165,6 +314,8 @@ export const {
   pauseTimer,
   resetTimer,
   tickTimer,
+  resetCurrentCountdown,
+  goToPreviousItem,
 } = timerSlice.actions;
 
 export default timerSlice.reducer;

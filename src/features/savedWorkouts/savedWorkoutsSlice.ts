@@ -48,6 +48,28 @@ const saveWorkoutsToStorage = (workouts: SavedWorkout[]) => {
   }
 };
 
+// Load current workout ID from localStorage
+const loadCurrentWorkoutId = (): string | null => {
+  try {
+    return localStorage.getItem('currentWorkoutId');
+  } catch (err) {
+    return null;
+  }
+};
+
+// Save current workout ID to localStorage
+const saveCurrentWorkoutId = (workoutId: string | null) => {
+  try {
+    if (workoutId) {
+      localStorage.setItem('currentWorkoutId', workoutId);
+    } else {
+      localStorage.removeItem('currentWorkoutId');
+    }
+  } catch (err) {
+    // localStorage not available or quota exceeded - fail silently
+  }
+};
+
 // Create the default r/calisthenics recommended routine
 const createDefaultWorkout = (): SavedWorkout => {
   const now = new Date().toISOString();
@@ -148,7 +170,7 @@ const createDefaultWorkout = (): SavedWorkout => {
 
 const initialState: SavedWorkoutsState = {
   workouts: loadSavedWorkouts(),
-  currentWorkoutId: null,
+  currentWorkoutId: loadCurrentWorkoutId(),
 };
 
 const savedWorkoutsSlice = createSlice({
@@ -177,6 +199,7 @@ const savedWorkoutsSlice = createSlice({
       state.workouts.push(newWorkout);
       state.currentWorkoutId = newWorkout.id;
       saveWorkoutsToStorage(state.workouts);
+      saveCurrentWorkoutId(newWorkout.id);
     },
     
     updateWorkout(state, action: PayloadAction<{
@@ -208,10 +231,12 @@ const savedWorkoutsSlice = createSlice({
         state.currentWorkoutId = null;
       }
       saveWorkoutsToStorage(state.workouts);
+      saveCurrentWorkoutId(state.currentWorkoutId);
     },
     
     setCurrentWorkout(state, action: PayloadAction<string | null>) {
       state.currentWorkoutId = action.payload;
+      saveCurrentWorkoutId(action.payload);
     },
     
     renameWorkout(state, action: PayloadAction<{ id: string; name: string }>) {

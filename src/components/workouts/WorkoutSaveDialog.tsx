@@ -73,7 +73,6 @@ const WorkoutSaveDialog = ({ isOpen, onClose }: WorkoutSaveDialogProps) => {
         
         <div className="dialog-content">
           <div className="workout-name-section">
-            <label>Workout Name</label>
             <input
               type="text"
               placeholder="Workout Name"
@@ -107,7 +106,7 @@ const WorkoutSaveDialog = ({ isOpen, onClose }: WorkoutSaveDialogProps) => {
             {currentWorkout && (
               <Button 
                 onClick={handleUpdateExisting}
-                variant="primary"
+                variant="secondary"
                 size="small"
                 disabled={!workoutName.trim()}
               >

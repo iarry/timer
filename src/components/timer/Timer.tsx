@@ -5,20 +5,21 @@ import {
   pauseTimer,
   resetTimer,
   tickTimer,
-  initializeTimer
+  initializeTimer,
+  resetCurrentCountdown,
+  goToPreviousItem,
 } from '../../features/timer/timerSlice';
 import { formatTime } from '../../utils';
 import { useSoundEffects } from '../../hooks/useSoundEffects';
 import Button from '../common/Button';
-import { ArrowLeft, Pause, Play, Settings, VolumeX, Volume2 } from 'lucide-react';
+import { Pause, Play, Undo, VolumeX, Volume2, X } from 'lucide-react';
 import './Timer.css';
 
 interface TimerProps {
   onExit: () => void;
-  onOpenSettings: () => void;
 }
 
-const Timer = ({ onExit, onOpenSettings }: TimerProps) => {
+const Timer = ({ onExit }: TimerProps) => {
   const dispatch = useAppDispatch();
   const timerState = useAppSelector(state => state.timer);
   const timerConfig = useAppSelector(state => state.timerConfig);
@@ -28,6 +29,7 @@ const Timer = ({ onExit, onOpenSettings }: TimerProps) => {
   const [smoothTimeRemaining, setSmoothTimeRemaining] = useState(0);
   const lastTickTimeRef = useRef<number>(Date.now());
   const [isMuted, setIsMuted] = useState(false);
+  const countdownStartTimeRef = useRef<number>(Date.now());
   
   // Get sound effects
   const { playStart, playComplete, playTransition } = useSoundEffects(isMuted);
@@ -105,6 +107,8 @@ const Timer = ({ onExit, onOpenSettings }: TimerProps) => {
       if (previousItemRef.current) {
         playTransition();
       }
+      // Update countdown start time when moving to a new item
+      countdownStartTimeRef.current = Date.now();
     }
     
     // Update the ref
@@ -134,6 +138,25 @@ const Timer = ({ onExit, onOpenSettings }: TimerProps) => {
   const handleBackToConfig = () => {
     dispatch(resetTimer());
     onExit(); // Call the onExit prop to return to config panel
+  };
+
+  // Handle reset button behavior
+  const handleReset = () => {
+    if (!timerState.currentItem) return;
+    
+    const elapsedTime = (Date.now() - countdownStartTimeRef.current) / 1000;
+    
+    if (elapsedTime < 1) {
+      // Less than 1 second has elapsed, go to previous item
+      dispatch(goToPreviousItem());
+      // Update the countdown start time for the previous item
+      countdownStartTimeRef.current = Date.now();
+    } else {
+      // Reset the current countdown to its original duration
+      dispatch(resetCurrentCountdown());
+      // Update the countdown start time
+      countdownStartTimeRef.current = Date.now();
+    }
   };
 
   // Calculate progress percentage for the current exercise
@@ -169,7 +192,7 @@ const Timer = ({ onExit, onOpenSettings }: TimerProps) => {
         <>
           <div className="timer-header">
             <Button onClick={handleBackToConfig} variant="transparent" className="back-button">
-              <ArrowLeft size={24} />
+              <X size={24} />
             </Button>
           </div>
           
@@ -215,7 +238,7 @@ const Timer = ({ onExit, onOpenSettings }: TimerProps) => {
                       fontSize="16px"
                       fontWeight="500"
                     >
-                      {timerState.currentItem && `Round ${timerState.currentItem.setIndex + 1}/${totalRounds}`}
+                      {timerState.currentItem && `Set ${timerState.currentItem.setIndex + 1}/${totalRounds}`}
                     </text>
                     
                     {/* Time remaining text - centered */}
@@ -275,12 +298,12 @@ const Timer = ({ onExit, onOpenSettings }: TimerProps) => {
                 {timerState.status === 'running' ? <Pause size={60} fill="currentColor" /> : <Play size={60} fill="currentColor" />}
               </Button>
               <Button 
-                onClick={onOpenSettings}
+                onClick={handleReset}
                 variant="transparent"
                 size="small"
-                className="timer-settings-button"
+                className="timer-back-button"
               >
-                <Settings size={24} />
+                <Undo size={24} />
               </Button>
             </div>
           )}
