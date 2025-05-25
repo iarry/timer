@@ -62,6 +62,7 @@ const workoutDB = new WorkoutDB();
 // Actions that should trigger persistence
 const PERSIST_ACTIONS = [
   'timerConfig/setDefaultDurations',
+  'timerConfig/setAudioProfile',
   'timerConfig/addSplit',
   'timerConfig/removeSplit',
   'timerConfig/updateSplit',

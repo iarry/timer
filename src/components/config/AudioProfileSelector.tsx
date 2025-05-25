@@ -1,32 +1,31 @@
 import React, { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { audioSystem } from '../../utils/audioSystem';
-import { AudioProfile } from '../../utils/audioProfiles';
+import { setAudioProfile } from '../../features/timerConfig/timerConfigSlice';
+import { RootState } from '../../store';
+import { Volume2 } from 'lucide-react';
 import './AudioProfileSelector.css';
 
 export const AudioProfileSelector: React.FC = () => {
-  const [currentProfile, setCurrentProfile] = useState<AudioProfile>(audioSystem.getCurrentProfile());
-  const [isTestingProfile, setIsTestingProfile] = useState<string | null>(null);
+  const dispatch = useDispatch();
+  const currentProfileName = useSelector((state: RootState) => state.timerConfig.audioProfile);
+  const currentProfile = audioSystem.getAvailableProfiles().find(p => p.name === currentProfileName) || audioSystem.getAvailableProfiles()[0];
+  const [isTesting, setIsTesting] = useState(false);
   const profiles = audioSystem.getAvailableProfiles();
 
   useEffect(() => {
-    setCurrentProfile(audioSystem.getCurrentProfile());
-  }, []);
+    // Update audio system when Redux state changes
+    audioSystem.setProfile(currentProfileName);
+  }, [currentProfileName]);
 
   const handleProfileChange = (profileName: string) => {
-    audioSystem.setProfile(profileName);
-    setCurrentProfile(audioSystem.getCurrentProfile());
+    dispatch(setAudioProfile(profileName));
   };
 
-  const testProfile = async (profile: AudioProfile) => {
-    if (isTestingProfile) return; // Prevent multiple simultaneous tests
+  const testCurrentProfile = async () => {
+    if (isTesting) return; // Prevent multiple simultaneous tests
     
-    setIsTestingProfile(profile.name);
-    
-    // Save current profile
-    const originalProfile = audioSystem.getCurrentProfile();
-    
-    // Temporarily switch to test profile
-    audioSystem.setProfile(profile.name);
+    setIsTesting(true);
     
     try {
       // Play workout flow demo sequence with full countdown
@@ -51,46 +50,34 @@ export const AudioProfileSelector: React.FC = () => {
       console.warn('Error testing audio profile:', error);
     }
     
-    // Restore original profile if different
-    if (originalProfile.name !== profile.name) {
-      setTimeout(() => {
-        audioSystem.setProfile(originalProfile.name);
-        setCurrentProfile(originalProfile);
-      }, 2000);
-    }
-    
-    setIsTestingProfile(null);
+    setIsTesting(false);
   };
 
   return (
     <div className="audio-profile-selector">
       <h3>Audio Profile</h3>
-      <div className="profile-options">
-        {profiles.map(profile => (
-          <div key={profile.name} className="profile-option">
-            <label className="profile-label">
-              <input
-                type="radio"
-                name="audioProfile"
-                value={profile.name}
-                checked={currentProfile.name === profile.name}
-                onChange={() => handleProfileChange(profile.name)}
-              />
-              <div className="profile-info">
-                <span className="profile-name">{profile.name}</span>
-              </div>
-            </label>
-            <button 
-              onClick={() => testProfile(profile)}
-              className={`test-button ${isTestingProfile === profile.name ? 'testing' : ''}`}
-              disabled={isTestingProfile !== null}
-              type="button"
-              title="Play a sample of this audio profile"
-            >
-              {isTestingProfile === profile.name ? '♪' : 'Test'}
-            </button>
-          </div>
-        ))}
+      <div className="profile-controls">
+        <select 
+          value={currentProfile.name}
+          onChange={(e) => handleProfileChange(e.target.value)}
+          className="profile-select"
+        >
+          {profiles.map(profile => (
+            <option key={profile.name} value={profile.name}>
+              {profile.name}
+            </option>
+          ))}
+        </select>
+        <button 
+          onClick={testCurrentProfile}
+          className={`test-button ${isTesting ? 'testing' : ''}`}
+          disabled={isTesting}
+          type="button"
+          title="Test the selected audio profile"
+        >
+          <Volume2 size={16} />
+          {isTesting && <span className="testing-indicator">♪</span>}
+        </button>
       </div>
     </div>
   );

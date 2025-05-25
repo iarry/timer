@@ -134,26 +134,36 @@ src/
 │   │   ├── Input.tsx    # Custom input component
 │   │   └── UserAuth.tsx # User authentication component
 │   ├── config/          # Workout configuration components
+│   │   ├── AudioProfileSelector.tsx
 │   │   └── ConfigPanel.tsx
-│   ├── layout/          # Layout components
-│   │   ├── Header.tsx
-│   │   └── Footer.tsx
-│   └── timer/           # Timer components
-│       └── Timer.tsx
+│   ├── timer/           # Timer components
+│   │   └── Timer.tsx
+│   └── workouts/        # Workout management components
+│       ├── WorkoutLibrary.tsx
+│       └── WorkoutSaveDialog.tsx
 ├── features/            # Redux slices by feature domain
 │   ├── samples/         # Sample workouts
 │   │   └── samplesSlice.ts
+│   ├── savedWorkouts/   # Saved workout management
+│   │   └── savedWorkoutsSlice.ts
 │   ├── timer/           # Timer functionality
 │   │   └── timerSlice.ts
 │   └── timerConfig/     # Configuration state
 │       └── timerConfigSlice.ts
 ├── hooks/               # Custom hooks
+│   ├── useScreenWakeLock.ts
 │   └── useSoundEffects.ts
+├── middleware/          # Redux middleware
+│   └── indexedDBMiddleware.ts  # Automatic state persistence
+├── utils/               # Utility functions and systems
+│   ├── audioProfiles.ts # Audio profile definitions
+│   ├── audioSystem.ts   # Web Audio API integration
+│   └── stateLoaders.ts  # App initialization and state restoration
 ├── App.tsx              # Main application component
 ├── firebase.ts          # Firebase initialization
 ├── hooks.ts             # Redux typed hooks
 ├── store.ts             # Redux store configuration
-└── utils.ts             # Utility functions
+└── utils.ts             # General utility functions
 ```
 
 ## Design Decisions
@@ -188,6 +198,192 @@ The user experience was optimized to minimize friction:
 - Automatic durations update without explicit save actions
 - Simplified split management with automatic numbering
 - Visual consistency between editing and viewing exercises
+
+## IndexedDB Middleware System
+
+The Vibe Timer app uses a custom IndexedDB middleware system for automatic state persistence. This middleware automatically saves Redux state changes to the browser's IndexedDB, providing offline data persistence without requiring manual save operations.
+
+### How It Works
+
+The `indexedDBMiddleware` intercepts specific Redux actions and automatically persists the relevant state slices to IndexedDB. This ensures user data is preserved across browser sessions and provides offline functionality.
+
+#### Architecture Overview
+
+```
+Redux Action → Middleware → IndexedDB Storage
+                    ↓
+            State Restoration on App Init
+```
+
+### Key Components
+
+#### 1. IndexedDB Middleware (`src/middleware/indexedDBMiddleware.ts`)
+
+The middleware defines which actions trigger persistence:
+
+```typescript
+// Actions that automatically trigger IndexedDB persistence
+const PERSIST_ACTIONS = [
+  'timerConfig/setDefaultDurations',
+  'timerConfig/setAudioProfile',
+  'timerConfig/addSplit',
+  'timerConfig/removeSplit',
+  // ... other actions
+];
+```
+
+**Database Structure:**
+- **Database Name**: `WorkoutTimerDB`
+- **Object Stores**:
+  - `timerConfig`: Stores workout configuration (splits, exercises, durations, audio profile)
+  - `savedWorkouts`: Stores saved workout templates and current workout ID
+
+#### 2. State Loaders (`src/utils/stateLoaders.ts`)
+
+Handles automatic state restoration when the app initializes:
+
+```typescript
+export const initializeAppState = async () => {
+  // Load timer configuration
+  const timerConfig = await workoutDB.getItem('timerConfig', 'state');
+  if (timerConfig) {
+    store.dispatch(loadWorkout({
+      splits: timerConfig.splits,
+      defaultExerciseDuration: timerConfig.defaultExerciseDuration,
+      defaultRestDuration: timerConfig.defaultRestDuration,
+      audioProfile: timerConfig.audioProfile
+    }));
+  }
+  
+  // Load saved workouts and initialize audio system
+  // ...
+};
+```
+
+### Usage Examples
+
+#### Adding Persistence to New Redux Actions
+
+1. **Define the action in your slice:**
+
+```typescript
+// In your slice file (e.g., timerConfigSlice.ts)
+export const setNewSetting = createAction<string>('timerConfig/setNewSetting');
+```
+
+2. **Add the action to the middleware:**
+
+```typescript
+// In indexedDBMiddleware.ts
+const PERSIST_ACTIONS = [
+  // ...existing actions
+  'timerConfig/setNewSetting',
+];
+```
+
+3. **The middleware automatically handles persistence** - no additional code needed!
+
+#### Working with Persisted Data
+
+The middleware automatically:
+- **Saves**: When any action in `PERSIST_ACTIONS` is dispatched
+- **Loads**: During app initialization via `initializeAppState()`
+- **Handles Errors**: Gracefully degrades when IndexedDB is unavailable
+
+#### Example: Audio Profile Persistence
+
+The audio profile system demonstrates the middleware in action:
+
+```typescript
+// 1. User changes audio profile (dispatches Redux action)
+dispatch(setAudioProfile('Serenity'));
+
+// 2. Middleware automatically saves to IndexedDB
+// 3. On next app load, state is automatically restored
+// 4. Audio system is initialized with saved profile
+```
+
+### Best Practices
+
+#### 1. Action Naming Convention
+Use descriptive action names that clearly indicate the feature domain:
+```typescript
+'timerConfig/setAudioProfile'  // ✅ Clear domain and purpose
+'setProfile'                   // ❌ Too generic
+```
+
+#### 2. State Shape Considerations
+Keep persisted state serializable (no functions, classes, or complex objects):
+```typescript
+// ✅ Good - simple, serializable state
+interface TimerConfigState {
+  audioProfile: string;
+  defaultExerciseDuration: number;
+}
+
+// ❌ Bad - contains non-serializable data
+interface BadState {
+  audioSystem: AudioSystem; // Class instance
+  callback: () => void;     // Function
+}
+```
+
+#### 3. Error Handling
+The middleware uses silent error handling to ensure the app works even when IndexedDB is unavailable:
+```typescript
+// Middleware catches errors and continues normal operation
+.catch(() => {
+  // Silent failure - IndexedDB not available
+});
+```
+
+### Debugging IndexedDB
+
+#### 1. Browser DevTools
+- **Chrome/Edge**: Application tab → Storage → IndexedDB → `WorkoutTimerDB`
+- **Firefox**: Storage tab → IndexedDB → `WorkoutTimerDB`
+
+#### 2. Programmatic Access
+You can access the database directly for debugging:
+```typescript
+import { workoutDB } from '../middleware/indexedDBMiddleware';
+
+// Get current timer config
+const config = await workoutDB.getItem('timerConfig', 'state');
+console.log('Current config:', config);
+```
+
+### Migration and Schema Changes
+
+When updating the state structure:
+
+1. **Update the middleware version** if needed:
+```typescript
+class WorkoutDB {
+  private version = 2; // Increment for schema changes
+}
+```
+
+2. **Handle migration in the `onupgradeneeded` event:**
+```typescript
+request.onupgradeneeded = (event) => {
+  const db = event.target.result;
+  
+  // Create new object stores or modify existing ones
+  if (event.oldVersion < 2) {
+    // Migration logic for version 2
+  }
+};
+```
+
+### Performance Considerations
+
+- **Automatic Batching**: Middleware only persists when specific actions occur
+- **Async Operations**: All IndexedDB operations are asynchronous and non-blocking
+- **Size Limits**: IndexedDB has generous storage quotas (typically >50MB)
+- **Error Recovery**: App continues to function even if persistence fails
+
+This middleware system provides seamless data persistence without requiring manual save operations, making the user experience smooth while ensuring data reliability.
 
 ## Implementation Details
 
@@ -443,30 +639,44 @@ git push origin main
 ## Technical Architecture
 
 ### State Management
-- **timerConfigSlice**: Workout configuration with auto-save to localStorage
+- **timerConfigSlice**: Workout configuration with automatic IndexedDB persistence
 - **timerSlice**: Timer countdown with complex queue management for splits/sets
 - **samplesSlice**: Sample workout data for quick start
+- **savedWorkoutsSlice**: Saved workout templates with IndexedDB storage
 - **userSlice**: Authentication state management
+
+### Data Persistence
+- **IndexedDB Middleware**: Automatic state persistence for specified Redux actions
+- **State Loaders**: Automatic state restoration on app initialization
+- **WorkoutDB**: Custom IndexedDB wrapper with error handling and graceful degradation
+- **Audio Profile Persistence**: User audio preferences saved and restored automatically
 
 ### Component Hierarchy
 ```
 App
 ├── ConfigPanel (main configuration interface)
 │   ├── Default duration controls
+│   ├── Audio profile selector (with IndexedDB persistence)
 │   ├── Split management
 │   └── Exercise CRUD operations
 ├── Timer (workout execution interface)
 │   ├── Circular progress display
 │   ├── Exercise information
+│   ├── Screen wake lock integration
 │   └── Control buttons
+├── WorkoutLibrary (saved workout management)
+│   ├── Load/save workout templates
+│   └── IndexedDB-backed storage
 └── UserAuth (authentication component)
     ├── Google sign-in
     └── User profile display
 ```
 
 ### Key Technical Features
+- **Automatic Persistence**: IndexedDB middleware saves state without manual intervention
 - **Real-time State Updates**: All changes immediately reflected across components
-- **Audio Management**: Custom hook with graceful error handling
-- **Type Safety**: Comprehensive TypeScript coverage
+- **Audio Management**: Web Audio API with profile system and countdown direction logic
+- **PWA Capabilities**: Service worker, offline functionality, and screen wake lock
+- **Type Safety**: Comprehensive TypeScript coverage with strict typing
 - **Mobile Optimization**: CSS Grid/Flexbox with touch-friendly interactions
-- **Error Boundaries**: Silent fallbacks for localStorage and audio failures
+- **Error Boundaries**: Silent fallbacks for IndexedDB, localStorage, and audio failures

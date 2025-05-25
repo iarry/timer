@@ -20,6 +20,7 @@ export interface TimerConfigState {
   defaultExerciseDuration: number; // in seconds
   defaultRestDuration: number; // in seconds
   splits: Split[];
+  audioProfile: string; // audio profile name
 }
 
 // Initial state for timer configuration
@@ -27,6 +28,7 @@ const initialState: TimerConfigState = {
   defaultExerciseDuration: 45, // default 45s
   defaultRestDuration: 30, // default 30s
   splits: [],
+  audioProfile: 'Clean', // default audio profile
 };
 
 // Create the timer config slice
@@ -148,8 +150,9 @@ const timerConfigSlice = createSlice({
       splits: Split[];
       defaultExerciseDuration: number;
       defaultRestDuration: number;
+      audioProfile?: string;
     }>) {
-      const { splits, defaultExerciseDuration, defaultRestDuration } = action.payload;
+      const { splits, defaultExerciseDuration, defaultRestDuration, audioProfile } = action.payload;
       
       // Clear existing splits
       state.splits = [];
@@ -157,6 +160,10 @@ const timerConfigSlice = createSlice({
       // Set new defaults
       state.defaultExerciseDuration = defaultExerciseDuration;
       state.defaultRestDuration = defaultRestDuration;
+      
+      if (audioProfile) {
+        state.audioProfile = audioProfile;
+      }
       
       // Add new splits
       state.splits = [...splits];
@@ -211,6 +218,10 @@ const timerConfigSlice = createSlice({
       // Reset to empty workout state
       state.splits = [];
     },
+
+    setAudioProfile(state, action: PayloadAction<string>) {
+      state.audioProfile = action.payload;
+    },
   },
 });
 
@@ -227,6 +238,7 @@ export const {
   moveExerciseToSplit,
   loadWorkout,
   clearWorkout,
+  setAudioProfile,
 } = timerConfigSlice.actions;
 
 export default timerConfigSlice.reducer;

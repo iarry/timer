@@ -1,12 +1,91 @@
 .audio-profile-selector {
-    margin: 1rem 0;
+  margin-bottom: 1.5rem;
 }
 
 .audio-profile-selector h3 {
-    margin: 0 0 0.5rem 0;
-    color: var(--text-primary);
-    font-size: 1.1rem;
-    font-weight: 600;
+  margin: 0 0 0.75rem 0;
+  font-size: 1rem;
+  color: #f5f5f5;
+  font-weight: 600;
+}
+
+.profile-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.profile-select {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  background: #2a2a2a;
+  border: 1px solid #444;
+  border-radius: 0.375rem;
+  color: #f5f5f5;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.profile-select:hover {
+  border-color: #2563eb;
+  background: #333;
+}
+
+.profile-select:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+.test-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  padding: 0.5rem;
+  background: #374151;
+  border: 1px solid #4b5563;
+  border-radius: 0.375rem;
+  color: #d1d5db;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 2.5rem;
+  position: relative;
+}
+
+.test-button:hover:not(:disabled) {
+  background: #4b5563;
+  border-color: #6b7280;
+  color: #f9fafb;
+}
+
+.test-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.test-button.testing {
+  background: #2563eb;
+  border-color: #3b82f6;
+  color: white;
+}
+
+.testing-indicator {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  font-size: 0.75rem;
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }
 
 .audio-profile-description {
