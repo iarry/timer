@@ -185,16 +185,6 @@ const savedWorkoutsSlice = createSlice({
     setCurrentWorkout(state, action: PayloadAction<string | null>) {
       state.currentWorkoutId = action.payload;
     },
-    
-    renameWorkout(state, action: PayloadAction<{ id: string; name: string }>) {
-      const { id, name } = action.payload;
-      const workoutIndex = state.workouts.findIndex(w => w.id === id);
-      
-      if (workoutIndex !== -1) {
-        state.workouts[workoutIndex].name = name;
-        state.workouts[workoutIndex].updatedAt = new Date().toISOString();
-      }
-    },
   },
 });
 
@@ -204,7 +194,6 @@ export const {
   updateWorkout,
   deleteWorkout,
   setCurrentWorkout,
-  renameWorkout,
 } = savedWorkoutsSlice.actions;
 
 export default savedWorkoutsSlice.reducer;

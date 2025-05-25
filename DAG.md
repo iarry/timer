@@ -13,7 +13,6 @@ React Components ◄──► Redux Store ◄──► IndexedDB
 ```
 ├── timerConfig: timing defaults, splits, audioProfile
 ├── timer: status, currentTime, queue, currentItem
-├── samples: hasLoadedSample, sampleWorkout
 └── savedWorkouts: workouts[], currentWorkoutId
 ```
 

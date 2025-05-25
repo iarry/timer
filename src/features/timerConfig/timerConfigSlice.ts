@@ -214,11 +214,6 @@ const timerConfigSlice = createSlice({
       }
     },
 
-    clearWorkout(state) {
-      // Reset to empty workout state
-      state.splits = [];
-    },
-
     setAudioProfile(state, action: PayloadAction<string>) {
       state.audioProfile = action.payload;
     },
@@ -237,7 +232,6 @@ export const {
   reorderExercises,
   moveExerciseToSplit,
   loadWorkout,
-  clearWorkout,
   setAudioProfile,
 } = timerConfigSlice.actions;
 

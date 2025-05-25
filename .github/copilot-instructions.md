@@ -6,9 +6,11 @@
   the point.
 - Use emojis in documentation titles to enhance readability and engagement.
 - Avoid fluff in user-facing copy.
-    
+- Keep bundle size small.
+
 ## Code Quality
 
+- When refactoring, the goal should generally be to reduce complexity and lines of code.
 - DRY, KISS, YAGNI principles
 - Deduplicate patterns into reusable components
 - Follow CONTRIBUTING.md guidelines

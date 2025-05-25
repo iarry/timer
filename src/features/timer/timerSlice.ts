@@ -123,73 +123,9 @@ const timerSlice = createSlice({
       state.originalSplits = splits;
       state.originalDefaultRestDuration = defaultRestDuration;
       state.currentItemIndex = 0;
-      state.queue = [];
       
-      // For each split, create timer items for each set and exercise
-      splits.forEach(split => {
-        for (let setIndex = 0; setIndex < split.sets; setIndex++) {
-          split.exercises.forEach((exercise, exerciseIndex) => {
-            if (exercise.leftRight) {
-              // For left/right exercises, add separate left and right sides
-              state.queue.push({
-                type: 'exercise',
-                splitId: split.id,
-                exerciseId: exercise.id,
-                name: `${exercise.name} (Left)`,
-                duration: exercise.duration,
-                setIndex,
-                exerciseIndex
-              });
-              
-              // Add rest between left and right
-              state.queue.push({
-                type: 'rest',
-                splitId: split.id,
-                name: 'Rest',
-                duration: defaultRestDuration,
-                setIndex,
-                exerciseIndex
-              });
-              
-              state.queue.push({
-                type: 'exercise',
-                splitId: split.id,
-                exerciseId: exercise.id,
-                name: `${exercise.name} (Right)`,
-                duration: exercise.duration,
-                setIndex,
-                exerciseIndex
-              });
-            } else {
-              // Regular exercise
-              state.queue.push({
-                type: 'exercise',
-                splitId: split.id,
-                exerciseId: exercise.id,
-                name: exercise.name,
-                duration: exercise.duration,
-                setIndex,
-                exerciseIndex
-              });
-            }
-            
-            // Add rest period after each exercise (except the last exercise in the last set)
-            const isLastExercise = exerciseIndex === split.exercises.length - 1;
-            const isLastSet = setIndex === split.sets - 1;
-            
-            if (!(isLastExercise && isLastSet)) {
-              state.queue.push({
-                type: 'rest',
-                splitId: split.id,
-                name: 'Rest',
-                duration: defaultRestDuration,
-                setIndex,
-                exerciseIndex
-              });
-            }
-          });
-        }
-      });
+      // Use the helper function to build the workout sequence
+      state.queue = buildWorkoutSequence(splits, defaultRestDuration);
       
       // Calculate total time
       state.totalTimeRemaining = state.queue.reduce(
@@ -298,11 +234,8 @@ const timerSlice = createSlice({
       // Subtract current time from total time remaining
       state.totalTimeRemaining -= state.currentTime;
       
-      // Move to next item in queue
-      state.currentItem = state.queue[0];
-      state.currentTime = state.queue[0].duration;
-      state.queue = state.queue.slice(1);
-      state.currentItemIndex++;
+      // Move to next item
+      timerSlice.caseReducers.advanceToNextItem(state);
     },
     
     tickTimer(state, action: PayloadAction<number>) {
@@ -314,17 +247,25 @@ const timerSlice = createSlice({
       
       // If current timer is done, move to next item in queue
       if (state.currentTime === 0) {
-        if (state.queue.length > 0) {
-          state.currentItem = state.queue[0];
-          state.currentTime = state.queue[0].duration;
-          state.queue = state.queue.slice(1);
-          state.currentItemIndex++; // Increment the current item index
-        } else {
-          // Workout complete
-          state.currentItem = null;
-          state.status = 'completed';
-        }
+        timerSlice.caseReducers.advanceToNextItem(state);
       }
+    },
+    
+    // Helper reducer to advance to the next item in the sequence
+    advanceToNextItem(state) {
+      if (state.queue.length === 0) {
+        // No more items - workout is complete
+        state.status = 'completed';
+        state.currentItem = null;
+        state.currentTime = 0;
+        return;
+      }
+      
+      // Move to next item
+      state.currentItem = state.queue[0];
+      state.currentTime = state.queue[0].duration;
+      state.queue = state.queue.slice(1);
+      state.currentItemIndex += 1;
     },
   },
 });

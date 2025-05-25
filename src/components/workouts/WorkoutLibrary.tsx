@@ -3,7 +3,7 @@ import { useAppDispatch, useAppSelector } from '../../hooks';
 import { 
   deleteWorkout, 
   setCurrentWorkout, 
-  renameWorkout 
+  updateWorkout 
 } from '../../features/savedWorkouts/savedWorkoutsSlice';
 import { 
   loadWorkout
@@ -52,7 +52,7 @@ const WorkoutLibrary = ({ isOpen, onClose }: WorkoutLibraryProps) => {
 
   const handleSaveEdit = () => {
     if (editingWorkoutId && editingName.trim()) {
-      dispatch(renameWorkout({
+      dispatch(updateWorkout({
         id: editingWorkoutId,
         name: editingName.trim(),
       }));

@@ -219,19 +219,8 @@ input[type='number'] {
     gap: var(--spacing-xs);
 }
 
-/* Split delete button styling when in sets-info */
 .sets-info .btn.btn-small {
-    background: transparent;
-    border: none;
-    color: var(--color-danger);
-    box-shadow: none;
-    padding: 4px;
-    min-width: auto;
     margin-left: var(--spacing-xs);
-}
-
-.sets-info .btn.btn-small:hover {
-    background: rgba(255, 82, 82, 0.1);
 }
 
 .sets-label {
@@ -254,8 +243,10 @@ input[type='number'] {
     background-color: var(--color-background);
 }
 
-/* Sets select styling to match exercise selects */
-.sets-select {
+/* Duration input fields - consolidated styling */
+.duration-input-field,
+.sets-select,
+.sets-input {
     background: transparent;
     border: 1px solid transparent;
     padding: var(--spacing-xs) 2px;
@@ -263,39 +254,41 @@ input[type='number'] {
     font-weight: 600;
     text-align: center;
     color: var(--color-secondary);
-    width: 42px;
     font-size: 0.9rem;
     border-radius: 4px;
     transition: border-color 0.2s ease;
     cursor: pointer;
 }
 
-.sets-select:hover,
-.sets-select:focus {
-    border-color: var(--color-border);
-    outline: none;
+.duration-input-field {
+    width: 50px;
+}
+
+.sets-select {
+    width: 42px;
 }
 
 .sets-input {
     width: 35px;
     padding: 2px 4px;
-    text-align: center;
-    font-weight: bold;
-    background: transparent;
-    border: 1px solid transparent;
-    border-radius: 4px;
-    color: var(--color-text);
-    font-size: 0.9rem;
-    transition: border-color 0.2s ease;
     background-color: rgba(var(--color-secondary-rgb, 74, 144, 226), 0.1);
     border-color: var(--color-secondary);
     color: var(--color-secondary);
 }
 
+.duration-input-field:hover,
+.duration-input-field:focus,
+.sets-select:hover,
+.sets-select:focus,
+.sets-input:hover,
+.sets-input:focus {
+    border-color: var(--color-border);
+    outline: none;
+}
+
 .sets-input:hover,
 .sets-input:focus {
     border-color: var(--color-secondary);
-    outline: none;
 }
 
 .exercises-list {
@@ -336,23 +329,8 @@ input[type='number'] {
     padding-bottom: 0;
 }
 
-.add-exercise-section .add-exercise-button.btn.btn-small {
-    width: auto;
-    height: auto;
-    font-size: 16px;
-    padding: 6px;
-    min-width: auto;
-    background-color: var(--color-secondary);
-    color: white;
-    border: none;
-    box-shadow: none;
-}
-
-.add-exercise-section .add-exercise-button.btn.btn-small:hover {
-    background-color: var(--color-secondary-hover);
-    color: white;
-}
-
+/* Add exercise button styling - consolidated */
+.add-exercise-section .add-exercise-button.btn.btn-small,
 .split-actions .add-exercise-button.btn.btn-small {
     width: auto;
     height: auto;
@@ -365,6 +343,7 @@ input[type='number'] {
     box-shadow: none;
 }
 
+.add-exercise-section .add-exercise-button.btn.btn-small:hover,
 .split-actions .add-exercise-button.btn.btn-small:hover {
     background-color: var(--color-secondary-hover);
     color: white;
@@ -390,8 +369,10 @@ input[type='number'] {
     gap: var(--spacing-xs);
 }
 
-/* Compact styling for delete buttons */
-.exercise-actions .btn.btn-small {
+/* Compact styling for delete buttons - use shared utility pattern */
+.exercise-actions .btn.btn-small,
+.split-actions .btn.btn-small,
+.sets-info .btn.btn-small {
     padding: 2px;
     min-width: auto;
     background: transparent;
@@ -400,21 +381,9 @@ input[type='number'] {
     box-shadow: none;
 }
 
-.exercise-actions .btn.btn-small:hover {
-    background: rgba(255, 82, 82, 0.1);
-}
-
-/* Split delete button styling */
-.split-actions .btn.btn-small {
-    background: transparent;
-    border: none;
-    color: var(--color-danger);
-    box-shadow: none;
-    padding: 4px;
-    min-width: auto;
-}
-
-.split-actions .btn.btn-small:hover {
+.exercise-actions .btn.btn-small:hover,
+.split-actions .btn.btn-small:hover,
+.sets-info .btn.btn-small:hover {
     background: rgba(255, 82, 82, 0.1);
 }
 
@@ -446,40 +415,36 @@ input[type='number'] {
     color: var(--color-secondary);
 }
 
-/* Exercise inputs styling for inline editing */
-.exercise-item .exercise-name-input {
+/* Exercise input styling - consolidated */
+.exercise-item .exercise-name-input,
+.exercise-item .exercise-duration-input {
     background: transparent;
     border: 1px solid transparent;
     padding: var(--spacing-xs) var(--spacing-sm);
     font-weight: 500;
-    flex: 1;
-    min-width: 0; /* Prevents flex item from overflowing */
     color: var(--color-text);
     border-radius: 4px;
     transition: border-color 0.2s ease;
+}
+
+.exercise-item .exercise-name-input {
+    flex: 1;
+    min-width: 0;
     margin-left: calc(var(--spacing-sm) * -1);
 }
 
-.exercise-item .exercise-name-input:hover,
-.exercise-item .exercise-name-input:focus {
-    border-color: var(--color-border);
-    outline: none;
-}
-
 .exercise-item .exercise-duration-input {
-    background: transparent;
-    border: 1px solid transparent;
-    padding: var(--spacing-xs) 2px;
     font-family: monospace;
     font-weight: 600;
     text-align: center;
     color: var(--color-secondary);
     width: 50px;
     font-size: 0.9rem;
-    border-radius: 4px;
-    transition: border-color 0.2s ease;
+    padding: var(--spacing-xs) 2px;
 }
 
+.exercise-item .exercise-name-input:hover,
+.exercise-item .exercise-name-input:focus,
 .exercise-item .exercise-duration-input:hover,
 .exercise-item .exercise-duration-input:focus {
     border-color: var(--color-border);
@@ -515,21 +480,6 @@ input[type='number'] {
 .duration-input label {
     font-weight: 600;
     color: var(--color-text-light);
-}
-
-.duration-input-field {
-    background: transparent;
-    border: 1px solid transparent;
-    padding: var(--spacing-xs) 2px;
-    font-family: monospace;
-    font-weight: 600;
-    text-align: center;
-    color: var(--color-secondary);
-    width: 50px;
-    font-size: 0.9rem;
-    border-radius: 4px;
-    transition: border-color 0.2s ease;
-    cursor: pointer;
 }
 
 .duration-input-field:hover,

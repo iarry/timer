@@ -72,12 +72,10 @@ const PERSIST_ACTIONS = [
   'timerConfig/reorderExercises',
   'timerConfig/moveExerciseToSplit',
   'timerConfig/loadWorkout',
-  'timerConfig/clearWorkout',
   'savedWorkouts/saveWorkout',
   'savedWorkouts/updateWorkout',
   'savedWorkouts/deleteWorkout',
   'savedWorkouts/setCurrentWorkout',
-  'savedWorkouts/renameWorkout',
 ];
 
 export const indexedDBMiddleware: Middleware = 

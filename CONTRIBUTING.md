@@ -19,7 +19,6 @@ src/
 ├── features/            # Redux slices by domain
 │   ├── timer/           # Timer state management
 │   ├── timerConfig/     # Configuration state
-│   ├── samples/         # Sample workout loading
 │   └── savedWorkouts/   # Workout persistence
 ├── hooks/               # Custom hooks (screen wake lock, sound effects)
 ├── middleware/          # IndexedDB persistence middleware

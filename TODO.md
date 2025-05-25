@@ -20,3 +20,13 @@
 ## Settings
 
 None
+
+## ✅ Completed Refactoring
+
+- [x] **Major code complexity reduction refactor** - Reduced codebase from ~4750 to ~4277 lines (-470+ lines)
+  - [x] Extracted SortableExercise component from ConfigPanel (599 → 426 lines, -173 lines)
+  - [x] Removed unused samples slice and related code (-57 lines)
+  - [x] Removed unused utility functions and hooks (-184 lines)  
+  - [x] Consolidated Redux actions (removed renameWorkout, clearWorkout)
+  - [x] Consolidated CSS styles (removed ~50+ lines of duplicate styles)
+  - [x] Updated documentation to reflect removed features
