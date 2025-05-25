@@ -1,7 +1,7 @@
 {
-    "name": "HIIT Timer - Custom Workout Timer",
-    "short_name": "HIIT Timer",
-    "description": "Create custom HIIT workouts with multiple splits and exercises for calisthenics training",
+    "name": "Vibe Timer - Custom Workout Timer",
+    "short_name": "Vibe Timer",
+    "description": "Create custom workouts with multiple splits and exercises for calisthenics training",
     "start_url": "/",
     "display": "standalone",
     "background_color": "#121212",

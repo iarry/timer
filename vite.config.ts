@@ -26,9 +26,9 @@ export default defineConfig({
       },
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
       manifest: {
-        name: 'HIIT Timer - Custom Workout Timer',
-        short_name: 'HIIT Timer',
-        description: 'Create custom HIIT workouts with multiple splits and exercises for calisthenics training',
+        name: 'Vibe Timer - Custom Workout Timer',
+        short_name: 'Vibe Timer',
+        description: 'Create custom workouts with multiple splits and exercises for calisthenics training',
         theme_color: '#2563eb',
         background_color: '#ffffff',
         display: 'standalone',

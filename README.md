@@ -1,10 +1,10 @@
-# HIIT Timer App
+# Vibe Timer App
 
-A mobile-first High-Intensity Interval Training (HIIT) timer application built with React, Redux, and Firebase. This app allows users to create custom workout routines with configurable exercises, rest periods, and multiple splits.
+A mobile-first interval training timer application built with React, Redux, and Firebase. This app allows users to create custom workout routines with configurable exercises, rest periods, and multiple splits.
 
 ## Recent Development Summary
 
-This HIIT Timer application has been completely implemented with all core features and thoroughly tested. The project demonstrates modern React/TypeScript development practices with Redux state management and Firebase integration.
+This Vibe Timer application has been completely implemented with all core features and thoroughly tested. The project demonstrates modern React/TypeScript development practices with Redux state management and Firebase integration.
 
 ### Major Features Implemented
 

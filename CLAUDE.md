@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-This is a HIIT timer that allows users to create custom workouts that support
+This is a Vibe Timer that allows users to create custom workouts that support
 the use case of multiple sets of different splits, largely based around the
 recommended routine of r/calisthenics - where you do 3 sets of 2 exercises, 3
 sets of 2 different exercises, 3 sets of another 2 exercises, and then 3 sets of
