@@ -2,7 +2,7 @@
 
 ## Commands
 
-- `npm run dev` - Start dev server (port 5173)
+- `npm run dev` - Start dev server (port 5173) - keep running for live updates
 - `npm run build` - TypeScript compile + Vite build
 - `npm run lint` - ESLint check
 - `npm run preview` - Preview built app
@@ -55,6 +55,8 @@ src/
 - **Event handlers** prefixed with `handle` (handleStartWorkout)
 - **Controlled inputs** with Redux state backing
 - **Cleanup** in useEffect return functions
+- **ES6+ features** - const/let over var, descriptive names
+- **2-space indentation** for consistency
 
 ### Redux
 
@@ -73,4 +75,5 @@ src/
 - **Logical properties** where supported (margin-inline-start)
 - **Component co-location** (.css files alongside .tsx)
 - **Utility classes** for common spacing (mt-1, mb-2)
-- **Specificity** be cautious adding specificity, avoid !important
+- **Descriptive class names** - organized logically
+- **Input validation** - validate user input, clear error messages

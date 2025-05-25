@@ -1,6 +1,6 @@
 # Vibe Timer
 
-Free, ad-free workout timer with saveable workouts.
+Free, ad-free workout timer with saveable workouts. Built for r/calisthenics recommended routine: multiple splits with varying exercises, sets, and left/right support.
 
 ## Features
 

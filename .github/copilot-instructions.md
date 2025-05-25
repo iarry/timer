@@ -1,28 +1,27 @@
 ## Priorities
 
--   UX → maintainability → performance → security
--   No fluff. Concise documentation only.
--   ABSOLUTELY NO FLUFF. Avoid unnecessary words and phrases. Be concise and to
-    the point. Emojis are allowed in documentation titles.
+- UX → maintainability → performance → security
+- No fluff. Concise documentation only.
 
 ## Code Quality
 
--   DRY, KISS, YAGNI principles
--   Deduplicate patterns into reusable components
--   Follow CONTRIBUTING.md guidelines
--   Split large files into logical components
--   Separation of concerns
--   Component hierarchy: atoms → molecules → organisms
+- DRY, KISS, YAGNI principles
+- Deduplicate patterns into reusable components
+- Follow CONTRIBUTING.md guidelines
+- Split large files into logical components
+- Separation of concerns
+- Component hierarchy: atoms → molecules → organisms
 
 ## Workflow
 
--   Keep dev server running (check port 5173 first)
--   Update docs: README.md (user changes), CONTRIBUTING.md (dev changes)
--   Clean up unused code/files/dependencies
+- Keep dev server running (check port 5173 first)
+- Update docs: README.md (user changes), CONTRIBUTING.md (dev changes)
+- Clean up unused code/files/dependencies
+- Mark completed TODOs in TODO.md
 -   Mark completed TODOs in TODO.md
 
 ## Context & Memory
 
--   README.md: project overview, features, roadmap
--   CONTRIBUTING.md: style guides, best practices, commands
--   DAG.md: architecture overview, project structure
+- README.md: project overview, features, roadmap
+- CONTRIBUTING.md: style guides, best practices, commands
+- DAG.md: architecture overview, project structure
