@@ -5,6 +5,7 @@ import timerConfigReducer from './features/timerConfig/timerConfigSlice';
 import timerReducer from './features/timer/timerSlice';
 import samplesReducer from './features/samples/samplesSlice';
 import savedWorkoutsReducer from './features/savedWorkouts/savedWorkoutsSlice';
+import { indexedDBMiddleware } from './middleware/indexedDBMiddleware';
 
 export const store = configureStore({
   reducer: {
@@ -14,6 +15,8 @@ export const store = configureStore({
     samples: samplesReducer,
     savedWorkouts: savedWorkoutsReducer,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(indexedDBMiddleware),
 });
 
 // Export RootState and AppDispatch for use with TypeScript hooks

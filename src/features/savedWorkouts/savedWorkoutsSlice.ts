@@ -18,58 +18,6 @@ interface SavedWorkoutsState {
   currentWorkoutId: string | null; // Track which workout is currently loaded
 }
 
-// Load saved workouts from localStorage
-const loadSavedWorkouts = (): SavedWorkout[] => {
-  try {
-    const serializedWorkouts = localStorage.getItem('savedWorkouts');
-    if (serializedWorkouts === null) {
-      // Return default workout if none exist
-      return [createDefaultWorkout()];
-    }
-    const workouts = JSON.parse(serializedWorkouts);
-    // Ensure we have the default workout
-    const hasDefault = workouts.some((w: SavedWorkout) => w.name === 'r/calisthenics recommended routine');
-    if (!hasDefault) {
-      workouts.unshift(createDefaultWorkout());
-    }
-    return workouts;
-  } catch (err) {
-    return [createDefaultWorkout()];
-  }
-};
-
-// Save workouts to localStorage
-const saveWorkoutsToStorage = (workouts: SavedWorkout[]) => {
-  try {
-    const serializedWorkouts = JSON.stringify(workouts);
-    localStorage.setItem('savedWorkouts', serializedWorkouts);
-  } catch (err) {
-    // localStorage not available or quota exceeded - fail silently
-  }
-};
-
-// Load current workout ID from localStorage
-const loadCurrentWorkoutId = (): string | null => {
-  try {
-    return localStorage.getItem('currentWorkoutId');
-  } catch (err) {
-    return null;
-  }
-};
-
-// Save current workout ID to localStorage
-const saveCurrentWorkoutId = (workoutId: string | null) => {
-  try {
-    if (workoutId) {
-      localStorage.setItem('currentWorkoutId', workoutId);
-    } else {
-      localStorage.removeItem('currentWorkoutId');
-    }
-  } catch (err) {
-    // localStorage not available or quota exceeded - fail silently
-  }
-};
-
 // Create the default r/calisthenics recommended routine
 const createDefaultWorkout = (): SavedWorkout => {
   const now = new Date().toISOString();
@@ -169,14 +117,19 @@ const createDefaultWorkout = (): SavedWorkout => {
 };
 
 const initialState: SavedWorkoutsState = {
-  workouts: loadSavedWorkouts(),
-  currentWorkoutId: loadCurrentWorkoutId(),
+  workouts: [createDefaultWorkout()],
+  currentWorkoutId: null,
 };
 
 const savedWorkoutsSlice = createSlice({
   name: 'savedWorkouts',
   initialState,
   reducers: {
+    // Bulk load workouts from IndexedDB
+    loadSavedWorkouts(state, action: PayloadAction<SavedWorkout[]>) {
+      state.workouts = action.payload;
+    },
+    
     saveWorkout(state, action: PayloadAction<{
       name: string;
       splits: Split[];
@@ -198,8 +151,6 @@ const savedWorkoutsSlice = createSlice({
       
       state.workouts.push(newWorkout);
       state.currentWorkoutId = newWorkout.id;
-      saveWorkoutsToStorage(state.workouts);
-      saveCurrentWorkoutId(newWorkout.id);
     },
     
     updateWorkout(state, action: PayloadAction<{
@@ -220,7 +171,6 @@ const savedWorkoutsSlice = createSlice({
         if (defaultRestDuration !== undefined) workout.defaultRestDuration = defaultRestDuration;
         workout.updatedAt = new Date().toISOString();
         
-        saveWorkoutsToStorage(state.workouts);
       }
     },
     
@@ -230,13 +180,10 @@ const savedWorkoutsSlice = createSlice({
       if (state.currentWorkoutId === id) {
         state.currentWorkoutId = null;
       }
-      saveWorkoutsToStorage(state.workouts);
-      saveCurrentWorkoutId(state.currentWorkoutId);
     },
     
     setCurrentWorkout(state, action: PayloadAction<string | null>) {
       state.currentWorkoutId = action.payload;
-      saveCurrentWorkoutId(action.payload);
     },
     
     renameWorkout(state, action: PayloadAction<{ id: string; name: string }>) {
@@ -246,13 +193,13 @@ const savedWorkoutsSlice = createSlice({
       if (workoutIndex !== -1) {
         state.workouts[workoutIndex].name = name;
         state.workouts[workoutIndex].updatedAt = new Date().toISOString();
-        saveWorkoutsToStorage(state.workouts);
       }
     },
   },
 });
 
 export const {
+  loadSavedWorkouts,
   saveWorkout,
   updateWorkout,
   deleteWorkout,
