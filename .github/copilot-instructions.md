@@ -2,7 +2,9 @@
 
 - UX → maintainability → performance → security
 - No fluff. Concise documentation only.
-
+- ABSOLUTELY NO FLUFF. Avoid unnecessary words and phrases. Be concise and to
+  the point. Emojis are allowed in documentation titles.
+    
 ## Code Quality
 
 - DRY, KISS, YAGNI principles
@@ -18,7 +20,6 @@
 - Update docs: README.md (user changes), CONTRIBUTING.md (dev changes)
 - Clean up unused code/files/dependencies
 - Mark completed TODOs in TODO.md
--   Mark completed TODOs in TODO.md
 
 ## Context & Memory
 
