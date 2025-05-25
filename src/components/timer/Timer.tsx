@@ -8,6 +8,7 @@ import {
   initializeTimer,
   resetCurrentCountdown,
   goToPreviousItem,
+  goToNextItem,
 } from '../../features/timer/timerSlice';
 import { formatTime } from '../../utils';
 import { useSoundEffects } from '../../hooks/useSoundEffects';
@@ -159,6 +160,24 @@ const Timer = ({ onExit }: TimerProps) => {
     }
   };
 
+  // Handle going to the next exercise
+  const handleNext = () => {
+    dispatch(goToNextItem());
+    // Update the countdown start time for the next item
+    countdownStartTimeRef.current = Date.now();
+  };
+
+  // Get the next exercise name (for showing during rest)
+  const getNextExerciseName = () => {
+    if (timerState.queue.length > 0) {
+      // If current item is rest and next item is exercise, show next exercise name
+      if (timerState.currentItem?.type === 'rest' && timerState.queue[0].type === 'exercise') {
+        return timerState.queue[0].name;
+      }
+    }
+    return null;
+  };
+
   // Calculate progress percentage for the current exercise
   const getProgressPercentage = () => {
     if (!timerState.currentItem) return 0;
@@ -194,6 +213,14 @@ const Timer = ({ onExit }: TimerProps) => {
             <Button onClick={handleBackToConfig} variant="transparent" className="back-button">
               <X size={24} />
             </Button>
+            <Button 
+              onClick={() => setIsMuted(!isMuted)}
+              variant="transparent"
+              size="small"
+              className="timer-mute-button top-right"
+            >
+              {isMuted ? <VolumeX size={24} /> : <Volume2 size={24} />}
+            </Button>
           </div>
           
           <div className="timer-display">
@@ -201,6 +228,12 @@ const Timer = ({ onExit }: TimerProps) => {
               <>
                 <div className="timer-info">
                   <h2>{timerState.currentItem.name}</h2>
+                  {/* Show next exercise during rest phase */}
+                  {timerState.currentItem.type === 'rest' && getNextExerciseName() && (
+                    <div className="next-exercise-info">
+                      Next: {getNextExerciseName()}
+                    </div>
+                  )}
                 </div>
                 
                 <div className="timer-circle">
@@ -282,12 +315,12 @@ const Timer = ({ onExit }: TimerProps) => {
           {timerState.status !== 'completed' && (
             <div className="timer-controls">
               <Button 
-                onClick={() => setIsMuted(!isMuted)}
+                onClick={handleReset}
                 variant="transparent"
                 size="small"
-                className="timer-mute-button"
+                className="timer-control-button"
               >
-                {isMuted ? <VolumeX size={24} /> : <Volume2 size={24} />}
+                <Undo size={24} />
               </Button>
               <Button 
                 onClick={handleTogglePlay}
@@ -298,12 +331,12 @@ const Timer = ({ onExit }: TimerProps) => {
                 {timerState.status === 'running' ? <Pause size={60} fill="currentColor" /> : <Play size={60} fill="currentColor" />}
               </Button>
               <Button 
-                onClick={handleReset}
+                onClick={handleNext}
                 variant="transparent"
                 size="small"
-                className="timer-back-button"
+                className="timer-control-button next-button"
               >
-                <Undo size={24} />
+                <Undo size={24} className="flip-horizontal" />
               </Button>
             </div>
           )}

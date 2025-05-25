@@ -284,6 +284,27 @@ const timerSlice = createSlice({
       }
     },
     
+    goToNextItem(state) {
+      // If there's no current item, there's nothing to advance from
+      if (!state.currentItem) return;
+      
+      // If there are no items in the queue, we're at the end
+      if (state.queue.length === 0) {
+        state.status = 'completed';
+        state.currentItem = null;
+        return;
+      }
+      
+      // Subtract current time from total time remaining
+      state.totalTimeRemaining -= state.currentTime;
+      
+      // Move to next item in queue
+      state.currentItem = state.queue[0];
+      state.currentTime = state.queue[0].duration;
+      state.queue = state.queue.slice(1);
+      state.currentItemIndex++;
+    },
+    
     tickTimer(state, action: PayloadAction<number>) {
       if (state.status !== 'running') return;
       
@@ -316,6 +337,7 @@ export const {
   tickTimer,
   resetCurrentCountdown,
   goToPreviousItem,
+  goToNextItem,
 } = timerSlice.actions;
 
 export default timerSlice.reducer;
