@@ -222,7 +222,7 @@ const Timer = ({ onExit }: TimerProps) => {
               onClick={() => setIsMuted(!isMuted)}
               variant="transparent"
               size="small"
-              className="timer-mute-button"
+              className="timer-mute-button top-right"
             >
               {isMuted ? <VolumeX size={24} /> : <Volume2 size={24} />}
             </Button>

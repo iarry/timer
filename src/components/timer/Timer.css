@@ -241,6 +241,23 @@ svg {
     transform: scaleX(-1);
 }
 
+.timer-mute-button.top-right {
+    position: absolute !important;
+    top: var(--spacing-md) !important;
+    right: var(--spacing-md) !important;
+    background-color: transparent !important;
+    color: var(--color-text) !important;
+    box-shadow: none !important;
+    min-width: auto !important;
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 50% !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
 .timer-mute-button {
     background-color: transparent !important;
     color: var(--color-text) !important;
