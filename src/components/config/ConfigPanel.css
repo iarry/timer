@@ -247,6 +247,13 @@ input[type='number'] {
     position: relative;
 }
 
+/* Audio Profile Section */
+.audio-profile-section {
+    padding: var(--spacing-md);
+    margin-top: var(--spacing-lg);
+    background-color: var(--color-background);
+}
+
 /* Sets select styling to match exercise selects */
 .sets-select {
     background: transparent;

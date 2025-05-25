@@ -55,7 +55,6 @@ export const AudioProfileSelector: React.FC = () => {
 
   return (
     <div className="audio-profile-selector">
-      <h3>Audio Profile</h3>
       <div className="profile-controls">
         <select 
           value={currentProfile.name}

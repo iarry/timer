@@ -421,8 +421,6 @@ const ConfigPanel = ({ onStartWorkout, onSaveWorkout, onLoadWorkout }: ConfigPan
             </div>
           </div>
         </div>
-        
-        <AudioProfileSelector />
       </div>
       
       <div className="splits-section">
@@ -558,6 +556,11 @@ const ConfigPanel = ({ onStartWorkout, onSaveWorkout, onLoadWorkout }: ConfigPan
           >
             Add Split
           </Button>
+        </div>
+        
+        {/* Audio Profile Selector */}
+        <div className="audio-profile-section">
+          <AudioProfileSelector />
         </div>
       </div>
       
