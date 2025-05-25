@@ -3,7 +3,9 @@
 - UX → maintainability → performance → security
 - No fluff. Concise documentation only.
 - ABSOLUTELY NO FLUFF. Avoid unnecessary words and phrases. Be concise and to
-  the point. Emojis are allowed in documentation titles.
+  the point.
+- Use emojis in documentation titles to enhance readability and engagement.
+- Avoid fluff in user-facing copy.
     
 ## Code Quality
 
