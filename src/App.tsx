@@ -5,6 +5,7 @@ import ConfigPanel from './components/config/ConfigPanel'
 import Timer from './components/timer/Timer'
 import WorkoutSaveDialog from './components/workouts/WorkoutSaveDialog'
 import WorkoutLibrary from './components/workouts/WorkoutLibrary'
+import { OfflineIndicator } from './components/common/OfflineIndicator'
 
 function App() {
   const [activeView, setActiveView] = useState<'config' | 'timer'>('config')
@@ -34,6 +35,9 @@ function App() {
     <div 
       className="app-container"
     >
+      {/* Offline Indicator */}
+      <OfflineIndicator />
+
       {/* Save Dialog */}
       <WorkoutSaveDialog 
         isOpen={showSaveDialog}
