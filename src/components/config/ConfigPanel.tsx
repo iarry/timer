@@ -1,4 +1,25 @@
 import { useState, useEffect } from 'react';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+  DragStartEvent,
+  DragOverlay,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import {
+  useSortable,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { 
   setDefaultDurations,
@@ -8,13 +29,15 @@ import {
   addExercise,
   removeExercise,
   updateExercise,
+  reorderExercises,
+  moveExerciseToSplit,
   Split,
   Exercise
 } from '../../features/timerConfig/timerConfigSlice';
 import { clearSampleWorkout } from '../../features/samples/samplesSlice';
 import { generateId } from '../../utils';
 import Button from '../common/Button';
-import { Trash2, Save, GalleryVerticalEnd, Plus } from 'lucide-react';
+import { Trash2, Save, GalleryVerticalEnd, Plus, GripVertical } from 'lucide-react';
 
 import './ConfigPanel.css';
 
@@ -23,6 +46,147 @@ interface ConfigPanelProps {
   onSaveWorkout: () => void;
   onLoadWorkout: () => void;
 }
+
+// Sortable Exercise Component
+interface SortableExerciseProps {
+  exercise: Exercise;
+  splitId: string;
+  isUsingDefaultDuration: (duration: number) => boolean;
+  durationOptions: number[];
+  editingExerciseId: string | null;
+  setEditingExerciseId: (id: string | null) => void;
+  dispatch: any;
+  updateExercise: any;
+  removeExercise: any;
+  exercisesLength: number;
+}
+
+const SortableExercise = ({
+  exercise,
+  splitId,
+  isUsingDefaultDuration,
+  durationOptions,
+  editingExerciseId,
+  setEditingExerciseId,
+  dispatch,
+  updateExercise,
+  removeExercise,
+  exercisesLength
+}: SortableExerciseProps) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: exercise.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style} className="exercise-item">
+      <div 
+        className="exercise-grip"
+        {...attributes}
+        {...listeners}
+      >
+        <GripVertical size={24} />
+      </div>
+      <input 
+        type="text"
+        className="exercise-name-input"
+        value={exercise.name}
+        onChange={(e) => 
+          dispatch(updateExercise({
+            splitId: splitId,
+            exerciseId: exercise.id,
+            name: e.target.value
+          }))
+        }
+        onBlur={(e) => {
+          // Only delete if exercise name is empty and the user isn't clicking on other form elements within the same exercise
+          const relatedTarget = e.relatedTarget as HTMLElement;
+          const exerciseContainer = e.currentTarget.closest('.exercise-item');
+          const isClickingWithinSameExercise = relatedTarget && exerciseContainer && exerciseContainer.contains(relatedTarget);
+          
+          if (exercise.name.trim() === '' && !isClickingWithinSameExercise) {
+            dispatch(removeExercise({
+              splitId: splitId,
+              exerciseId: exercise.id
+            }));
+          }
+          setEditingExerciseId(null);
+        }}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            e.currentTarget.blur();
+          } else if (e.key === 'Escape') {
+            // Reset to empty and blur (which will delete it)
+            dispatch(updateExercise({
+              splitId: splitId,
+              exerciseId: exercise.id,
+              name: ''
+            }));
+            e.currentTarget.blur();
+          }
+        }}
+        placeholder="Exercise name"
+        autoFocus={editingExerciseId === exercise.id}
+      />
+      <select
+        className={`exercise-duration-input ${isUsingDefaultDuration(exercise.duration) ? 'default-duration' : ''}`}
+        value={exercise.duration}
+        onChange={(e) => 
+          dispatch(updateExercise({
+            splitId: splitId,
+            exerciseId: exercise.id,
+            duration: parseInt(e.target.value)
+          }))
+        }
+      >
+        {durationOptions.map(duration => (
+          <option key={duration} value={duration}>{duration}</option>
+        ))}
+      </select>
+      <div className="exercise-checkbox">
+        <label>
+          <input
+            type="checkbox"
+            checked={exercise.leftRight || false}
+            onChange={(e) =>
+              dispatch(updateExercise({
+                splitId: splitId,
+                exerciseId: exercise.id,
+                leftRight: e.target.checked
+              }))
+            }
+          />
+          L/R
+        </label>
+      </div>
+      <div className="exercise-actions">
+        <Button 
+          onClick={() => 
+            dispatch(removeExercise({
+              splitId: splitId,
+              exerciseId: exercise.id
+            }))
+          }
+          variant="danger"
+          size="small"
+          disabled={exercisesLength === 1}
+        >
+          <Trash2 size={14} />
+        </Button>
+      </div>
+    </div>
+  );
+};
 
 const ConfigPanel = ({ onStartWorkout, onSaveWorkout, onLoadWorkout }: ConfigPanelProps) => {
   const dispatch = useAppDispatch();
@@ -37,6 +201,17 @@ const ConfigPanel = ({ onStartWorkout, onSaveWorkout, onLoadWorkout }: ConfigPan
 
   // Track which exercise is being edited (for auto-focus)
   const [editingExerciseId, setEditingExerciseId] = useState<string | null>(null);
+
+  // Track active drag item for DragOverlay
+  const [activeExercise, setActiveExercise] = useState<Exercise | null>(null);
+
+  // DnD Kit sensors
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   // Generate duration options (5-180 seconds in intervals of 5)
   const generateDurationOptions = () => {
@@ -114,6 +289,67 @@ const ConfigPanel = ({ onStartWorkout, onSaveWorkout, onLoadWorkout }: ConfigPan
     // Set this exercise as being edited
     setEditingExerciseId(newExercise.id);
   };
+
+  // Handle drag start
+  const handleDragStart = (event: DragStartEvent) => {
+    const { active } = event;
+    const draggedExercise = splits
+      .flatMap(split => split.exercises)
+      .find(exercise => exercise.id === active.id);
+    
+    setActiveExercise(draggedExercise || null);
+  };
+
+  // Handle drag end
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    // Clear drag state
+    setActiveExercise(null);
+
+    if (!over) return;
+
+    const activeId = active.id as string;
+    const overId = over.id as string;
+
+    if (activeId !== overId) {
+      // Find the splits containing the active and target exercises
+      const activeSplit = splits.find(split => 
+        split.exercises.some(ex => ex.id === activeId)
+      );
+      const overSplit = splits.find(split => 
+        split.exercises.some(ex => ex.id === overId)
+      );
+      
+      if (activeSplit && overSplit) {
+        if (activeSplit.id === overSplit.id) {
+          // Reordering within the same split
+          const oldIndex = activeSplit.exercises.findIndex(ex => ex.id === activeId);
+          const newIndex = activeSplit.exercises.findIndex(ex => ex.id === overId);
+          
+          if (oldIndex !== -1 && newIndex !== -1) {
+            const newOrder = arrayMove(activeSplit.exercises, oldIndex, newIndex);
+            dispatch(reorderExercises({
+              splitId: activeSplit.id,
+              exerciseIds: newOrder.map(ex => ex.id)
+            }));
+          }
+        } else {
+          // Moving between different splits
+          const overIndex = overSplit.exercises.findIndex(ex => ex.id === overId);
+          
+          if (overIndex !== -1) {
+            dispatch(moveExerciseToSplit({
+              exerciseId: activeId,
+              fromSplitId: activeSplit.id,
+              toSplitId: overSplit.id,
+              toIndex: overIndex
+            }));
+          }
+        }
+      }
+    }
+  };
   
   // Monitor the sample workout from the store
   const { sampleWorkout } = useAppSelector(state => state.samples);
@@ -190,145 +426,124 @@ const ConfigPanel = ({ onStartWorkout, onSaveWorkout, onLoadWorkout }: ConfigPan
       <div className="splits-section">
         {/* List of existing splits */}
         <div className="splits-list">
-          {splits.map(split => (
-            <div key={split.id} className="split-item">
-              <div className="split-header">
-                <div className="sets-info">
-                  <select
-                    value={split.sets}
-                    onChange={(e) => dispatch(updateSplit({ 
-                      id: split.id, 
-                      sets: parseInt(e.target.value) || 1 
-                    }))}
-                    className="sets-select"
-                  >
-                    {Array.from({ length: 20 }, (_, i) => i + 1).map(num => (
-                      <option key={num} value={num}>{num}</option>
-                    ))}
-                  </select>
-                  <span className="sets-label">sets</span>
-                  <Button 
-                    onClick={() => {
-                      if (confirm('Are you sure you want to delete this split?')) {
-                        dispatch(removeSplit(split.id));
-                      }
-                    }}
-                    variant="danger"
-                    size="small"
-                    disabled={splits.length === 1}
-                  >
-                    <Trash2 size={16} />
-                  </Button>
-                </div>
-
-              </div>
-              
-              {/* Exercises in this split */}
-              <div className="exercises-list">
-                {split.exercises.map(exercise => (
-                  <div key={exercise.id} className="exercise-item">
-                    <input 
-                      type="text"
-                      className="exercise-name-input"
-                      value={exercise.name}
-                      onChange={(e) => 
-                        dispatch(updateExercise({
-                          splitId: split.id,
-                          exerciseId: exercise.id,
-                          name: e.target.value
-                        }))
-                      }
-                      onBlur={(e) => {
-                        // Only delete if exercise name is empty and the user isn't clicking on other form elements within the same exercise
-                        const relatedTarget = e.relatedTarget as HTMLElement;
-                        const exerciseContainer = e.currentTarget.closest('.exercise-item');
-                        const isClickingWithinSameExercise = relatedTarget && exerciseContainer && exerciseContainer.contains(relatedTarget);
-                        
-                        if (exercise.name.trim() === '' && !isClickingWithinSameExercise) {
-                          dispatch(removeExercise({
-                            splitId: split.id,
-                            exerciseId: exercise.id
-                          }));
-                        }
-                        setEditingExerciseId(null);
-                      }}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                          e.currentTarget.blur();
-                        } else if (e.key === 'Escape') {
-                          // Reset to empty and blur (which will delete it)
-                          dispatch(updateExercise({
-                            splitId: split.id,
-                            exerciseId: exercise.id,
-                            name: ''
-                          }));
-                          e.currentTarget.blur();
-                        }
-                      }}
-                      placeholder="Exercise name"
-                      autoFocus={editingExerciseId === exercise.id}
-                    />
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
+          >
+            {splits.map(split => (
+              <div key={split.id} className="split-item">
+                <div className="split-header">
+                  <div className="sets-info">
                     <select
-                      className={`exercise-duration-input ${isUsingDefaultDuration(exercise.duration) ? 'default-duration' : ''}`}
-                      value={exercise.duration}
-                      onChange={(e) => 
-                        dispatch(updateExercise({
-                          splitId: split.id,
-                          exerciseId: exercise.id,
-                          duration: parseInt(e.target.value)
-                        }))
-                      }
+                      value={split.sets}
+                      onChange={(e) => dispatch(updateSplit({ 
+                        id: split.id, 
+                        sets: parseInt(e.target.value) || 1 
+                      }))}
+                      className="sets-select"
                     >
-                      {durationOptions.map(duration => (
-                        <option key={duration} value={duration}>{duration}</option>
+                      {Array.from({ length: 20 }, (_, i) => i + 1).map(num => (
+                        <option key={num} value={num}>{num}</option>
                       ))}
                     </select>
-                    <div className="exercise-checkbox">
-                      <label>
-                        <input
-                          type="checkbox"
-                          checked={exercise.leftRight || false}
-                          onChange={(e) =>
-                            dispatch(updateExercise({
-                              splitId: split.id,
-                              exerciseId: exercise.id,
-                              leftRight: e.target.checked
-                            }))
-                          }
-                        />
-                        L/R
-                      </label>
-                    </div>
-                    <div className="exercise-actions">
-                      <Button 
-                        onClick={() => 
-                          dispatch(removeExercise({
-                            splitId: split.id,
-                            exerciseId: exercise.id
-                          }))
+                    <span className="sets-label">sets</span>
+                    <Button 
+                      onClick={() => {
+                        if (confirm('Are you sure you want to delete this split?')) {
+                          dispatch(removeSplit(split.id));
                         }
-                        variant="danger"
-                        size="small"
-                        disabled={split.exercises.length === 1}
-                      >
-                        <Trash2 size={14} />
-                      </Button>
-                    </div>
+                      }}
+                      variant="danger"
+                      size="small"
+                      disabled={splits.length === 1}
+                    >
+                      <Trash2 size={16} />
+                    </Button>
                   </div>
-                ))}
-                <div className="add-exercise-section">
-                  <Button 
-                    className="add-exercise-button"
-                    onClick={() => handleAddBlankExercise(split.id)}
-                    variant="secondary"
-                    size="small"
+                </div>
+                
+                {/* Exercises in this split */}
+                <div className="exercises-list">
+                  <SortableContext
+                    items={split.exercises.map(ex => ex.id)}
+                    strategy={verticalListSortingStrategy}
                   >
-                    <Plus size={16} />
-                  </Button>
+                    {split.exercises.map(exercise => (
+                      <SortableExercise
+                        key={exercise.id}
+                        exercise={exercise}
+                        splitId={split.id}
+                        isUsingDefaultDuration={isUsingDefaultDuration}
+                        durationOptions={durationOptions}
+                        editingExerciseId={editingExerciseId}
+                        setEditingExerciseId={setEditingExerciseId}
+                        dispatch={dispatch}
+                        updateExercise={updateExercise}
+                        removeExercise={removeExercise}
+                        exercisesLength={split.exercises.length}
+                      />
+                    ))}
+                  </SortableContext>
+                  <div className="add-exercise-section">
+                    <Button 
+                      className="add-exercise-button"
+                      onClick={() => handleAddBlankExercise(split.id)}
+                      variant="secondary"
+                      size="small"
+                    >
+                      <Plus size={16} />
+                    </Button>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+            
+            <DragOverlay>
+              {activeExercise ? (
+                <div className="exercise-item" style={{ opacity: 0.8, transform: 'rotate(5deg)' }}>
+                  <div className="exercise-grip">
+                    <GripVertical size={24} />
+                  </div>
+                  <input 
+                    type="text"
+                    className="exercise-name-input"
+                    value={activeExercise.name}
+                    readOnly
+                    placeholder="Exercise name"
+                  />
+                  <select
+                    className={`exercise-duration-input ${isUsingDefaultDuration(activeExercise.duration) ? 'default-duration' : ''}`}
+                    value={activeExercise.duration}
+                    disabled
+                  >
+                    <option value={activeExercise.duration}>{activeExercise.duration}</option>
+                  </select>
+                  <div className="exercise-checkbox">
+                    <label>
+                      <input
+                        type="checkbox"
+                        checked={activeExercise.leftRight || false}
+                        disabled
+                        readOnly
+                      />
+                      L/R
+                    </label>
+                  </div>
+                  <div className="exercise-actions">
+                    <Button 
+                      variant="danger"
+                      size="small"
+                      disabled
+                    >
+                      <Trash2 size={14} />
+                    </Button>
+                  </div>
+                </div>
+              ) : null}
+            </DragOverlay>
+          </DndContext>
         </div>
         
         {/* Add Split button moved to bottom */}

@@ -115,13 +115,17 @@ const timerConfigSlice = createSlice({
     
     addExercise(
       state,
-      action: PayloadAction<{ splitId: string; exercise: Exercise }>
+      action: PayloadAction<{ splitId: string; exercise: Exercise; index?: number }>
     ) {
-      const { splitId, exercise } = action.payload;
+      const { splitId, exercise, index } = action.payload;
       const splitIndex = state.splits.findIndex(split => split.id === splitId);
       
       if (splitIndex !== -1) {
-        state.splits[splitIndex].exercises.push(exercise);
+        if (index !== undefined && index >= 0) {
+          state.splits[splitIndex].exercises.splice(index, 0, exercise);
+        } else {
+          state.splits[splitIndex].exercises.push(exercise);
+        }
         saveState(state); // Save to local storage
       }
     },
@@ -196,6 +200,52 @@ const timerConfigSlice = createSlice({
       saveState(state);
     },
 
+    reorderExercises(
+      state,
+      action: PayloadAction<{
+        splitId: string;
+        exerciseIds: string[];
+      }>
+    ) {
+      const { splitId, exerciseIds } = action.payload;
+      const splitIndex = state.splits.findIndex(split => split.id === splitId);
+      
+      if (splitIndex !== -1) {
+        const exercises = state.splits[splitIndex].exercises;
+        const reorderedExercises = exerciseIds.map(id => 
+          exercises.find(exercise => exercise.id === id)!
+        ).filter(Boolean);
+        
+        state.splits[splitIndex].exercises = reorderedExercises;
+        saveState(state);
+      }
+    },
+
+    moveExerciseToSplit(
+      state,
+      action: PayloadAction<{
+        exerciseId: string;
+        fromSplitId: string;
+        toSplitId: string;
+        toIndex: number;
+      }>
+    ) {
+      const { exerciseId, fromSplitId, toSplitId, toIndex } = action.payload;
+      const fromSplitIndex = state.splits.findIndex(split => split.id === fromSplitId);
+      const toSplitIndex = state.splits.findIndex(split => split.id === toSplitId);
+      
+      if (fromSplitIndex !== -1 && toSplitIndex !== -1) {
+        const fromExercises = state.splits[fromSplitIndex].exercises;
+        const exerciseIndex = fromExercises.findIndex(ex => ex.id === exerciseId);
+        
+        if (exerciseIndex !== -1) {
+          const [movedExercise] = fromExercises.splice(exerciseIndex, 1);
+          state.splits[toSplitIndex].exercises.splice(toIndex, 0, movedExercise);
+          saveState(state);
+        }
+      }
+    },
+
     clearWorkout(state) {
       // Reset to empty workout state
       state.splits = [];
@@ -213,6 +263,8 @@ export const {
   addExercise,
   removeExercise,
   updateExercise,
+  reorderExercises,
+  moveExerciseToSplit,
   loadWorkout,
   clearWorkout,
 } = timerConfigSlice.actions;

@@ -302,10 +302,12 @@ input[type='number'] {
     gap: var(--spacing-sm);
     padding: var(--spacing-xs) 0;
     border-bottom: 1px solid var(--color-border);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.exercise-item:last-child {
-    border-bottom: none;
+.exercise-item:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* When the add form is present, ensure the last regular exercise has a border */
@@ -447,6 +449,7 @@ input[type='number'] {
     color: var(--color-text);
     border-radius: 4px;
     transition: border-color 0.2s ease;
+    margin-left: calc(var(--spacing-sm) * -1);
 }
 
 .exercise-item .exercise-name-input:hover,
@@ -532,48 +535,23 @@ input[type='number'] {
     font-size: 0.9rem;
 }
 
-/* Confirmation dialog styles */
-.confirmation-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 2000;
-}
-
-.confirmation-dialog {
-    background-color: var(--color-surface);
-    padding: var(--spacing-lg);
-    border-radius: 8px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-    max-width: 400px;
-    width: 90%;
-    text-align: center;
-}
-
-.confirmation-dialog h3 {
-    margin: 0 0 var(--spacing-md) 0;
-    color: var(--color-text);
-    font-size: 1.25rem;
-}
-
-.confirmation-dialog p {
-    margin: 0 0 var(--spacing-lg) 0;
+/* Drag and drop styles */
+.exercise-grip {
+    cursor: grab;
     color: var(--color-text-light);
-    line-height: 1.5;
-}
-
-.confirmation-buttons {
+    padding: 0 var(--spacing-xs);
     display: flex;
-    gap: var(--spacing-md);
-    justify-content: center;
+    align-items: center;
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
+    margin: 0 calc(var(--spacing-xs) * -1);
 }
 
-.confirmation-buttons .btn {
-    min-width: 80px;
+.exercise-grip:hover {
+    opacity: 1;
+    color: var(--color-text);
+}
+
+.exercise-grip:active {
+    cursor: grabbing;
 }
