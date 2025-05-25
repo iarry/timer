@@ -12,6 +12,7 @@ import {
 } from '../../features/timer/timerSlice';
 import { formatTime } from '../../utils';
 import { useSoundEffects } from '../../hooks/useSoundEffects';
+import { useScreenWakeLock } from '../../hooks/useScreenWakeLock';
 import Button from '../common/Button';
 import { Pause, Play, Undo, VolumeX, Volume2, X } from 'lucide-react';
 import './Timer.css';
@@ -34,6 +35,10 @@ const Timer = ({ onExit }: TimerProps) => {
   
   // Get sound effects
   const { playStart, playComplete, playTransition } = useSoundEffects(isMuted);
+
+  // Keep screen awake when timer is running
+  const isTimerActive = timerState.status === 'running';
+  const { isSupported: isWakeLockSupported } = useScreenWakeLock(isTimerActive);
 
   // Calculate total rounds for the display
   const totalRounds = timerConfig.splits.reduce((total, split) => total + split.sets, 0);
@@ -213,14 +218,21 @@ const Timer = ({ onExit }: TimerProps) => {
             <Button onClick={handleBackToConfig} variant="transparent" className="back-button">
               <X size={24} />
             </Button>
-            <Button 
-              onClick={() => setIsMuted(!isMuted)}
-              variant="transparent"
-              size="small"
-              className="timer-mute-button top-right"
-            >
-              {isMuted ? <VolumeX size={24} /> : <Volume2 size={24} />}
-            </Button>
+            <div className="timer-header-right">
+              {isWakeLockSupported && isTimerActive && (
+                <div className="wake-lock-indicator" title="Screen wake lock active - display will stay on">
+                  📱
+                </div>
+              )}
+              <Button 
+                onClick={() => setIsMuted(!isMuted)}
+                variant="transparent"
+                size="small"
+                className="timer-mute-button"
+              >
+                {isMuted ? <VolumeX size={24} /> : <Volume2 size={24} />}
+              </Button>
+            </div>
           </div>
           
           <div className="timer-display">
