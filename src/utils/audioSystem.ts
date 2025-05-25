@@ -137,11 +137,7 @@ class AudioSystem {
     await this.playToneSequence(this.currentProfile.workoutComplete);
   }
 
-  async playTransitionBeep() {
-    if (this.currentProfile.transition && this.currentProfile.transition.length > 0) {
-      await this.playToneSequence(this.currentProfile.transition);
-    }
-  }
+
 
   // Initialize audio on first user interaction
   async initializeOnUserInteraction() {

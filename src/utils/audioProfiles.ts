@@ -12,7 +12,6 @@ export interface AudioProfile {
   exerciseStart: ToneSpec[];    // Tones for starting exercise
   restStart: ToneSpec[];        // Tones for starting rest
   workoutComplete: ToneSpec[];  // Tones for workout completion
-  transition?: ToneSpec[];      // Optional transition beep
 }
 
 const cleanProfile: AudioProfile = {
@@ -34,9 +33,6 @@ const cleanProfile: AudioProfile = {
       { frequency: 784, duration: 0.25, waveform: "triangle", volume: 0.5 },
       { frequency: 880, duration: 0.25, waveform: "triangle", volume: 0.5, delay: 0.1 },
       { frequency: 988, duration: 0.4, waveform: "triangle", volume: 0.6, delay: 0.3 },
-    ],
-    transition: [
-      { frequency: 700, duration: 0.15, waveform: "sine", volume: 0.4 }
     ]
   };
   
@@ -60,9 +56,6 @@ const cleanProfile: AudioProfile = {
       { frequency: 784, duration: 0.2, waveform: "square", volume: 0.7, delay: 0.2 },
       { frequency: 987.77, duration: 0.3, waveform: "square", volume: 0.8, delay: 0.3 },
       { frequency: 1318.5, duration: 0.4, waveform: "square", volume: 0.9, delay: 0.4 }
-    ],
-    transition: [
-      { frequency: 600, duration: 0.15, waveform: "square", volume: 0.5 }
     ]
   };
 
@@ -85,10 +78,7 @@ const cleanProfile: AudioProfile = {
         { frequency: 600, duration: 0.4, waveform: "sine", volume: 0.5 },
         { frequency: 700, duration: 0.4, waveform: "sine", volume: 0.6, delay: 0.1 },
         { frequency: 800, duration: 0.6, waveform: "sine", volume: 0.4, delay: 0.4 },
-      ],
-    transition: [
-      { frequency: 300, duration: 0.4, waveform: "sine", volume: 0.5 }
-    ]
+      ]
   };
 
   
