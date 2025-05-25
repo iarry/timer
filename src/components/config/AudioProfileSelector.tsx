@@ -30,25 +30,23 @@ export const AudioProfileSelector: React.FC = () => {
     
     try {
       // Play workout flow demo sequence with full countdown
-      // Full countdown: 3-2-1
-      await audioSystem.playCountdownBeep(3);          // "1" countdown beep
+      // Countdown to exercise (1-2-3 ascending tones, energizing)
+      await audioSystem.playCountdownBeep(3, 'exercise');          // "1" countdown beep (low)
       await new Promise(resolve => setTimeout(resolve, 1000));
-      await audioSystem.playCountdownBeep(2);          // "2" countdown beep
+      await audioSystem.playCountdownBeep(2, 'exercise');          // "2" countdown beep (mid)
       await new Promise(resolve => setTimeout(resolve, 1000));
-      await audioSystem.playCountdownBeep(1);          // "3" countdown beep
+      await audioSystem.playCountdownBeep(1, 'exercise');          // "3" countdown beep (high)
       await new Promise(resolve => setTimeout(resolve, 1000));
-      await audioSystem.playRestStart();               // Rest start
-      await new Promise(resolve => setTimeout(resolve, 3000));  // 3s pause to simulate exercise time
-      // Full countdown again: 3-2-1
-      await audioSystem.playCountdownBeep(1);          // "3" countdown beep
+      await audioSystem.playWorkoutStart();               // Exercise start
+      await new Promise(resolve => setTimeout(resolve, 2000));  // 2s pause to simulate exercise time
+      // Countdown to rest (3-2-1 descending tones, relaxing)
+      await audioSystem.playCountdownBeep(3, 'rest');          // "3" countdown beep (high)
       await new Promise(resolve => setTimeout(resolve, 1000));
-      await audioSystem.playCountdownBeep(2);          // "2" countdown beep
+      await audioSystem.playCountdownBeep(2, 'rest');          // "2" countdown beep (mid)
       await new Promise(resolve => setTimeout(resolve, 1000));
-      await audioSystem.playCountdownBeep(3);          // "1" countdown beep
+      await audioSystem.playCountdownBeep(1, 'rest');          // "1" countdown beep (low)
       await new Promise(resolve => setTimeout(resolve, 1000));
-      await audioSystem.playWorkoutStart();            // Exercise start
-      await new Promise(resolve => setTimeout(resolve, 3000));  // 3s pause to simulate exercise time
-      await audioSystem.playWorkoutComplete();          // Workout complete
+      await audioSystem.playRestStart();            // Rest start
     } catch (error) {
       console.warn('Error testing audio profile:', error);
     }

@@ -68,7 +68,9 @@ const Timer = ({ onExit }: TimerProps) => {
         // Play countdown beeps for last 3 seconds
         const newTimeRemaining = timerState.currentTime - 1;
         if (newTimeRemaining <= 3 && newTimeRemaining > 0) {
-          audioSystem.playCountdownBeep(newTimeRemaining);
+          // Determine what type of segment is starting when countdown finishes
+          const nextSegmentType = timerState.queue.length > 0 ? timerState.queue[0].type : undefined;
+          audioSystem.playCountdownBeep(newTimeRemaining, nextSegmentType);
         }
       }, 1000);
 

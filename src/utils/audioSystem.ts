@@ -115,9 +115,21 @@ class AudioSystem {
     }
   }
 
-  async playCountdownBeep(count: number) {
+  async playCountdownBeep(count: number, nextSegmentType?: 'exercise' | 'rest') {
     const countdownTones = this.currentProfile.countdown;
-    const toneIndex = Math.min(count - 1, countdownTones.length - 1);
+    
+    // Determine tone order based on what's coming next
+    const isCountingToExercise = nextSegmentType === 'exercise';
+    
+    let toneIndex: number;
+    if (isCountingToExercise) {
+      // Counting to exercise: play tones 1-2-3 (ascending, energizing)
+      toneIndex = Math.min(countdownTones.length - count, countdownTones.length - 1);
+    } else {
+      // Counting to rest: play tones 3-2-1 (descending, relaxing)
+      toneIndex = Math.min(count - 1, countdownTones.length - 1);
+    }
+    
     const tone = countdownTones[toneIndex];
     
     if (tone) {
