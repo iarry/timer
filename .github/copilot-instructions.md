@@ -2,6 +2,8 @@
 
 -   Priorize in this order: user experience, code maintainability, performance,
     and security.
+-   ABSOLUTELY NO FLUFF. Avoid unnecessary words and phrases. Be concise and to the
+    point. PARTICULARLY IMPORTANT FOR DOCUMENTATION. Emojis are allowed in titles.
 
 ## Code Quality
 

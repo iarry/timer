@@ -1,8 +1,14 @@
-# Vibe Timer App
+# Vibe Timer
 
-Yet another workout timer with saveable workouts, but this one will is free and ad-free forever.
+Free, ad-free workout timer with saveable workouts.
 
 ## Features
+
+- **Interval timer** - Multiple splits, exercises, left/right support
+- **Audio profiles** - Clean, Pixel, Serenity themes with Web Audio API
+- **Workout library** - Save/load with drag-drop reordering
+- **PWA** - Install, offline support, screen wake lock
+- **Local storage** - IndexedDB, no accounts, private
 
 ## Roadmap
 
