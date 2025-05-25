@@ -11,7 +11,7 @@ import {
   goToNextItem,
 } from '../../features/timer/timerSlice';
 import { formatTime } from '../../utils';
-import { useSoundEffects } from '../../hooks/useSoundEffects';
+import { audioSystem } from '../../utils/audioSystem';
 import { useScreenWakeLock } from '../../hooks/useScreenWakeLock';
 import Button from '../common/Button';
 import { Pause, Play, Undo, VolumeX, Volume2, X } from 'lucide-react';
@@ -33,8 +33,10 @@ const Timer = ({ onExit }: TimerProps) => {
   const [isMuted, setIsMuted] = useState(false);
   const countdownStartTimeRef = useRef<number>(Date.now());
   
-  // Get sound effects
-  const { playStart, playComplete, playTransition } = useSoundEffects(isMuted);
+  // Update the audio system mute state when local mute state changes
+  useEffect(() => {
+    audioSystem.setMuted(isMuted);
+  }, [isMuted]);
 
   // Keep screen awake when timer is running
   const isTimerActive = timerState.status === 'running';
@@ -43,7 +45,7 @@ const Timer = ({ onExit }: TimerProps) => {
   // Calculate total rounds for the display
   const totalRounds = timerConfig.splits.reduce((total, split) => total + split.sets, 0);
 
-  // Effect to handle the timer ticking
+  // Effect to handle the timer ticking and countdown audio
   useEffect(() => {
     if (timerState.status === 'running') {
       // Clear any existing timer
@@ -62,6 +64,12 @@ const Timer = ({ onExit }: TimerProps) => {
       timerRef.current = window.setInterval(() => {
         dispatch(tickTimer(1));
         lastTickTimeRef.current = Date.now();
+        
+        // Play countdown beeps for last 3 seconds
+        const newTimeRemaining = timerState.currentTime - 1;
+        if (newTimeRemaining <= 3 && newTimeRemaining > 0) {
+          audioSystem.playCountdownBeep(newTimeRemaining);
+        }
       }, 1000);
 
       // Set up smooth animation
@@ -104,14 +112,19 @@ const Timer = ({ onExit }: TimerProps) => {
   useEffect(() => {
     // Play different sounds based on timer events
     if (timerState.status === 'completed') {
-      playComplete();
+      audioSystem.playWorkoutComplete();
     } else if (
       timerState.currentItem && 
       (!previousItemRef.current || previousItemRef.current !== timerState.currentItem)
     ) {
       // Play transition sound when moving to a new exercise
       if (previousItemRef.current) {
-        playTransition();
+        // Play the appropriate sound based on the new item type
+        if (timerState.currentItem.type === 'exercise') {
+          audioSystem.playWorkoutStart();
+        } else if (timerState.currentItem.type === 'rest') {
+          audioSystem.playRestStart();
+        }
       }
       // Update countdown start time when moving to a new item
       countdownStartTimeRef.current = Date.now();
@@ -119,7 +132,7 @@ const Timer = ({ onExit }: TimerProps) => {
     
     // Update the ref
     previousItemRef.current = timerState.currentItem;
-  }, [timerState.currentItem, timerState.status, playComplete, playTransition]);
+  }, [timerState.currentItem, timerState.status]);
 
   // Initialize the timer with the current configuration
   const handleStartWorkout = () => {
@@ -128,7 +141,10 @@ const Timer = ({ onExit }: TimerProps) => {
       defaultRestDuration: timerConfig.defaultRestDuration,
     }));
     dispatch(startTimer());
-    playStart();
+    
+    // Play initial audio cue based on first item type
+    // Note: We'll let the transition effect handle the first sound
+    audioSystem.initializeOnUserInteraction();
   };
 
   // Toggle between pause and play
@@ -196,6 +212,22 @@ const Timer = ({ onExit }: TimerProps) => {
   const radius = 100;
   const circumference = 2 * Math.PI * radius;
   const progressOffset = circumference - (getProgressPercentage() / 100) * circumference;
+
+  // Initialize audio on first user interaction
+  useEffect(() => {
+    const initializeAudio = () => {
+      // This ensures audio context is ready for use
+      audioSystem.initializeOnUserInteraction();
+    };
+
+    document.addEventListener('click', initializeAudio, { once: true });
+    document.addEventListener('touchstart', initializeAudio, { once: true });
+
+    return () => {
+      document.removeEventListener('click', initializeAudio);
+      document.removeEventListener('touchstart', initializeAudio);
+    };
+  }, []);
 
   // Auto-start the workout when the component is mounted
   useEffect(() => {
