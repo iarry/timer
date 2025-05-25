@@ -208,7 +208,11 @@ const ConfigPanel = ({ onStartWorkout, onSaveWorkout, onLoadWorkout }: ConfigPan
                   </select>
                   <span className="sets-label">sets</span>
                   <Button 
-                    onClick={() => dispatch(removeSplit(split.id))}
+                    onClick={() => {
+                      if (confirm('Are you sure you want to delete this split?')) {
+                        dispatch(removeSplit(split.id));
+                      }
+                    }}
                     variant="danger"
                     size="small"
                     disabled={splits.length === 1}
@@ -216,16 +220,7 @@ const ConfigPanel = ({ onStartWorkout, onSaveWorkout, onLoadWorkout }: ConfigPan
                     <Trash2 size={16} />
                   </Button>
                 </div>
-                <div className="split-actions">
-                  <Button 
-                    className="add-exercise-button"
-                    onClick={() => handleAddBlankExercise(split.id)}
-                    variant="secondary"
-                    size="small"
-                  >
-                    <Plus size={16} />
-                  </Button>
-                </div>
+
               </div>
               
               {/* Exercises in this split */}
@@ -321,6 +316,16 @@ const ConfigPanel = ({ onStartWorkout, onSaveWorkout, onLoadWorkout }: ConfigPan
                     </div>
                   </div>
                 ))}
+                <div className="add-exercise-section">
+                  <Button 
+                    className="add-exercise-button"
+                    onClick={() => handleAddBlankExercise(split.id)}
+                    variant="secondary"
+                    size="small"
+                  >
+                    <Plus size={16} />
+                  </Button>
+                </div>
               </div>
             </div>
           ))}
