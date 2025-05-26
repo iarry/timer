@@ -155,6 +155,7 @@ const Timer = ({ onExit }: TimerProps) => {
     dispatch(initializeTimer({
       splits: timerConfig.splits,
       defaultRestDuration: timerConfig.defaultRestDuration,
+      warmupDuration: timerConfig.warmupDuration, // Pass warmupDuration from timerConfig
     }));
     dispatch(startTimer());
     
@@ -247,11 +248,12 @@ const Timer = ({ onExit }: TimerProps) => {
 
   // Auto-start the workout when the component is mounted
   useEffect(() => {
-    const hasWorkout = timerConfig.splits.length > 0;
+    const hasWorkout = timerConfig.splits.length > 0 || timerConfig.warmupDuration > 0;
     if (timerState.status === 'idle' && hasWorkout) {
       handleStartWorkout();
     }
-  }, []);
+  // Ensure re-initialization if config changes, though typically Timer is unmounted/remounted
+  }, [timerConfig.splits, timerConfig.defaultRestDuration, timerConfig.warmupDuration, timerState.status, dispatch]); 
 
   // Check if timer has been initialized
   const isInitialized = timerState.status !== 'idle' || timerState.currentItem !== null;
@@ -324,7 +326,9 @@ const Timer = ({ onExit }: TimerProps) => {
                       fontSize="16px"
                       fontWeight="500"
                     >
-                      {timerState.currentItem && `Set ${timerState.currentItem.currentGlobalSetIndex}/${totalRounds}`}
+                      {timerState.currentItem && timerState.currentItem.splitId === 'system-warmup' 
+                        ? 'Warmup' 
+                        : timerState.currentItem && `Set ${timerState.currentItem.currentGlobalSetIndex}/${totalRounds}`}
                     </text>
                     
                     {/* Time remaining text - centered */}

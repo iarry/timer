@@ -23,6 +23,7 @@ export interface TimerState {
   queue: TimerItem[]; // Queue of exercises and rest periods
   originalSplits?: Split[]; // Store original configuration for rebuilding
   originalDefaultRestDuration?: number;
+  originalWarmupDuration?: number; // Added for warmup
   currentItemIndex: number; // Track position in the full workout sequence
 }
 
@@ -34,13 +35,32 @@ const initialState: TimerState = {
   queue: [],
   originalSplits: undefined,
   originalDefaultRestDuration: undefined,
+  originalWarmupDuration: undefined, // Added for warmup
   currentItemIndex: 0,
 };
 
 // Helper function to build the complete workout sequence
-const buildWorkoutSequence = (splits: Split[], defaultRestDuration: number): TimerItem[] => {
+const buildWorkoutSequence = (
+  splits: Split[], 
+  defaultRestDuration: number,
+  warmupDuration: number // Added warmupDuration
+): TimerItem[] => {
   const sequence: TimerItem[] = [];
-  let currentGlobalSet = 0; // Starts at 0, increments to 1 for the first set
+  let currentGlobalSet = 0; 
+
+  // Add warmup item if duration is positive
+  if (warmupDuration > 0) {
+    sequence.push({
+      type: 'exercise', // Treat warmup like an exercise for countdown purposes
+      splitId: 'system-warmup', // Special ID for warmup
+      exerciseId: 'system-warmup', // Special ID for warmup
+      name: 'Warmup',
+      duration: warmupDuration,
+      setIndex: 0, // Not applicable in the same way as splits
+      exerciseIndex: 0, // Not applicable
+      currentGlobalSetIndex: 0, // Special value for warmup, to be handled in UI
+    });
+  }
   
   splits.forEach((split, splitIndex) => {
     for (let setIndex = 0; setIndex < split.sets; setIndex++) {
@@ -68,7 +88,7 @@ const buildWorkoutSequence = (splits: Split[], defaultRestDuration: number): Tim
             name: 'Rest', // Or 'Side Switch Rest'
             duration: defaultRestDuration,
             setIndex,
-            exerciseIndex, // Associates with the preceding Left exercise
+            exerciseIndex: exerciseIndex, // Associates with the preceding Left exercise
             currentGlobalSetIndex: currentGlobalSetForDisplay,
           });
           
@@ -142,16 +162,18 @@ const timerSlice = createSlice({
     initializeTimer(state, action: PayloadAction<{
       splits: Split[];
       defaultRestDuration: number;
+      warmupDuration: number; // Added warmupDuration
     }>) {
-      const { splits, defaultRestDuration } = action.payload;
+      const { splits, defaultRestDuration, warmupDuration } = action.payload;
       
       // Store the original configuration for rebuilding if needed
       state.originalSplits = splits;
       state.originalDefaultRestDuration = defaultRestDuration;
+      state.originalWarmupDuration = warmupDuration; // Store warmup duration
       state.currentItemIndex = 0;
       
       // Use the helper function to build the workout sequence
-      state.queue = buildWorkoutSequence(splits, defaultRestDuration);
+      state.queue = buildWorkoutSequence(splits, defaultRestDuration, warmupDuration); // Pass warmupDuration
       
       // Calculate total time
       state.totalTimeRemaining = state.queue.reduce(
@@ -199,13 +221,20 @@ const timerSlice = createSlice({
       if (!state.currentItem) return;
       
       // We need to ensure we've stored the original splits configuration
-      if (!state.originalSplits || !state.originalDefaultRestDuration) {
-        console.error("Cannot go to previous item: original workout configuration not stored");
+      if (!state.originalSplits || 
+          typeof state.originalDefaultRestDuration === 'undefined' ||
+          typeof state.originalWarmupDuration === 'undefined' // Check warmup duration
+      ) {
+        console.error("Cannot go to previous item: original workout configuration not stored completely");
         return;
       }
       
       // Rebuild the complete workout sequence
-      const sequence = buildWorkoutSequence(state.originalSplits, state.originalDefaultRestDuration);
+      const sequence = buildWorkoutSequence(
+        state.originalSplits, 
+        state.originalDefaultRestDuration,
+        state.originalWarmupDuration // Pass stored warmup duration
+      );
       
       // Determine current position in sequence
       let currentIndex = 0;
