@@ -10,8 +10,9 @@ export interface TimerItem {
   exerciseId?: string;
   name: string;
   duration: number;
-  setIndex: number;
-  exerciseIndex: number;
+  setIndex: number; // 0-indexed, local to split
+  exerciseIndex: number; // 0-indexed, local to set's exercise list
+  currentGlobalSetIndex: number; // 1-indexed, global across all splits for display
 }
 
 export interface TimerState {
@@ -39,9 +40,13 @@ const initialState: TimerState = {
 // Helper function to build the complete workout sequence
 const buildWorkoutSequence = (splits: Split[], defaultRestDuration: number): TimerItem[] => {
   const sequence: TimerItem[] = [];
+  let currentGlobalSet = 0; // Starts at 0, increments to 1 for the first set
   
-  splits.forEach((split, splitIndex) => { // Added splitIndex
+  splits.forEach((split, splitIndex) => {
     for (let setIndex = 0; setIndex < split.sets; setIndex++) {
+      currentGlobalSet++; // Increment for each new set (becomes 1-indexed for this set)
+      const currentGlobalSetForDisplay = currentGlobalSet;
+
       split.exercises.forEach((exercise, exerciseIndex) => {
         if (exercise.leftRight) {
           // For left/right exercises, add separate left and right sides
@@ -52,7 +57,8 @@ const buildWorkoutSequence = (splits: Split[], defaultRestDuration: number): Tim
             name: `${exercise.name} (Left)`,
             duration: exercise.duration,
             setIndex,
-            exerciseIndex
+            exerciseIndex,
+            currentGlobalSetIndex: currentGlobalSetForDisplay,
           });
           
           // Add rest between left and right
@@ -62,7 +68,8 @@ const buildWorkoutSequence = (splits: Split[], defaultRestDuration: number): Tim
             name: 'Rest', // Or 'Side Switch Rest'
             duration: defaultRestDuration,
             setIndex,
-            exerciseIndex // Associates with the preceding Left exercise
+            exerciseIndex, // Associates with the preceding Left exercise
+            currentGlobalSetIndex: currentGlobalSetForDisplay,
           });
           
           sequence.push({
@@ -72,7 +79,8 @@ const buildWorkoutSequence = (splits: Split[], defaultRestDuration: number): Tim
             name: `${exercise.name} (Right)`,
             duration: exercise.duration,
             setIndex,
-            exerciseIndex
+            exerciseIndex,
+            currentGlobalSetIndex: currentGlobalSetForDisplay,
           });
         } else {
           // Regular exercise
@@ -83,7 +91,8 @@ const buildWorkoutSequence = (splits: Split[], defaultRestDuration: number): Tim
             name: exercise.name,
             duration: exercise.duration,
             setIndex,
-            exerciseIndex
+            exerciseIndex,
+            currentGlobalSetIndex: currentGlobalSetForDisplay,
           });
         }
         
@@ -99,7 +108,8 @@ const buildWorkoutSequence = (splits: Split[], defaultRestDuration: number): Tim
             name: 'Rest',
             duration: defaultRestDuration,
             setIndex, // Refers to the set the preceding exercise was in
-            exerciseIndex // Refers to the exercise index it follows
+            exerciseIndex, // Refers to the exercise index it follows
+            currentGlobalSetIndex: currentGlobalSetForDisplay,
           });
         }
       }); // End of exercises.forEach
@@ -115,7 +125,8 @@ const buildWorkoutSequence = (splits: Split[], defaultRestDuration: number): Tim
         duration: defaultRestDuration,
         // Associate with the last exercise of the preceding split
         setIndex: split.sets - 1, 
-        exerciseIndex: split.exercises.length - 1 
+        exerciseIndex: split.exercises.length - 1,
+        currentGlobalSetIndex: currentGlobalSet, // This rest belongs to the set it follows
       });
     }
   }); // End of splits.forEach

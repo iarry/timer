@@ -324,7 +324,7 @@ const Timer = ({ onExit }: TimerProps) => {
                       fontSize="16px"
                       fontWeight="500"
                     >
-                      {timerState.currentItem && `Set ${timerState.currentItem.setIndex + 1}/${totalRounds}`}
+                      {timerState.currentItem && `Set ${timerState.currentItem.currentGlobalSetIndex}/${totalRounds}`}
                     </text>
                     
                     {/* Time remaining text - centered */}
