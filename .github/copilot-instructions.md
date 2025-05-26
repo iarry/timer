@@ -26,6 +26,7 @@
 - Clean up unused code/files/dependencies
 - Mark completed TODOs in TODO.md
 - Remove failed attempts before retrying.
+- Do not create summary documents, just update DAG.md or CONTRIBUTING.md as needed (avoid fluff).
 
 ## Context & Memory
 

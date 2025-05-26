@@ -14,6 +14,8 @@ export const initializeAppState = async () => {
         defaultExerciseDuration: timerConfig.defaultExerciseDuration,
         defaultRestDuration: timerConfig.defaultRestDuration,
         audioProfile: timerConfig.audioProfile,
+        warmupDuration: timerConfig.warmupDuration,
+        muted: timerConfig.muted,
       }));
     }
     
@@ -32,6 +34,7 @@ export const initializeAppState = async () => {
     // Initialize audio system with current profile from state
     const currentState = store.getState();
     audioSystem.setProfile(currentState.timerConfig.audioProfile);
+    audioSystem.setMuted(currentState.timerConfig.muted);
     
   } catch (error) {
     // Fall back to default state - IndexedDB not available

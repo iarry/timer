@@ -63,6 +63,8 @@ const workoutDB = new WorkoutDB();
 const PERSIST_ACTIONS = [
   'timerConfig/setDefaultDurations',
   'timerConfig/setAudioProfile',
+  'timerConfig/setWarmupDuration',
+  'timerConfig/setMuted',
   'timerConfig/addSplit',
   'timerConfig/removeSplit',
   'timerConfig/updateSplit',

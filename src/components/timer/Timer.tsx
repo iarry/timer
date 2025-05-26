@@ -10,6 +10,7 @@ import {
   goToPreviousItem,
   goToNextItem,
 } from '../../features/timer/timerSlice';
+import { setMuted } from '../../features/timerConfig/timerConfigSlice';
 import { formatTime } from '../../utils';
 import { audioSystem } from '../../utils/audioSystem';
 import { useScreenWakeLock } from '../../hooks/useScreenWakeLock';
@@ -30,8 +31,10 @@ const Timer = ({ onExit }: TimerProps) => {
   const previousItemRef = useRef(timerState.currentItem);
   const [smoothTimeRemaining, setSmoothTimeRemaining] = useState(0);
   const lastTickTimeRef = useRef<number>(Date.now());
-  const [isMuted, setIsMuted] = useState(false);
   const countdownStartTimeRef = useRef<number>(Date.now());
+
+  // Get mute state from persisted config instead of local state
+  const isMuted = timerConfig.muted;
 
   // Encouraging messages for workout completion
   const encouragingMessages = [
@@ -269,7 +272,7 @@ const Timer = ({ onExit }: TimerProps) => {
               <X size={24} />
             </Button>
             <Button 
-              onClick={() => setIsMuted(!isMuted)}
+              onClick={() => dispatch(setMuted(!isMuted))}
               variant="transparent"
               size="small"
               className="timer-mute-button"

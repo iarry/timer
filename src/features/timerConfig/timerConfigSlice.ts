@@ -22,6 +22,7 @@ export interface TimerConfigState {
   warmupDuration: number; // in seconds, 0 means no warmup
   splits: Split[];
   audioProfile: string; // audio profile name
+  muted: boolean; // audio mute state
 }
 
 // Initial state for timer configuration
@@ -31,6 +32,7 @@ const initialState: TimerConfigState = {
   warmupDuration: 180, // default 3 minutes (180s)
   splits: [],
   audioProfile: 'Clean', // default audio profile
+  muted: false, // default unmuted
 };
 
 // Create the timer config slice
@@ -153,8 +155,17 @@ const timerConfigSlice = createSlice({
       defaultExerciseDuration: number;
       defaultRestDuration: number;
       audioProfile?: string;
+      warmupDuration?: number;
+      muted?: boolean;
     }>) {
-      const { splits, defaultExerciseDuration, defaultRestDuration, audioProfile } = action.payload;
+      const { 
+        splits, 
+        defaultExerciseDuration, 
+        defaultRestDuration, 
+        audioProfile,
+        warmupDuration,
+        muted 
+      } = action.payload;
       
       // Clear existing splits
       state.splits = [];
@@ -165,6 +176,14 @@ const timerConfigSlice = createSlice({
       
       if (audioProfile) {
         state.audioProfile = audioProfile;
+      }
+
+      if (warmupDuration !== undefined) {
+        state.warmupDuration = warmupDuration;
+      }
+
+      if (muted !== undefined) {
+        state.muted = muted;
       }
       
       // Add new splits
@@ -232,6 +251,10 @@ const timerConfigSlice = createSlice({
     setWarmupDuration(state, action: PayloadAction<number>) {
       state.warmupDuration = action.payload;
     },
+
+    setMuted(state, action: PayloadAction<boolean>) {
+      state.muted = action.payload;
+    },
   },
 });
 
@@ -249,7 +272,8 @@ export const {
   moveExerciseToSplit,
   loadWorkout,
   setAudioProfile,
-  setWarmupDuration, // Add the new action
+  setWarmupDuration,
+  setMuted,
 } = timerConfigSlice.actions;
 
 export default timerConfigSlice.reducer;
