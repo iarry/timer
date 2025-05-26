@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 
 // Type definitions for Screen Wake Lock API
 interface WakeLockSentinel {
@@ -22,7 +22,7 @@ export const useScreenWakeLock = (isActive: boolean = false) => {
   const wakeLockRef = useRef<WakeLockSentinel | null>(null);
   const isSupported = 'wakeLock' in navigator;
 
-  const requestWakeLock = async () => {
+  const requestWakeLock = useCallback(async () => {
     if (!isSupported) {
       console.log('Screen Wake Lock API not supported');
       return false;
@@ -51,7 +51,7 @@ export const useScreenWakeLock = (isActive: boolean = false) => {
       wakeLockRef.current = null;
       return false;
     }
-  };
+  }, [isSupported]);
 
   const releaseWakeLock = async () => {
     if (wakeLockRef.current) {
@@ -77,7 +77,7 @@ export const useScreenWakeLock = (isActive: boolean = false) => {
     return () => {
       releaseWakeLock();
     };
-  }, [isActive]);
+  }, [isActive, requestWakeLock]);
 
   // Handle visibility change - re-acquire wake lock when page becomes visible again
   useEffect(() => {
@@ -93,7 +93,7 @@ export const useScreenWakeLock = (isActive: boolean = false) => {
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
-  }, [isActive]);
+  }, [isActive, requestWakeLock]);
 
   return {
     isSupported,

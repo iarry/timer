@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import {
   startTimer,
@@ -37,7 +37,7 @@ const Timer = ({ onExit }: TimerProps) => {
   const isMuted = timerConfig.muted;
 
   // Encouraging messages for workout completion
-  const encouragingMessages = [
+  const encouragingMessages = useMemo(() => [
     "Well done! Every step forward is a victory.",
     "Fantastic effort! You're stronger than you think.",
     "Workout complete! Embrace the progress you've made.",
@@ -45,7 +45,7 @@ const Timer = ({ onExit }: TimerProps) => {
     "Great job! Rest, recover, and come back stronger.",
     "Excellent work! The journey of a thousand miles begins with a single step.",
     "Phenomenal! Your dedication is inspiring."
-  ];
+  ], []);
   const [completionMessage, setCompletionMessage] = useState("");
 
   // Update the audio system mute state when local mute state changes
@@ -123,7 +123,7 @@ const Timer = ({ onExit }: TimerProps) => {
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [timerState.status, timerState.currentTime, dispatch]);
+  }, [timerState.status, timerState.currentTime, timerState.queue, dispatch]);
   
   // Effect to play sounds on transitions
   useEffect(() => {
@@ -151,10 +151,10 @@ const Timer = ({ onExit }: TimerProps) => {
     
     // Update the ref
     previousItemRef.current = timerState.currentItem;
-  }, [timerState.currentItem, timerState.status]);
+  }, [timerState.currentItem, timerState.status, encouragingMessages]);
 
   // Initialize the timer with the current configuration
-  const handleStartWorkout = () => {
+  const handleStartWorkout = useCallback(() => {
     dispatch(initializeTimer({
       splits: timerConfig.splits,
       defaultRestDuration: timerConfig.defaultRestDuration,
@@ -165,7 +165,7 @@ const Timer = ({ onExit }: TimerProps) => {
     // Play initial audio cue based on first item type
     // Note: We'll let the transition effect handle the first sound
     audioSystem.initializeOnUserInteraction();
-  };
+  }, [dispatch, timerConfig.splits, timerConfig.defaultRestDuration, timerConfig.warmupDuration]);
 
   // Toggle between pause and play
   const handleTogglePlay = () => {
@@ -256,7 +256,7 @@ const Timer = ({ onExit }: TimerProps) => {
       handleStartWorkout();
     }
   // Ensure re-initialization if config changes, though typically Timer is unmounted/remounted
-  }, [timerConfig.splits, timerConfig.defaultRestDuration, timerConfig.warmupDuration, timerState.status, dispatch]); 
+  }, [timerConfig.splits, timerConfig.defaultRestDuration, timerConfig.warmupDuration, timerState.status, dispatch, handleStartWorkout]); 
 
   // Check if timer has been initialized
   const isInitialized = timerState.status !== 'idle' || timerState.currentItem !== null;

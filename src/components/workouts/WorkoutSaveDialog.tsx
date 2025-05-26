@@ -80,7 +80,11 @@ const WorkoutSaveDialog = ({ isOpen, onClose }: WorkoutSaveDialogProps) => {
               onChange={(e) => setWorkoutName(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
-                  currentWorkout ? handleUpdateExisting() : handleSaveNew();
+                  if (currentWorkout) {
+                    handleUpdateExisting();
+                  } else {
+                    handleSaveNew();
+                  }
                 }
               }}
               autoFocus

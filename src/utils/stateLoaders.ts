@@ -1,21 +1,30 @@
 import { store } from '../store';
-import { loadWorkout } from '../features/timerConfig/timerConfigSlice';
+import { loadWorkout, type Split } from '../features/timerConfig/timerConfigSlice';
 import { loadSavedWorkouts, setCurrentWorkout } from '../features/savedWorkouts/savedWorkoutsSlice';
 import { workoutDB } from '../middleware/indexedDBMiddleware';
 import { audioSystem } from './audioSystem';
 
+interface StoredTimerConfig {
+  splits?: Split[];
+  defaultExerciseDuration?: number;
+  defaultRestDuration?: number;
+  audioProfile?: string;
+  warmupDuration?: number;
+  muted?: boolean;
+}
+
 export const initializeAppState = async () => {
   try {
     // Load timer config
-    const timerConfig = await workoutDB.getItem('timerConfig', 'state');
-    if (timerConfig) {
+    const timerConfig = await workoutDB.getItem('timerConfig', 'state') as StoredTimerConfig | null;
+    if (timerConfig && typeof timerConfig === 'object' && Object.keys(timerConfig).length > 0) {
       store.dispatch(loadWorkout({
-        splits: timerConfig.splits,
-        defaultExerciseDuration: timerConfig.defaultExerciseDuration,
-        defaultRestDuration: timerConfig.defaultRestDuration,
-        audioProfile: timerConfig.audioProfile,
-        warmupDuration: timerConfig.warmupDuration,
-        muted: timerConfig.muted,
+        splits: timerConfig.splits || [],
+        defaultExerciseDuration: timerConfig.defaultExerciseDuration || 30,
+        defaultRestDuration: timerConfig.defaultRestDuration || 10,
+        audioProfile: timerConfig.audioProfile || 'standard',
+        warmupDuration: timerConfig.warmupDuration || 180,
+        muted: timerConfig.muted || false,
       }));
     }
     
@@ -26,8 +35,8 @@ export const initializeAppState = async () => {
     }
     
     // Load current workout ID
-    const currentWorkoutId = await workoutDB.getItem('savedWorkouts', 'currentWorkoutId');
-    if (currentWorkoutId) {
+    const currentWorkoutId = await workoutDB.getItem('savedWorkouts', 'currentWorkoutId') as string;
+    if (currentWorkoutId && typeof currentWorkoutId === 'string') {
       store.dispatch(setCurrentWorkout(currentWorkoutId));
     }
 
@@ -36,7 +45,7 @@ export const initializeAppState = async () => {
     audioSystem.setProfile(currentState.timerConfig.audioProfile);
     audioSystem.setMuted(currentState.timerConfig.muted);
     
-  } catch (error) {
+  } catch {
     // Fall back to default state - IndexedDB not available
   }
 };

@@ -16,8 +16,8 @@
 - [x] Move the play/pause button up on the screen
 - [x] Make the ring larger, almost to the width of the screen.
 - [x] Increase the font size of both the current exercise and the next exercise.
-- [ ] FIX there's no rest inbetween splits (make sure there isn't one added at the end of the workout though)
-- [ ] After finishing the workout, remove the "Restart workout" button. Just have some no-fluff encouraging copy. Maybe have a list of congradulatory or encouraging things to say - base them slightly on spiritual/eastern philosphy but all kind of david goggin's "stay hard!" like.
+- [x] FIX there's no rest inbetween splits (make sure there isn't one added at the end of the workout though)
+- [x] After finishing the workout, remove the "Restart workout" button. Just have some no-fluff encouraging copy. Maybe have a list of congradulatory or encouraging things to say - base them slightly on spiritual/eastern philosphy but all kind of david goggin's "stay hard!" like.
 - [x] DEBUG - something is broken with the sound on my phone. It seems to drop out at times, or lose its place. For example, if I start a workout and then switch apps it might not be playing again, but then sometimes switching and coming back again will restore the sound. Maybe it's getting lost or attached to some event that's not always firing?
 
 ## Settings

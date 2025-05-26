@@ -14,8 +14,8 @@ class AudioSystem {
 
   private initializeAudio() {
     try {
-      this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-    } catch (error) {
+      this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)(); // eslint-disable-line @typescript-eslint/no-explicit-any
+    } catch {
       console.warn('Web Audio API not supported');
     }
   }
@@ -53,6 +53,7 @@ class AudioSystem {
   }
 
   private createTone(frequency: number, duration: number, type: OscillatorType = 'sine', volume: number = 0.3) {
+    // eslint-disable-next-line no-async-promise-executor
     return new Promise<void>(async (resolve) => {
       if (this.isMuted) {
         resolve();

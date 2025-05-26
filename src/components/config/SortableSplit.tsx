@@ -1,7 +1,7 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { useAppDispatch } from '../../hooks';
-import { updateSplit, removeSplit, Split, Exercise } from '../../features/timerConfig/timerConfigSlice';
+import { updateSplit, removeSplit, Split } from '../../features/timerConfig/timerConfigSlice';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { SortableExercise } from './SortableExercise';
 import Button from '../common/Button';

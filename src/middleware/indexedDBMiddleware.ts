@@ -30,7 +30,7 @@ class WorkoutDB {
     });
   }
 
-  async setItem(storeName: string, key: string, value: any): Promise<void> {
+  async setItem(storeName: string, key: string, value: unknown): Promise<void> {
     if (!this.db) await this.init();
     
     return new Promise((resolve, reject) => {
@@ -43,7 +43,7 @@ class WorkoutDB {
     });
   }
 
-  async getItem(storeName: string, key: string): Promise<any> {
+  async getItem(storeName: string, key: string): Promise<unknown> {
     if (!this.db) await this.init();
     
     return new Promise((resolve, reject) => {
@@ -81,7 +81,7 @@ const PERSIST_ACTIONS = [
 ];
 
 export const indexedDBMiddleware: Middleware = 
-  (store) => (next) => (action: any) => {
+  (store) => (next) => (action: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
     // Let the action go through first
     const result = next(action);
     
