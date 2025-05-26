@@ -2,6 +2,11 @@
 
 Free, ad-free workout timer with saveable workouts. Built for r/calisthenics recommended routine: multiple splits with varying exercises, sets, and left/right support.
 
+## 📸 Screenshots
+
+<img src="Screenshot 2025-05-25 at 10.47.21 PM.png" alt="Timer Configuration" width="400">
+<img src="Screenshot 2025-05-25 at 10.47.47 PM.png" alt="Timer Running" width="400">
+
 ## 🚀 Features
 
 - **Interval timer** - Multiple splits, exercises, left/right support
