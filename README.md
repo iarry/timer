@@ -4,8 +4,8 @@ Free, ad-free workout timer with saveable workouts. Built for r/calisthenics rec
 
 ## 📸 Screenshots
 
-<img src="Screenshot 2025-05-25 at 10.47.21 PM.png" alt="Timer Configuration" width="400">
-<img src="Screenshot 2025-05-25 at 10.47.47 PM.png" alt="Timer Running" width="400">
+<img src="https://github.com/iarry/timer/blob/main/Screenshot%202025-05-25%20at%2010.47.21%E2%80%AFPM.png" alt="Timer Configuration" width="400">
+<img src="https://github.com/iarry/timer/blob/main/Screenshot%202025-05-25%20at%2010.47.47%E2%80%AFPM.png" alt="Timer Running" width="400">
 
 ## 🚀 Features
 
