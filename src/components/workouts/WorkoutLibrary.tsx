@@ -9,15 +9,16 @@ import {
   loadWorkout
 } from '../../features/timerConfig/timerConfigSlice';
 import Button from '../common/Button';
-import { Trash2, Edit3, Check, X } from 'lucide-react';
+import { Trash2, Edit3, Check, X, PlusCircle } from 'lucide-react';
 import './WorkoutLibrary.css';
 
 interface WorkoutLibraryProps {
   isOpen: boolean;
   onClose: () => void;
+  onNewWorkout?: () => void;
 }
 
-const WorkoutLibrary = ({ isOpen, onClose }: WorkoutLibraryProps) => {
+const WorkoutLibrary = ({ isOpen, onClose, onNewWorkout }: WorkoutLibraryProps) => {
   const dispatch = useAppDispatch();
   const { workouts, currentWorkoutId } = useAppSelector(state => state.savedWorkouts);
   const [editingWorkoutId, setEditingWorkoutId] = useState<string | null>(null);
@@ -79,6 +80,9 @@ const WorkoutLibrary = ({ isOpen, onClose }: WorkoutLibraryProps) => {
       <div className="workout-library">
         <div className="dialog-header">
           <h3>Workouts</h3>
+          <div className="workout-note">
+            Edits to saved workouts are not saved automatically.
+          </div>
           <Button 
             onClick={onClose}
             variant="transparent"
@@ -88,8 +92,21 @@ const WorkoutLibrary = ({ isOpen, onClose }: WorkoutLibraryProps) => {
             <X size={20} />
           </Button>
         </div>
-        
+
         <div className="workout-list">
+          {onNewWorkout && (
+            <Button
+              onClick={onNewWorkout}
+              variant="primary" 
+              size="small"
+              className="new-workout-button"
+              fullWidth
+            >
+              <PlusCircle size={16} />
+              New Workout
+            </Button>
+          )}
+          
           {workouts.map(workout => (
             <div 
               key={workout.id} 

@@ -7,6 +7,7 @@
 - Use emojis in documentation titles to enhance readability and engagement.
 - Avoid fluff in user-facing copy.
 - Keep bundle size small.
+- Do one TODO at a time, but you can read all of them to get context.
 
 ## Code Quality
 
@@ -24,6 +25,7 @@
 - Update docs: README.md (user changes), CONTRIBUTING.md (dev changes)
 - Clean up unused code/files/dependencies
 - Mark completed TODOs in TODO.md
+- Remove failed attempts before retrying.
 
 ## Context & Memory
 

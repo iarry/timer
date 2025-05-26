@@ -15,49 +15,32 @@
   gap: 0.5rem;
 }
 
-.profile-select {
-  flex: 1;
-  padding: 0.5rem 0.75rem;
-  background: #2a2a2a;
-  border: 1px solid #444;
-  border-radius: 0.375rem;
-  color: #f5f5f5;
-  font-size: 0.875rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.profile-select:hover {
-  border-color: #2563eb;
-  background: #333;
-}
-
-.profile-select:focus {
-  outline: none;
-  border-color: #2563eb;
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
-}
-
 .test-button {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.25rem;
-  padding: 0.5rem;
-  background: #374151;
-  border: 1px solid #4b5563;
-  border-radius: 0.375rem;
-  color: #d1d5db;
+  padding: var(--spacing-sm);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  color: var(--color-text);
   cursor: pointer;
   transition: all 0.2s ease;
   min-width: 2.5rem;
   position: relative;
 }
 
+.test-button svg {
+  /* Ensure the main icon stays centered */
+  position: relative;
+  z-index: 1;
+}
+
 .test-button:hover:not(:disabled) {
-  background: #4b5563;
-  border-color: #6b7280;
-  color: #f9fafb;
+  background: var(--color-background-alt);
+  border-color: var(--color-secondary);
+  color: var(--color-secondary);
 }
 
 .test-button:disabled {
@@ -66,17 +49,19 @@
 }
 
 .test-button.testing {
-  background: #2563eb;
-  border-color: #3b82f6;
+  background: var(--color-secondary);
+  border-color: var(--color-secondary);
   color: white;
 }
 
 .testing-indicator {
   position: absolute;
-  top: -2px;
-  right: -2px;
+  top: -4px;
+  right: -4px;
   font-size: 0.75rem;
   animation: pulse 1s infinite;
+  z-index: 2;
+  pointer-events: none; /* Ensure it doesn't interfere with button clicks */
 }
 
 @keyframes pulse {

@@ -65,3 +65,13 @@
     gap: var(--spacing-sm);
     justify-content: flex-end;
 }
+
+/* Green outline variant for Save New button */
+.btn-outline-green {
+    border-color: var(--color-secondary) !important;
+    color: var(--color-secondary) !important;
+}
+
+.btn-outline-green:hover:not(:disabled) {
+    background-color: rgba(76, 175, 80, 0.1) !important;
+}

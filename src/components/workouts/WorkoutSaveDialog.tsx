@@ -100,6 +100,7 @@ const WorkoutSaveDialog = ({ isOpen, onClose }: WorkoutSaveDialogProps) => {
               variant="outline"
               size="small"
               disabled={!workoutName.trim()}
+              className="btn-outline-green"
             >
               Save New
             </Button>

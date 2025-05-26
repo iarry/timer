@@ -1,10 +1,13 @@
 ## Configuration page
 
-- [ ] Add a button for "new workout" when on the load workout modal
-- [ ] Add a note above the list of saved workouts along the lines of "Edits to saved workouts are not saved automatically".
-- [ ] The "Save New" button on the saved workout list modal should be green in the outline style - the cancel and update buttons are styled correctly, don't change those.
-- [ ] Improve the stlying of the audio profile select - it looks very basi right now. Perhaps use the same style select as the rest of the page.
-- [ ] There's a small bug with the "test audio" button, where an icon is off center while playing
+- [x] Add a button for "new workout" when on the load workout modal
+- [x] Add a note above the list of saved workouts along the lines of "Edits to saved workouts are not saved automatically".
+- [x] The "Save New" button on the saved workout list modal should be green in the outline style - the cancel and update buttons are styled correctly, don't change those.
+- [x] Improve the stlying of the audio profile select - it looks very basi right now. Perhaps use the same style select as the rest of the page.
+- [x] There's a small bug with the "test audio" button, where an icon is off center while playing
+- [x] Create reusable Select component to standardize all select styling across the app
+- [x] Move workout note to WorkoutLibrary modal header for better UX
+- [x] Disable service worker in development to prevent caching issues
 - [ ] Add the ability to drag and drop an entire set, to re-order the sets.
 - [ ] Add a "Warmup" duration, with increments of 15s, defaulting to 3 minutes. It's configuration should be just below but part of the default settings, and it should occur before the rest of the workout a single time.
 

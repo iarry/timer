@@ -4,6 +4,7 @@ import { audioSystem } from '../../utils/audioSystem';
 import { setAudioProfile } from '../../features/timerConfig/timerConfigSlice';
 import { RootState } from '../../store';
 import { Volume2 } from 'lucide-react';
+import Select from '../common/Select';
 import './AudioProfileSelector.css';
 
 export const AudioProfileSelector: React.FC = () => {
@@ -56,17 +57,17 @@ export const AudioProfileSelector: React.FC = () => {
   return (
     <div className="audio-profile-selector">
       <div className="profile-controls">
-        <select 
+        <Select 
           value={currentProfile.name}
           onChange={(e) => handleProfileChange(e.target.value)}
-          className="profile-select"
+          fullWidth
         >
           {profiles.map(profile => (
             <option key={profile.name} value={profile.name}>
               {profile.name}
             </option>
           ))}
-        </select>
+        </Select>
         <button 
           onClick={testCurrentProfile}
           className={`test-button ${isTesting ? 'testing' : ''}`}

@@ -30,6 +30,7 @@ import {
 } from '../../features/timerConfig/timerConfigSlice';
 import { generateId } from '../../utils';
 import Button from '../common/Button';
+import Select from '../common/Select';
 import { AudioProfileSelector } from './AudioProfileSelector';
 import { SortableExercise } from './SortableExercise';
 import { Trash2, Save, GalleryVerticalEnd, Plus, GripVertical } from 'lucide-react';
@@ -74,13 +75,6 @@ const ConfigPanel = ({ onStartWorkout, onSaveWorkout, onLoadWorkout }: ConfigPan
   };
 
   const durationOptions = generateDurationOptions();
-
-  // Check if an exercise is using the default duration
-  const isUsingDefaultDuration = (exerciseDuration: number) => {
-    return exerciseDuration === defaultExerciseDuration;
-  };
-
-
 
   // Effect for auto-updating default durations when they change
   useEffect(() => {
@@ -229,28 +223,30 @@ const ConfigPanel = ({ onStartWorkout, onSaveWorkout, onLoadWorkout }: ConfigPan
           <div className="default-durations-row">
             <div className="duration-input">
               <label>Default work: </label>
-              <select
+              <Select
                 value={exerciseDuration}
                 onChange={(e) => setExerciseDuration(parseInt(e.target.value))}
+                variant="compact"
                 className="duration-input-field"
               >
                 {durationOptions.map(duration => (
                   <option key={duration} value={duration}>{duration}</option>
                 ))}
-              </select>
+              </Select>
             </div>
             
             <div className="duration-input">
               <label>Rest: </label>
-              <select
+              <Select
                 value={restDuration}
                 onChange={(e) => setRestDuration(parseInt(e.target.value))}
+                variant="compact"
                 className="duration-input-field"
               >
                 {durationOptions.map(duration => (
                   <option key={duration} value={duration}>{duration}</option>
                 ))}
-              </select>
+              </Select>
             </div>
           </div>
         </div>
@@ -269,18 +265,19 @@ const ConfigPanel = ({ onStartWorkout, onSaveWorkout, onLoadWorkout }: ConfigPan
               <div key={split.id} className="split-item">
                 <div className="split-header">
                   <div className="sets-info">
-                    <select
+                    <Select
                       value={split.sets}
                       onChange={(e) => dispatch(updateSplit({ 
                         id: split.id, 
                         sets: parseInt(e.target.value) || 1 
                       }))}
+                      variant="compact"
                       className="sets-select"
                     >
                       {Array.from({ length: 20 }, (_, i) => i + 1).map(num => (
                         <option key={num} value={num}>{num}</option>
                       ))}
-                    </select>
+                    </Select>
                     <span className="sets-label">sets</span>
                     <Button 
                       onClick={() => {
@@ -308,7 +305,6 @@ const ConfigPanel = ({ onStartWorkout, onSaveWorkout, onLoadWorkout }: ConfigPan
                         key={exercise.id}
                         exercise={exercise}
                         splitId={split.id}
-                        isUsingDefaultDuration={isUsingDefaultDuration}
                         durationOptions={durationOptions}
                         exercisesLength={split.exercises.length}
                       />
@@ -342,7 +338,7 @@ const ConfigPanel = ({ onStartWorkout, onSaveWorkout, onLoadWorkout }: ConfigPan
                     placeholder="Exercise name"
                   />
                   <select
-                    className={`exercise-duration-input ${isUsingDefaultDuration(activeExercise.duration) ? 'default-duration' : ''}`}
+                    className="exercise-duration-input"
                     value={activeExercise.duration}
                     disabled
                   >

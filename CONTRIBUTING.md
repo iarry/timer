@@ -68,6 +68,7 @@ src/
 
 ### CSS
 
+- **Minimize specificity**: Use single, BEM-compliant selectors.
 - **CSS custom properties** for theming (--color-primary, --spacing-md)
 - **BEM-like naming** (.exercise-item, .timer-controls)
 - **Mobile-first** responsive design

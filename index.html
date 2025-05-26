@@ -30,7 +30,10 @@
     
     <!-- Service Worker Registration -->
     <script>
-      if ('serviceWorker' in navigator) {
+      // Only register service worker in production (when served from non-localhost)
+      const isProduction = !location.hostname.includes('localhost') && !location.hostname.includes('127.0.0.1');
+      
+      if ('serviceWorker' in navigator && isProduction) {
         window.addEventListener('load', () => {
           navigator.serviceWorker.register('/sw.js')
             .then((registration) => {

@@ -3,12 +3,12 @@ import { CSS } from '@dnd-kit/utilities';
 import { useAppDispatch } from '../../hooks';
 import { updateExercise, removeExercise, Exercise } from '../../features/timerConfig/timerConfigSlice';
 import Button from '../common/Button';
+import Select from '../common/Select';
 import { Trash2, GripVertical } from 'lucide-react';
 
 interface SortableExerciseProps {
   exercise: Exercise;
   splitId: string;
-  isUsingDefaultDuration: (duration: number) => boolean;
   durationOptions: number[];
   exercisesLength: number;
 }
@@ -16,7 +16,6 @@ interface SortableExerciseProps {
 export const SortableExercise = ({
   exercise,
   splitId,
-  isUsingDefaultDuration,
   durationOptions,
   exercisesLength
 }: SortableExerciseProps) => {
@@ -65,8 +64,9 @@ export const SortableExercise = ({
         placeholder="Exercise name"
       />
       
-      <select
-        className={`exercise-duration-input ${isUsingDefaultDuration(exercise.duration) ? 'default-duration' : ''}`}
+      <Select
+        className="exercise-duration-input"
+        variant="compact"
         value={exercise.duration}
         onChange={(e) => 
           dispatch(updateExercise({
@@ -79,7 +79,7 @@ export const SortableExercise = ({
         {durationOptions.map(duration => (
           <option key={duration} value={duration}>{duration}</option>
         ))}
-      </select>
+      </Select>
       
       <div className="exercise-checkbox">
         <label>

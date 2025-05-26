@@ -1,0 +1,36 @@
+/* Base select styling */
+.select {
+    background: transparent;
+    border: 1px solid transparent;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-family: monospace;
+    font-weight: 600;
+    color: var(--color-secondary);
+    font-size: 0.9rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+}
+
+.select:hover,
+.select:focus {
+    border-color: var(--color-border);
+    outline: none;
+}
+
+/* Variant styles */
+.select-default {
+    /* Default styling already applied above */
+}
+
+.select-compact {
+    padding: var(--spacing-xs) 2px;
+    text-align: center;
+    width: 50px;
+}
+
+/* Full width modifier */
+.select-full-width {
+    width: 100%;
+    flex: 1;
+}

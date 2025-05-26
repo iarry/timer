@@ -1,13 +1,16 @@
 import { useState } from 'react'
-import { useAppSelector } from './hooks'
+import { useAppSelector, useAppDispatch } from './hooks'
 import './App.css'
 import ConfigPanel from './components/config/ConfigPanel'
 import Timer from './components/timer/Timer'
 import WorkoutSaveDialog from './components/workouts/WorkoutSaveDialog'
 import WorkoutLibrary from './components/workouts/WorkoutLibrary'
 import { OfflineIndicator } from './components/common/OfflineIndicator'
+import { loadWorkout } from './features/timerConfig/timerConfigSlice'
+import { setCurrentWorkout } from './features/savedWorkouts/savedWorkoutsSlice'
 
 function App() {
+  const dispatch = useAppDispatch()
   const [activeView, setActiveView] = useState<'config' | 'timer'>('config')
   const [showSaveDialog, setShowSaveDialog] = useState(false)
   const [showWorkoutLibrary, setShowWorkoutLibrary] = useState(false)
@@ -31,6 +34,17 @@ function App() {
     setShowWorkoutLibrary(true)
   }
 
+  const handleNewWorkout = () => {
+    // Clear current workout and reset configuration
+    dispatch(setCurrentWorkout(null))
+    dispatch(loadWorkout({
+      splits: [],
+      defaultExerciseDuration: 45,
+      defaultRestDuration: 30
+    }))
+    setShowWorkoutLibrary(false)
+  }
+
   return (
     <div 
       className="app-container"
@@ -48,6 +62,7 @@ function App() {
       <WorkoutLibrary 
         isOpen={showWorkoutLibrary}
         onClose={() => setShowWorkoutLibrary(false)}
+        onNewWorkout={handleNewWorkout}
       />
 
       <main className="app-content">
