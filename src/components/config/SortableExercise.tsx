@@ -27,7 +27,13 @@ export const SortableExercise = ({
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: exercise.id });
+  } = useSortable({ 
+    id: exercise.id, 
+    data: { 
+      type: 'exercise', 
+      parentId: splitId 
+    } 
+  });
 
   const style = {
     transform: CSS.Transform.toString(transform),

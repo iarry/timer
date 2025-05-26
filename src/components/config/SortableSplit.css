@@ -1,0 +1,14 @@
+.split-item.is-dragging-placeholder {
+    opacity: 0.4;
+    border: 2px dashed var(--color-secondary, #6c757d); /* Keep green dotted outline (using secondary color) */
+    border-radius: 8px; /* Add border-radius for consistency with drag overlay */
+    /* Important: This class should NOT alter padding, margin, or other layout-affecting properties
+     that are defined on the base .split-item class. It only changes appearance. */
+}
+
+.split-drag-handle {
+    cursor: grab;
+    display: flex; /* Helps center the icon if needed */
+    align-items: center;
+    padding: 4px; /* Make it a bit easier to grab */
+}

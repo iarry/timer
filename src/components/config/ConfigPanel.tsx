@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import {
   DndContext,
-  closestCenter,
+  pointerWithin, // Changed from rectIntersection
   KeyboardSensor,
   PointerSensor,
   useSensor,
@@ -20,11 +20,10 @@ import { useAppDispatch, useAppSelector } from '../../hooks';
 import { 
   setDefaultDurations,
   addSplit,
-  removeSplit,
-  updateSplit,
   addExercise,
   reorderExercises,
   moveExerciseToSplit,
+  reorderSplits, 
   Split,
   Exercise
 } from '../../features/timerConfig/timerConfigSlice';
@@ -32,8 +31,8 @@ import { generateId } from '../../utils';
 import Button from '../common/Button';
 import Select from '../common/Select';
 import { AudioProfileSelector } from './AudioProfileSelector';
-import { SortableExercise } from './SortableExercise';
-import { Trash2, Save, GalleryVerticalEnd, Plus, GripVertical } from 'lucide-react';
+import { SortableSplit } from './SortableSplit'; 
+import { Trash2, Save, GalleryVerticalEnd, GripVertical } from 'lucide-react'; 
 
 import './ConfigPanel.css';
 
@@ -56,6 +55,7 @@ const ConfigPanel = ({ onStartWorkout, onSaveWorkout, onLoadWorkout }: ConfigPan
 
   // Track active drag item for DragOverlay
   const [activeExercise, setActiveExercise] = useState<Exercise | null>(null);
+  const [activeSplitState, setActiveSplitState] = useState<Split | null>(null); // Renamed to avoid conflict with a potential variable 'activeSplit'
 
   // DnD Kit sensors
   const sensors = useSensors(
@@ -131,19 +131,26 @@ const ConfigPanel = ({ onStartWorkout, onSaveWorkout, onLoadWorkout }: ConfigPan
   // Handle drag start
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event;
-    const draggedExercise = splits
-      .flatMap(split => split.exercises)
-      .find(exercise => exercise.id === active.id);
-    
-    setActiveExercise(draggedExercise || null);
+    if (active.data.current?.type === 'split') {
+      const draggedSplit = splits.find(split => split.id === active.id);
+      setActiveSplitState(draggedSplit || null);
+      setActiveExercise(null); 
+    } else {
+      // Assuming anything not a 'split' is an 'exercise' or unclassified (handled by existing logic)
+      const draggedExercise = splits
+        .flatMap(split => split.exercises)
+        .find(exercise => exercise.id === active.id);
+      setActiveExercise(draggedExercise || null);
+      setActiveSplitState(null); 
+    }
   };
 
   // Handle drag end
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
-    // Clear drag state
     setActiveExercise(null);
+    setActiveSplitState(null);
 
     if (!over) return;
 
@@ -151,37 +158,48 @@ const ConfigPanel = ({ onStartWorkout, onSaveWorkout, onLoadWorkout }: ConfigPan
     const overId = over.id as string;
 
     if (activeId !== overId) {
-      // Find the splits containing the active and target exercises
-      const activeSplit = splits.find(split => 
-        split.exercises.some(ex => ex.id === activeId)
-      );
-      const overSplit = splits.find(split => 
-        split.exercises.some(ex => ex.id === overId)
-      );
-      
-      if (activeSplit && overSplit) {
-        if (activeSplit.id === overSplit.id) {
-          // Reordering within the same split
-          const oldIndex = activeSplit.exercises.findIndex(ex => ex.id === activeId);
-          const newIndex = activeSplit.exercises.findIndex(ex => ex.id === overId);
-          
-          if (oldIndex !== -1 && newIndex !== -1) {
-            const newOrder = arrayMove(activeSplit.exercises, oldIndex, newIndex);
-            dispatch(reorderExercises({
-              splitId: activeSplit.id,
-              exerciseIds: newOrder.map(ex => ex.id)
-            }));
-          }
-        } else {
-          // Moving between different splits
-          const overIndex = overSplit.exercises.findIndex(ex => ex.id === overId);
-          
-          if (overIndex !== -1) {
+      // Check if we are dragging a split
+      if (active.data.current?.type === 'split' && over.data.current?.type === 'split') {
+        const oldIndex = splits.findIndex(split => split.id === activeId);
+        const newIndex = splits.findIndex(split => split.id === overId);
+        if (oldIndex !== -1 && newIndex !== -1) {
+          dispatch(reorderSplits({ oldIndex, newIndex })); // Dispatch the reorderSplits action
+        }
+      } else if (active.data.current?.type !== 'split' && over.data.current?.type !== 'split' && (!active.data.current?.type && !over.data.current?.type) ) { 
+        // This condition ensures we are not dragging an exercise onto a split drop zone or vice-versa
+        // This is the existing logic for moving exercises
+        const activeItemSplit = splits.find(split => 
+          split.exercises.some(ex => ex.id === activeId)
+        );
+        const overItemSplit = splits.find(split => 
+          split.exercises.some(ex => ex.id === overId) || over.data.current?.accepts === 'exercise' && over.id === split.id
+        ); // over.id could be a split ID if dropping on an empty split
+        
+        if (activeItemSplit && overItemSplit) {
+          if (activeItemSplit.id === overItemSplit.id) {
+            // Reordering within the same split
+            const oldIndex = activeItemSplit.exercises.findIndex(ex => ex.id === activeId);
+            const newIndex = overItemSplit.exercises.findIndex(ex => ex.id === overId);
+            
+            if (oldIndex !== -1 && newIndex !== -1) {
+              const newOrder = arrayMove(activeItemSplit.exercises, oldIndex, newIndex);
+              dispatch(reorderExercises({
+                splitId: activeItemSplit.id,
+                exerciseIds: newOrder.map(ex => ex.id)
+              }));
+            }
+          } else {
+            // Moving between different splits
+            const overIndex = overItemSplit.exercises.findIndex(ex => ex.id === overId);
+            // If overId is not an exercise, it might be the split itself (e.g. dropping into an empty split)
+            // In that case, add to the end of the target split's exercises.
+            const targetIndex = overIndex !== -1 ? overIndex : overItemSplit.exercises.length;
+            
             dispatch(moveExerciseToSplit({
               exerciseId: activeId,
-              fromSplitId: activeSplit.id,
-              toSplitId: overSplit.id,
-              toIndex: overIndex
+              fromSplitId: activeItemSplit.id,
+              toSplitId: overItemSplit.id,
+              toIndex: targetIndex
             }));
           }
         }
@@ -256,76 +274,36 @@ const ConfigPanel = ({ onStartWorkout, onSaveWorkout, onLoadWorkout }: ConfigPan
         <div className="splits-list">
           <DndContext
             sensors={sensors}
-            collisionDetection={closestCenter}
+            collisionDetection={pointerWithin} // Changed to pointerWithin
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
           >
-            {splits.map(split => (
-              <div key={split.id} className="split-item">
-                <div className="split-header">
-                  <div className="sets-info">
-                    <Select
-                      value={split.sets}
-                      onChange={(e) => dispatch(updateSplit({ 
-                        id: split.id, 
-                        sets: parseInt(e.target.value) || 1 
-                      }))}
-                      variant="compact"
-                      className="sets-select"
-                    >
-                      {Array.from({ length: 20 }, (_, i) => i + 1).map(num => (
-                        <option key={num} value={num}>{num}</option>
-                      ))}
-                    </Select>
-                    <span className="sets-label">sets</span>
-                    <Button 
-                      onClick={() => {
-                        if (confirm('Are you sure you want to delete this split?')) {
-                          dispatch(removeSplit(split.id));
-                        }
-                      }}
-                      variant="danger"
-                      size="small"
-                      disabled={splits.length === 1}
-                    >
-                      <Trash2 size={16} />
-                    </Button>
-                  </div>
-                </div>
-                
-                {/* Exercises in this split */}
-                <div className="exercises-list">
-                  <SortableContext
-                    items={split.exercises.map(ex => ex.id)}
-                    strategy={verticalListSortingStrategy}
-                  >
-                    {split.exercises.map(exercise => (
-                      <SortableExercise
-                        key={exercise.id}
-                        exercise={exercise}
-                        splitId={split.id}
-                        durationOptions={durationOptions}
-                        exercisesLength={split.exercises.length}
-                      />
-                    ))}
-                  </SortableContext>
-                  <div className="add-exercise-section">
-                    <Button 
-                      className="add-exercise-button"
-                      onClick={() => handleAddBlankExercise(split.id)}
-                      variant="secondary"
-                      size="small"
-                    >
-                      <Plus size={16} />
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            ))}
+            <SortableContext items={splits.map(s => s.id)} strategy={verticalListSortingStrategy}>
+              {splits.map(split => (
+                <SortableSplit
+                  key={split.id}
+                  split={split}
+                  durationOptions={durationOptions}
+                  onAddExercise={handleAddBlankExercise} // Pass the handler
+                  isOnlySplit={splits.length === 1} // Pass if it's the only split
+                />
+              ))}
+            </SortableContext>
             
             <DragOverlay>
-              {activeExercise ? (
-                <div className="exercise-item" style={{ opacity: 0.8, transform: 'rotate(5deg)' }}>
+              {activeSplitState ? (
+                // Drag overlay for a Split
+                // Use the actual SortableSplit component for the overlay
+                <SortableSplit
+                  split={activeSplitState}
+                  durationOptions={durationOptions} // Pass necessary props
+                  onAddExercise={() => {}} // No-op for overlay
+                  isOnlySplit={splits.length === 1} // Or determine based on context if needed
+                  // Ensure no interactive elements are active in the overlay version if SortableSplit has them
+                />
+              ) : activeExercise ? (
+                // Drag overlay for an Exercise (existing logic)
+                <div className="exercise-item drag-overlay-exercise-item"> {/* Added class for specific styling */}
                   <div className="exercise-grip">
                     <GripVertical size={24} />
                   </div>

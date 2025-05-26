@@ -190,6 +190,15 @@ const timerConfigSlice = createSlice({
       }
     },
 
+    reorderSplits(
+      state,
+      action: PayloadAction<{ oldIndex: number; newIndex: number }>
+    ) {
+      const { oldIndex, newIndex } = action.payload;
+      const [movedSplit] = state.splits.splice(oldIndex, 1);
+      state.splits.splice(newIndex, 0, movedSplit);
+    },
+
     moveExerciseToSplit(
       state,
       action: PayloadAction<{
@@ -230,6 +239,7 @@ export const {
   removeExercise,
   updateExercise,
   reorderExercises,
+  reorderSplits,
   moveExerciseToSplit,
   loadWorkout,
   setAudioProfile,
