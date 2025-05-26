@@ -65,7 +65,8 @@ export const AudioProfileSelector: React.FC = () => {
       await new Promise(resolve => setTimeout(resolve, 1000));
       await audioSystem.playCountdownBeep(1, 'rest');             // "1" countdown beep (low)
       await new Promise(resolve => setTimeout(resolve, 1000));
-      await audioSystem.playRestStart();                          // Rest start
+      // Rest start sound is disabled for now
+      // await audioSystem.playRestStart();                       // Rest start
     } catch (error) {
       console.warn('Error testing audio profile:', error);
     }

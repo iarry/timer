@@ -176,9 +176,11 @@ const Timer = ({ onExit }: TimerProps) => {
           if (!audioSystem.getCurrentProfile().useSpeech) {
             audioSystem.playWorkoutStart(timerState.currentItem.name);
           }
-        } else if (timerState.currentItem.type === 'rest') {
-          audioSystem.playRestStart();
         }
+        // Rest start sound is disabled for now
+        // else if (timerState.currentItem.type === 'rest') {
+        //   audioSystem.playRestStart();
+        // }
       }
       // Update countdown start time when moving to a new item
       countdownStartTimeRef.current = Date.now();
