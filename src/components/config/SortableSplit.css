@@ -12,3 +12,29 @@
     align-items: center;
     padding: 4px; /* Make it a bit easier to grab */
 }
+
+.split-header {
+    display: flex;
+    /* justify-content: space-between; /* No longer needed as all items are in split-header-left */
+    align-items: center;
+    margin-bottom: 0;
+    padding-bottom: var(--spacing-sm);
+}
+
+.split-header-left { /* New class for left group */
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm); /* Gap between drag handle, sets info, and delete button */
+}
+
+.sets-info { /* Styles for the sets selector and delete button container */
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+/* .split-delete-button can be removed if no specific styles are needed 
+   beyond what the Button component provides, or add specific styles here. 
+   The margin-left is removed as justify-content handles spacing. */
+
+/* Removed empty .split-actions and .sets-label ruleset

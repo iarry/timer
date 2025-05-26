@@ -24,6 +24,7 @@ import {
   reorderExercises,
   moveExerciseToSplit,
   reorderSplits, 
+  setWarmupDuration, // Import the new action
   Split,
   Exercise
 } from '../../features/timerConfig/timerConfigSlice';
@@ -44,11 +45,12 @@ interface ConfigPanelProps {
 
 const ConfigPanel = ({ onStartWorkout, onSaveWorkout, onLoadWorkout }: ConfigPanelProps) => {
   const dispatch = useAppDispatch();
-  const { defaultExerciseDuration, defaultRestDuration, splits } = 
+  const { defaultExerciseDuration, defaultRestDuration, warmupDuration, splits } = 
     useAppSelector(state => state.timerConfig);
 
   const [exerciseDuration, setExerciseDuration] = useState(defaultExerciseDuration);
   const [restDuration, setRestDuration] = useState(defaultRestDuration);
+  const [currentWarmupDuration, setCurrentWarmupDuration] = useState(warmupDuration);
 
   // Form state for new split
   const [newSplitSets, setNewSplitSets] = useState(3);
@@ -75,6 +77,16 @@ const ConfigPanel = ({ onStartWorkout, onSaveWorkout, onLoadWorkout }: ConfigPan
   };
   const durationOptions = generateDurationOptions();
 
+  // Generate warmup duration options (0-600 seconds in intervals of 15)
+  const generateWarmupOptions = () => {
+    const options = [];
+    for (let i = 0; i <= 600; i += 15) {
+      options.push(i);
+    }
+    return options;
+  };
+  const warmupOptions = generateWarmupOptions();
+
   // Effect for auto-updating default durations when they change
   useEffect(() => {
     if (exerciseDuration !== defaultExerciseDuration || restDuration !== defaultRestDuration) {
@@ -84,6 +96,13 @@ const ConfigPanel = ({ onStartWorkout, onSaveWorkout, onLoadWorkout }: ConfigPan
       }));
     }
   }, [exerciseDuration, restDuration, dispatch, defaultExerciseDuration, defaultRestDuration]);
+
+  // Effect for updating warmup duration in Redux store
+  useEffect(() => {
+    if (currentWarmupDuration !== warmupDuration) {
+      dispatch(setWarmupDuration(currentWarmupDuration));
+    }
+  }, [currentWarmupDuration, dispatch, warmupDuration]);
 
   // Handler for adding a new split
   const handleAddSplit = () => {
@@ -244,7 +263,7 @@ const ConfigPanel = ({ onStartWorkout, onSaveWorkout, onLoadWorkout }: ConfigPan
                 value={exerciseDuration}
                 onChange={(e) => setExerciseDuration(parseInt(e.target.value))}
                 variant="compact"
-                className="duration-input-field"
+                className="select-compact" // Replaced .duration-input-field
               >
                 {durationOptions.map(duration => (
                   <option key={duration} value={duration}>{duration}</option>
@@ -258,10 +277,25 @@ const ConfigPanel = ({ onStartWorkout, onSaveWorkout, onLoadWorkout }: ConfigPan
                 value={restDuration}
                 onChange={(e) => setRestDuration(parseInt(e.target.value))}
                 variant="compact"
-                className="duration-input-field"
+                className="select-compact" // Replaced .duration-input-field
               >
                 {durationOptions.map(duration => (
                   <option key={duration} value={duration}>{duration}</option>
+                ))}
+              </Select>
+            </div>
+          </div>
+          <div className="warmup-duration-row">
+            <div className="duration-input">
+              <label>Warmup: </label>
+              <Select
+                value={currentWarmupDuration}
+                onChange={(e) => setCurrentWarmupDuration(parseInt(e.target.value))}
+                variant="compact"
+                className="select-compact" // Replaced .duration-input-field
+              >
+                {warmupOptions.map(duration => (
+                  <option key={duration} value={duration}>{duration === 0 ? 'None' : duration}</option>
                 ))}
               </Select>
             </div>

@@ -19,14 +19,10 @@
 }
 
 /* Variant styles */
-.select-default {
-    /* Default styling already applied above */
-}
-
 .select-compact {
     padding: var(--spacing-xs) 2px;
     text-align: center;
-    width: 50px;
+    width: 52px; /* Increased width for 3 digits */
 }
 
 /* Full width modifier */

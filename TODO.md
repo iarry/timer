@@ -8,7 +8,7 @@
 - [x] Create reusable Select component to standardize all select styling across the app
 - [x] Move workout note to WorkoutLibrary modal header for better UX
 - [x] Disable service worker in development to prevent caching issues
-- [ ] Add the ability to drag and drop an entire set, to re-order the sets.
+- [x] Add the ability to drag and drop an entire set, to re-order the sets.
 - [ ] Add a "Warmup" duration, with increments of 15s, defaulting to 3 minutes. It's configuration should be just below but part of the default settings, and it should occur before the rest of the workout a single time.
 
 ## Timer page

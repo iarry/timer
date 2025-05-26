@@ -243,10 +243,6 @@ input[type='number'] {
     background-color: var(--color-background);
 }
 
-.duration-input-field {
-    width: 50px;
-}
-
 .sets-select {
     width: 42px;
 }
@@ -404,7 +400,7 @@ input[type='number'] {
     font-weight: 600;
     text-align: center;
     color: var(--color-secondary);
-    width: 50px;
+    width: 52px;
     font-size: 0.9rem;
     padding: var(--spacing-xs) 2px;
 }
@@ -446,12 +442,6 @@ input[type='number'] {
 .duration-input label {
     font-weight: 600;
     color: var(--color-text-light);
-}
-
-.duration-input-field:hover,
-.duration-input-field:focus {
-    border-color: var(--color-border);
-    outline: none;
 }
 
 .duration-input span {

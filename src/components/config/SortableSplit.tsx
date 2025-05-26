@@ -43,24 +43,26 @@ export const SortableSplit = ({ split, durationOptions, onAddExercise, isOnlySpl
       className={`split-item ${isDragging && !transform ? 'is-dragging-placeholder' : ''}`}
     >
       <div className="split-header">
-        <div {...attributes} {...listeners} className="split-drag-handle">
-          <GripVertical size={24} />
-        </div>
-        <div className="sets-info">
-          <Select
-            value={split.sets}
-            onChange={(e) => dispatch(updateSplit({
-              id: split.id,
-              sets: parseInt(e.target.value) || 1
-            }))}
-            variant="compact"
-            className="sets-select"
-          >
-            {Array.from({ length: 20 }, (_, i) => i + 1).map(num => (
-              <option key={num} value={num}>{num}</option>
-            ))}
-          </Select>
-          <span className="sets-label">sets</span>
+        <div className="split-header-left">
+          <div {...attributes} {...listeners} className="split-drag-handle">
+            <GripVertical size={24} />
+          </div>
+          <div className="sets-info">
+            <Select
+              value={split.sets}
+              onChange={(e) => dispatch(updateSplit({
+                id: split.id,
+                sets: parseInt(e.target.value) || 1
+              }))}
+              variant="compact"
+              className="sets-select"
+            >
+              {Array.from({ length: 20 }, (_, i) => i + 1).map(num => (
+                <option key={num} value={num}>{num}</option>
+              ))}
+            </Select>
+            <span className="sets-label">sets</span>
+          </div>
           <Button
             onClick={() => {
               if (confirm('Are you sure you want to delete this split?')) {
@@ -70,6 +72,7 @@ export const SortableSplit = ({ split, durationOptions, onAddExercise, isOnlySpl
             variant="danger"
             size="small"
             disabled={isOnlySplit}
+            className="split-delete-button"
           >
             <Trash2 size={16} />
           </Button>
