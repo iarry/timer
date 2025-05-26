@@ -74,6 +74,17 @@
     background-color: rgba(255, 82, 82, 0.1);
 }
 
+.btn-outline-danger {
+    background-color: transparent;
+    border: none;
+    color: var(--color-danger);
+    box-shadow: none;
+}
+
+.btn-outline-danger:hover:not(:disabled) {
+    background-color: rgba(255, 82, 82, 0.1);
+}
+
 .btn-transparent {
     background-color: transparent;
     color: var(--color-text);

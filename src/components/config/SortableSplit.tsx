@@ -69,7 +69,7 @@ export const SortableSplit = ({ split, durationOptions, onAddExercise, isOnlySpl
                 dispatch(removeSplit(split.id));
               }
             }}
-            variant="danger"
+            variant="outline-danger"
             size="small"
             disabled={isOnlySplit}
             className="split-delete-button"
