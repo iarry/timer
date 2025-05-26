@@ -8,6 +8,9 @@
 - Avoid fluff in user-facing copy.
 - Keep bundle size small.
 - Do one TODO at a time, but you can read all of them to get context.
+- Code should be self-documenting.
+- Use comments only when necessary, and keep them concise.
+- Don't use comments to preserve history.
 
 ## Code Quality
 
