@@ -32,7 +32,19 @@ const Timer = ({ onExit }: TimerProps) => {
   const lastTickTimeRef = useRef<number>(Date.now());
   const [isMuted, setIsMuted] = useState(false);
   const countdownStartTimeRef = useRef<number>(Date.now());
-  
+
+  // Encouraging messages for workout completion
+  const encouragingMessages = [
+    "Well done! Every step forward is a victory.",
+    "Fantastic effort! You're stronger than you think.",
+    "Workout complete! Embrace the progress you've made.",
+    "You did it! Remember, consistency is key.",
+    "Great job! Rest, recover, and come back stronger.",
+    "Excellent work! The journey of a thousand miles begins with a single step.",
+    "Phenomenal! Your dedication is inspiring."
+  ];
+  const [completionMessage, setCompletionMessage] = useState("");
+
   // Update the audio system mute state when local mute state changes
   useEffect(() => {
     audioSystem.setMuted(isMuted);
@@ -115,6 +127,8 @@ const Timer = ({ onExit }: TimerProps) => {
     // Play different sounds based on timer events
     if (timerState.status === 'completed') {
       audioSystem.playWorkoutComplete();
+      // Select a random encouraging message
+      setCompletionMessage(encouragingMessages[Math.floor(Math.random() * encouragingMessages.length)]);
     } else if (
       timerState.currentItem && 
       (!previousItemRef.current || previousItemRef.current !== timerState.currentItem)
@@ -345,8 +359,8 @@ const Timer = ({ onExit }: TimerProps) => {
             
             {timerState.status === 'completed' && (
               <div className="completion-message">
-                <h2>Great job! You've completed your workout.</h2>
-                <Button onClick={handleStartWorkout} variant="secondary">Restart Workout</Button>
+                <h2>{completionMessage || "Great job! You've completed your workout."}</h2>
+                {/* Restart Workout button removed as per TODO */}
               </div>
             )}
           </div>

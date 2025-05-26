@@ -40,7 +40,7 @@ const initialState: TimerState = {
 const buildWorkoutSequence = (splits: Split[], defaultRestDuration: number): TimerItem[] => {
   const sequence: TimerItem[] = [];
   
-  splits.forEach(split => {
+  splits.forEach((split, splitIndex) => { // Added splitIndex
     for (let setIndex = 0; setIndex < split.sets; setIndex++) {
       split.exercises.forEach((exercise, exerciseIndex) => {
         if (exercise.leftRight) {
@@ -59,10 +59,10 @@ const buildWorkoutSequence = (splits: Split[], defaultRestDuration: number): Tim
           sequence.push({
             type: 'rest',
             splitId: split.id,
-            name: 'Rest',
+            name: 'Rest', // Or 'Side Switch Rest'
             duration: defaultRestDuration,
             setIndex,
-            exerciseIndex
+            exerciseIndex // Associates with the preceding Left exercise
           });
           
           sequence.push({
@@ -87,23 +87,38 @@ const buildWorkoutSequence = (splits: Split[], defaultRestDuration: number): Tim
           });
         }
         
-        // Add rest period after each exercise (except the last exercise in the last set)
-        const isLastExercise = exerciseIndex === split.exercises.length - 1;
-        const isLastSet = setIndex === split.sets - 1;
+        // Add rest period after each exercise (or L/R pair),
+        // but not if it's the last exercise of the last set of THIS split.
+        const isLastExerciseInSplitDefinition = exerciseIndex === split.exercises.length - 1;
+        const isLastSetOfThisSplit = setIndex === split.sets - 1;
         
-        if (!(isLastExercise && isLastSet)) {
+        if (!(isLastExerciseInSplitDefinition && isLastSetOfThisSplit)) {
           sequence.push({
             type: 'rest',
             splitId: split.id,
             name: 'Rest',
             duration: defaultRestDuration,
-            setIndex,
-            exerciseIndex
+            setIndex, // Refers to the set the preceding exercise was in
+            exerciseIndex // Refers to the exercise index it follows
           });
         }
+      }); // End of exercises.forEach
+    } // End of set loop for the current split
+
+    // Add rest period AFTER the entire split, but not if it's the last split of the workout.
+    const isLastSplitInWorkout = splitIndex === splits.length - 1;
+    if (!isLastSplitInWorkout) {
+      sequence.push({
+        type: 'rest',
+        splitId: split.id, // This rest follows split.id
+        name: 'Split Rest', 
+        duration: defaultRestDuration,
+        // Associate with the last exercise of the preceding split
+        setIndex: split.sets - 1, 
+        exerciseIndex: split.exercises.length - 1 
       });
     }
-  });
+  }); // End of splits.forEach
   
   return sequence;
 };
