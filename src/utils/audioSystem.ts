@@ -8,6 +8,8 @@ class AudioSystem {
   constructor() {
     this.initializeAudio();
     this.currentProfile = audioProfiles[0]; // Default to first profile
+    this.handleVisibilityChange = this.handleVisibilityChange.bind(this); // Bind the method
+    document.addEventListener('visibilitychange', this.handleVisibilityChange);
   }
 
   private initializeAudio() {
@@ -37,8 +39,15 @@ class AudioSystem {
   private async ensureAudioContext() {
     if (!this.audioContext) return null;
     
+    // Always try to resume if suspended, especially on visibility change
     if (this.audioContext.state === 'suspended') {
-      await this.audioContext.resume();
+      try {
+        await this.audioContext.resume();
+        // console.log('AudioContext resumed');
+      } catch (err) {
+        console.warn('Error resuming AudioContext:', err);
+        return null; // Indicate failure to resume
+      }
     }
     return this.audioContext;
   }
@@ -156,13 +165,40 @@ class AudioSystem {
     if (this.isMuted) return;
     
     const context = await this.ensureAudioContext();
-    if (context && context.state === 'suspended') {
-      await context.resume();
+    // No need to check context.state here, ensureAudioContext handles resume
+    if (context) {
+      // Play a very quiet, short tone to initialize
+      // This also helps "wake up" the audio system after a tab has been backgrounded
+      await this.createTone(440, 0.05, 'sine', 0.001); // Reduced volume further
     }
-    
-    // Play a very quiet, short tone to initialize
-    await this.createTone(440, 0.05, 'sine', 0.01);
+  }
+
+  // Method to handle visibility change
+  private async handleVisibilityChange() {
+    if (document.visibilityState === 'visible') {
+      // console.log('Tab became visible, ensuring audio context is active.');
+      // Attempt to resume and "ping" the audio context when tab returns to foreground
+      await this.initializeOnUserInteraction();
+    } else {
+      // console.log('Tab became hidden.');
+      // Optionally, you could add logic here if needed when tab is hidden,
+      // but browsers usually suspend AudioContext automatically.
+    }
+  }
+
+  // Cleanup method for when the audio system is no longer needed (e.g., component unmount)
+  public cleanup() {
+    document.removeEventListener('visibilitychange', this.handleVisibilityChange);
+    if (this.audioContext && this.audioContext.state !== 'closed') {
+      this.audioContext.close().catch(err => console.warn('Error closing AudioContext:', err));
+      this.audioContext = null;
+    }
+    // console.log('AudioSystem cleaned up.');
   }
 }
 
 export const audioSystem = new AudioSystem();
+
+// It's good practice to offer a way to clean up global event listeners
+// if the app structure allows for it (e.g., when the main App component unmounts).
+// For now, this global instance will persist for the app's lifetime.

@@ -73,7 +73,6 @@ const ConfigPanel = ({ onStartWorkout, onSaveWorkout, onLoadWorkout }: ConfigPan
     }
     return options;
   };
-
   const durationOptions = generateDurationOptions();
 
   // Effect for auto-updating default durations when they change
