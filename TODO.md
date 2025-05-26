@@ -10,6 +10,7 @@
 - [x] Disable service worker in development to prevent caching issues
 - [x] Add the ability to drag and drop an entire set, to re-order the sets.
 - [x] Add a "Warmup" duration, with increments of 15s, defaulting to 3 minutes. It's configuration should be just below but part of the default settings, and it should occur before the rest of the workout a single time.
+- [x] **Dual audio profiles** - Implement dual audio profile system where each existing audio profile (Clean, Pixel, Serenity) has two user-visible versions: the original tone-based version and a new speech synthesis version that reads exercise names aloud before the countdown instead of playing the `exerciseStart` sound. Display these as "Clean" and "Clean (tones only)", etc.
 
 ## Timer page
 

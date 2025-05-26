@@ -32,6 +32,8 @@ const Timer = ({ onExit }: TimerProps) => {
   const [smoothTimeRemaining, setSmoothTimeRemaining] = useState(0);
   const lastTickTimeRef = useRef<number>(Date.now());
   const countdownStartTimeRef = useRef<number>(Date.now());
+  const hasAnnouncedExerciseRef = useRef<string | null>(null); // Track if we've announced for current transition
+  const speechEndTimeRef = useRef<number | null>(null); // Track when speech announcement ends
 
   // Get mute state from persisted config instead of local state
   const isMuted = timerConfig.muted;
@@ -69,10 +71,50 @@ const Timer = ({ onExit }: TimerProps) => {
         lastTickTimeRef.current = Date.now();
         
         // Play countdown beeps for last 3 seconds
+        const now = Date.now();
         const newTimeRemaining = timerState.currentTime - 1;
         if (newTimeRemaining <= 3 && newTimeRemaining > 0) {
           // Determine what type of segment is starting when countdown finishes
           const nextSegmentType = timerState.queue.length > 0 ? timerState.queue[0].type : undefined;
+          const nextExerciseName = timerState.queue.length > 0 ? timerState.queue[0].name : undefined;
+          
+          // If this is counting down to an exercise and we're at 3 seconds, announce the exercise name first
+          if (newTimeRemaining === 3 && nextSegmentType === 'exercise' && nextExerciseName) {
+            const announcementKey = `${nextExerciseName}-${timerState.currentItemIndex}`;
+            if (hasAnnouncedExerciseRef.current !== announcementKey) {
+              hasAnnouncedExerciseRef.current = announcementKey;
+              // For speech profiles, announce the exercise name and create properly spaced beeps
+              if (audioSystem.getCurrentProfile().useSpeech) {
+                audioSystem.announceExerciseBeforeCountdown(nextExerciseName).then(() => {
+                  // Mark when the speech ends and start countdown sequence with proper spacing
+                  speechEndTimeRef.current = Date.now();
+                  
+                  // Play the first beep with a small delay after speech
+                  setTimeout(() => {
+                    audioSystem.playCountdownBeep(3, nextSegmentType);
+                    
+                    // Schedule remaining beeps with exact 1-second spacing
+                    setTimeout(() => {
+                      audioSystem.playCountdownBeep(2, nextSegmentType);
+                      setTimeout(() => {
+                        audioSystem.playCountdownBeep(1, nextSegmentType);
+                      }, 1000);
+                    }, 1000);
+                  }, 300);
+                });
+                // Skip the normal countdown beep logic since we're handling beeps ourselves
+                return;
+              }
+            }
+          } else if (newTimeRemaining === 2 || newTimeRemaining === 1) {
+            // For 2 and 1 second beeps, skip if we recently played a speech announcement
+            // This prevents duplicate beeps from our manual sequence and the timer tick
+            if (speechEndTimeRef.current && now - speechEndTimeRef.current < 4000) {
+              return;
+            }
+          }
+          
+          // Play the countdown beep normally for non-speech cases
           audioSystem.playCountdownBeep(newTimeRemaining, nextSegmentType);
         }
       }, 1000);
@@ -122,11 +164,18 @@ const Timer = ({ onExit }: TimerProps) => {
       timerState.currentItem && 
       (!previousItemRef.current || previousItemRef.current !== timerState.currentItem)
     ) {
+      // Reset tracking variables when moving to a new item
+      hasAnnouncedExerciseRef.current = null;
+      speechEndTimeRef.current = null;
+      
       // Play transition sound when moving to a new exercise
       if (previousItemRef.current) {
         // Play the appropriate sound based on the new item type
         if (timerState.currentItem.type === 'exercise') {
-          audioSystem.playWorkoutStart();
+          // For speech profiles, we don't play the start sound since we announced the name during countdown
+          if (!audioSystem.getCurrentProfile().useSpeech) {
+            audioSystem.playWorkoutStart(timerState.currentItem.name);
+          }
         } else if (timerState.currentItem.type === 'rest') {
           audioSystem.playRestStart();
         }
@@ -177,11 +226,17 @@ const Timer = ({ onExit }: TimerProps) => {
     if (elapsedTime < 1) {
       // Less than 1 second has elapsed, go to previous item
       dispatch(goToPreviousItem());
+      // Reset tracking variables
+      hasAnnouncedExerciseRef.current = null;
+      speechEndTimeRef.current = null;
       // Update the countdown start time for the previous item
       countdownStartTimeRef.current = Date.now();
     } else {
       // Reset the current countdown to its original duration
       dispatch(resetCurrentCountdown());
+      // Reset tracking variables
+      hasAnnouncedExerciseRef.current = null;
+      speechEndTimeRef.current = null;
       // Update the countdown start time
       countdownStartTimeRef.current = Date.now();
     }
@@ -190,6 +245,9 @@ const Timer = ({ onExit }: TimerProps) => {
   // Handle going to the next exercise
   const handleNext = () => {
     dispatch(goToNextItem());
+    // Reset tracking variables
+    hasAnnouncedExerciseRef.current = null;
+    speechEndTimeRef.current = null;
     // Update the countdown start time for the next item
     countdownStartTimeRef.current = Date.now();
   };

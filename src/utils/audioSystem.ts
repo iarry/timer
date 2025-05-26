@@ -147,8 +147,42 @@ class AudioSystem {
     }
   }
 
-  async playWorkoutStart() {
-    await this.playToneSequence(this.currentProfile.exerciseStart);
+  async announceExerciseBeforeCountdown(exerciseName: string) {
+    if (this.isMuted) return;
+    
+    // Only announce if using speech synthesis
+    if (!this.currentProfile.useSpeech) return;
+    
+    // Check if speech synthesis is supported
+    if (!('speechSynthesis' in window)) {
+      console.warn('Speech synthesis not supported');
+      return;
+    }
+
+    return new Promise<void>((resolve) => {
+      const utterance = new SpeechSynthesisUtterance(exerciseName);
+      
+      // Configure speech settings
+      utterance.rate = 1.0;
+      utterance.pitch = 1.0;
+      utterance.volume = 0.8;
+      
+      utterance.onend = () => resolve();
+      utterance.onerror = () => {
+        console.warn('Speech synthesis error for exercise announcement');
+        resolve();
+      };
+      
+      speechSynthesis.speak(utterance);
+    });
+  }
+
+  async playWorkoutStart(exerciseName?: string) {
+    if (this.currentProfile.useSpeech && exerciseName) {
+      await this.speakExerciseName(exerciseName);
+    } else {
+      await this.playToneSequence(this.currentProfile.exerciseStart);
+    }
   }
 
   async playRestStart() {
@@ -157,6 +191,34 @@ class AudioSystem {
 
   async playWorkoutComplete() {
     await this.playToneSequence(this.currentProfile.workoutComplete);
+  }
+
+  private async speakExerciseName(exerciseName: string) {
+    if (this.isMuted) return;
+    
+    // Check if speech synthesis is supported
+    if (!('speechSynthesis' in window)) {
+      console.warn('Speech synthesis not supported, falling back to tones');
+      await this.playToneSequence(this.currentProfile.exerciseStart);
+      return;
+    }
+
+    return new Promise<void>((resolve) => {
+      const utterance = new SpeechSynthesisUtterance(exerciseName);
+      
+      // Configure speech settings
+      utterance.rate = 1.0;
+      utterance.pitch = 1.0;
+      utterance.volume = 0.8;
+      
+      utterance.onend = () => resolve();
+      utterance.onerror = () => {
+        console.warn('Speech synthesis error, falling back to tones');
+        this.playToneSequence(this.currentProfile.exerciseStart).then(resolve);
+      };
+      
+      speechSynthesis.speak(utterance);
+    });
   }
 
 

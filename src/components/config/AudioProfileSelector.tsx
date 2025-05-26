@@ -29,24 +29,43 @@ export const AudioProfileSelector: React.FC = () => {
     setIsTesting(true);
     
     try {
-      // Play workout flow demo sequence with full countdown
-      // Countdown to exercise (1-2-3 ascending tones, energizing)
-      await audioSystem.playCountdownBeep(3, 'exercise');          // "1" countdown beep (low)
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      await audioSystem.playCountdownBeep(2, 'exercise');          // "2" countdown beep (mid)
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      await audioSystem.playCountdownBeep(1, 'exercise');          // "3" countdown beep (high)
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      await audioSystem.playWorkoutStart();               // Exercise start
-      await new Promise(resolve => setTimeout(resolve, 2000));  // 2s pause to simulate exercise time
+      // Different test flow based on profile type
+      if (currentProfile.useSpeech) {
+        // Speech profiles: First announce the exercise name, then spaced countdown beeps
+        await audioSystem.announceExerciseBeforeCountdown('Push-up');
+        await new Promise(resolve => setTimeout(resolve, 300)); // Small pause after speech
+        
+        // Evenly spaced countdown beeps after speech
+        await audioSystem.playCountdownBeep(3, 'exercise');    // "3" countdown beep
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        await audioSystem.playCountdownBeep(2, 'exercise');    // "2" countdown beep
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        await audioSystem.playCountdownBeep(1, 'exercise');    // "1" countdown beep
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      } else {
+        // Tone-only profiles: Just the evenly spaced countdown beeps
+        await audioSystem.playCountdownBeep(3, 'exercise');    // "3" countdown beep
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        await audioSystem.playCountdownBeep(2, 'exercise');    // "2" countdown beep
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        await audioSystem.playCountdownBeep(1, 'exercise');    // "1" countdown beep
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
+      
+      // For tone-only profiles, play the exercise start sound
+      if (!currentProfile.useSpeech) {
+        await audioSystem.playWorkoutStart('Push-up');            // Exercise start (tones only)
+      }
+      
+      await new Promise(resolve => setTimeout(resolve, 2000));     // 2s pause to simulate exercise time
       // Countdown to rest (3-2-1 descending tones, relaxing)
-      await audioSystem.playCountdownBeep(3, 'rest');          // "3" countdown beep (high)
+      await audioSystem.playCountdownBeep(3, 'rest');             // "3" countdown beep (high)
       await new Promise(resolve => setTimeout(resolve, 1000));
-      await audioSystem.playCountdownBeep(2, 'rest');          // "2" countdown beep (mid)
+      await audioSystem.playCountdownBeep(2, 'rest');             // "2" countdown beep (mid)
       await new Promise(resolve => setTimeout(resolve, 1000));
-      await audioSystem.playCountdownBeep(1, 'rest');          // "1" countdown beep (low)
+      await audioSystem.playCountdownBeep(1, 'rest');             // "1" countdown beep (low)
       await new Promise(resolve => setTimeout(resolve, 1000));
-      await audioSystem.playRestStart();            // Rest start
+      await audioSystem.playRestStart();                          // Rest start
     } catch (error) {
       console.warn('Error testing audio profile:', error);
     }
@@ -64,7 +83,7 @@ export const AudioProfileSelector: React.FC = () => {
         >
           {profiles.map(profile => (
             <option key={profile.name} value={profile.name}>
-              {profile.name}
+              {profile.displayName}
             </option>
           ))}
         </Select>
