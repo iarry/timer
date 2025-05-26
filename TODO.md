@@ -9,13 +9,13 @@
 - [x] Move workout note to WorkoutLibrary modal header for better UX
 - [x] Disable service worker in development to prevent caching issues
 - [x] Add the ability to drag and drop an entire set, to re-order the sets.
-- [ ] Add a "Warmup" duration, with increments of 15s, defaulting to 3 minutes. It's configuration should be just below but part of the default settings, and it should occur before the rest of the workout a single time.
+- [x] Add a "Warmup" duration, with increments of 15s, defaulting to 3 minutes. It's configuration should be just below but part of the default settings, and it should occur before the rest of the workout a single time.
 
 ## Timer page
 
-- [ ] Move the play/pause button up on the screen
-- [ ] Make the ring larger, almost to the width of the screen.
-- [ ] Increase the font size of both the current exercise and the next exercise.
+- [x] Move the play/pause button up on the screen
+- [x] Make the ring larger, almost to the width of the screen.
+- [x] Increase the font size of both the current exercise and the next exercise.
 - [ ] FIX there's no rest inbetween splits (make sure there isn't one added at the end of the workout though)
 - [ ] After finishing the workout, remove the "Restart workout" button. Just have some no-fluff encouraging copy. Maybe have a list of congradulatory or encouraging things to say - base them slightly on spiritual/eastern philosphy but all kind of david goggin's "stay hard!" like.
 - [x] DEBUG - something is broken with the sound on my phone. It seems to drop out at times, or lose its place. For example, if I start a workout and then switch apps it might not be playing again, but then sometimes switching and coming back again will restore the sound. Maybe it's getting lost or attached to some event that's not always firing?
